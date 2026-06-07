@@ -3,6 +3,7 @@ import { jwtVerify } from "jose";
 import { SESSION_COOKIE } from "@/lib/auth/jwt";
 
 const PUBLIC_PATHS = [
+  "/",
   "/auth/login",
   "/auth/register",
   "/auth/forgot-password",
