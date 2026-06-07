@@ -147,6 +147,17 @@ app/
 components/
   ui/                shadcn/ui base components
   auth/              LogoutButton
+  landing/           Public marketing page sections
+  dashboard/         Authenticated dashboard widgets
+    DashboardShell   Client shell — sidebar + mobile nav toggle
+    BalanceCard      REAL balance (available / pending split)
+    WalletCard       All 6 asset balances from ledger
+    ReferralCard     Referral code, copy link, stats
+    ProfileCard      Completion checklist + progress bar
+    RecentActivity   Latest audit log entries
+    RecentTransactions Latest deposit/withdrawal requests
+    EcosystemCards   4 SETAEI product cards
+    CopyButton       Clipboard copy (client component)
 
 lib/
   prisma.ts          Prisma client singleton
@@ -157,6 +168,10 @@ lib/
     password.ts      hashPassword, verifyPassword (bcrypt)
     tokens.ts        createAuthToken, consumeAuthToken, generateReferralCode
     guards.ts        getSession, requireAuth, requireRole
+  ledger/
+    balance.ts       getUserBalances — raw SQL sum by asset, split completed/pending
+  dashboard/
+    queries.ts       getDashboardData — all dashboard data in parallel Promise.all
   validators/
     auth.ts          Zod schemas for all auth forms
 
@@ -187,10 +202,12 @@ npm run db:studio   # Open Prisma Studio (visual DB browser)
 | 1 | Project Scaffold | ✅ Done |
 | 1.5 | Architecture Review | ✅ Done |
 | 2 | Database Schema | ✅ Done |
-| 3 | Authentication | ⬜ Pending |
-| 3 | Authentication | ⬜ Pending |
-| 4 | Landing Page | ⬜ Pending |
-| 5 | User Dashboard | ⬜ Pending |
+| 3 | Authentication | ✅ Done |
+| 3.5 | Security Review | ✅ Done |
+| 3.6 | Session Invalidation | ✅ Done |
+| 4 | Landing Page | ✅ Done |
+| 4.5 | TON Architecture | ✅ Done |
+| 5 | User Dashboard | ✅ Done |
 | 6 | Wallet & Transactions | ⬜ Pending |
 | 7 | Referral System | ⬜ Pending |
 | 8 | KYC Module | ⬜ Pending |
