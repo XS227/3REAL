@@ -73,38 +73,78 @@ Health check: http://localhost:3000/api/health
 
 ---
 
+## Authentication
+
+Phase 3 implements full authentication. All sessions use HTTP-only cookies (`__3real_session`, 7-day HS256 JWT).
+
+### API Endpoints
+
+| Method | Path | Description |
+|--------|------|-------------|
+| POST | `/api/auth/register` | Create account; sends email verification link |
+| POST | `/api/auth/login` | Password login; sets session cookie |
+| POST | `/api/auth/logout` | Clears session cookie |
+| GET  | `/api/auth/me` | Returns current user from cookie |
+| POST | `/api/auth/verify-email` | Consumes verification token; sets kycTier=1 |
+| POST | `/api/auth/forgot-password` | Sends password reset link (console in dev) |
+| POST | `/api/auth/reset-password` | Consumes reset token; updates password |
+
+### Pages
+
+| Path | Description |
+|------|-------------|
+| `/auth/login` | Login form |
+| `/auth/register` | Registration form (optional referral code, `?ref=CODE`) |
+| `/auth/forgot-password` | Request reset link |
+| `/auth/reset-password?token=...` | Set new password |
+| `/auth/verify-email?token=...` | Auto-verifies on load |
+| `/dashboard` | Protected user dashboard |
+| `/admin` | Protected admin panel (super_admin / operator only) |
+
+### Test credentials (seeded)
+
+```
+Email:    admin@3real.no
+Password: ChangeMe@3REAL!2026
+Role:     super_admin / KYC Tier 3
+```
+
+**In development**, verification and reset URLs are logged to the console and also returned as `devVerifyUrl` / `devResetUrl` in API responses.
+
+---
+
 ## Project Structure
 
 ```
 app/
-  (public)/          Landing page and public routes
-  (auth)/            Login, register, email verify
-  (dashboard)/       Protected user routes (wallet, KYC, referrals)
-  (admin)/           Admin panel routes
-  api/               REST API handlers
+  auth/              Login, register, email verify, reset password
+  dashboard/         Protected user routes (wallet, KYC, referrals — Phase 5+)
+  admin/             Admin panel routes (Phase 6+)
+  api/
+    auth/            register, login, logout, me, verify-email, forgot-password, reset-password
     health/          GET /api/health — liveness + DB check
 
 components/
   ui/                shadcn/ui base components
-  layout/            Shell, sidebar, header, footer
-  dashboard/
-  wallet/
-  kyc/
-  admin/
+  auth/              LogoutButton
 
 lib/
   prisma.ts          Prisma client singleton
-  ledger/            Double-entry ledger core (Phase 6)
-  auth/              JWT + bcrypt helpers (Phase 3)
-  kyc/               KYC file handling (Phase 8)
-  utils/
+  audit.ts           Fire-and-forget audit logging
+  email/             Email stubs (console in dev; real provider in Phase 7)
+  auth/
+    jwt.ts           signToken, verifyToken, cookieOptions
+    password.ts      hashPassword, verifyPassword (bcrypt)
+    tokens.ts        createAuthToken, consumeAuthToken, generateReferralCode
+    guards.ts        getSession, requireAuth, requireRole
+  validators/
+    auth.ts          Zod schemas for all auth forms
+
+proxy.ts             Route protection (Next.js 16 proxy / middleware)
 
 prisma/
-  schema.prisma      Database schema
+  schema.prisma      17-table database schema, 22 enums
   migrations/
-
-uploads/
-  kyc/               KYC documents (outside web root)
 ```
 
 ---
