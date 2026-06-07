@@ -32,12 +32,13 @@ export async function POST(req: NextRequest) {
 
   const passwordHash = hashPassword(parsed.data.password);
 
+  // Increment sessionVersion — invalidates every active JWT for this user
   await prisma.user.update({
     where: { id: record.userId },
-    data: { passwordHash },
+    data: { passwordHash, sessionVersion: { increment: 1 } },
   });
 
-  // Invalidate all other password reset tokens for this user
+  // Also mark any remaining unused reset tokens as consumed
   await prisma.authToken.updateMany({
     where: { userId: record.userId, type: "password_reset", usedAt: null },
     data: { usedAt: new Date() },

@@ -67,6 +67,7 @@ export async function POST(req: NextRequest) {
     role: user.role,
     kycTier: user.kycTier,
     emailVerified: user.emailVerified,
+    sessionVersion: user.sessionVersion,
   });
 
   await audit({

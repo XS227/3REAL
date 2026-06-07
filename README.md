@@ -77,6 +77,26 @@ Health check: http://localhost:3000/api/health
 
 Phase 3 implements full authentication. All sessions use HTTP-only cookies (`__3real_session`, 7-day HS256 JWT).
 
+### Session Invalidation (Phase 3.6)
+
+Every JWT contains a `sessionVersion` integer that matches `users.sessionVersion` in the database. On every protected request, `validateSession()` loads the user from the DB and rejects the session if:
+
+- `jwt.sessionVersion !== user.sessionVersion` (password was reset, forced logout, role changed)
+- `user.isActive === false` (account deactivated)
+
+The `sessionVersion` is incremented atomically with any operation that should invalidate active sessions:
+
+| Operation | Increments `sessionVersion`? |
+|---|---|
+| Password reset | ✅ Yes — in `reset-password` route |
+| Account deactivation (admin) | Must — use `{ isActive: false, sessionVersion: { increment: 1 } }` |
+| Role change (admin) | Must — use `{ role: "...", sessionVersion: { increment: 1 } }` |
+| KYC tier revocation (admin) | Must — same pattern |
+| Normal login | No — issues token with current version |
+| Normal logout | No — cookie is cleared client-side |
+
+**Note:** Existing sessions are invalidated immediately when `sessionVersion` changes. All active browser sessions for that user will receive a 401 (API routes) or be redirected to `/auth/login` (pages).
+
 ### API Endpoints
 
 | Method | Path | Description |

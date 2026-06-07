@@ -9,6 +9,7 @@ export interface SessionPayload {
   role: string;
   kycTier: number;
   emailVerified: boolean;
+  sessionVersion: number;
 }
 
 function getSecret(): Uint8Array {
