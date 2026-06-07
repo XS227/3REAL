@@ -4,9 +4,18 @@ import { createAuthToken } from "@/lib/auth/tokens";
 import { forgotPasswordSchema } from "@/lib/validators/auth";
 import { sendEmail, passwordResetEmail } from "@/lib/email";
 import { audit, ipFromRequest } from "@/lib/audit";
+import { checkRateLimit } from "@/lib/rate-limit";
 
 export async function POST(req: NextRequest) {
   const ip = ipFromRequest(req);
+
+  const rl = checkRateLimit(`forgot:${ip}`, 3, 60 * 60 * 1000);
+  if (!rl.allowed) {
+    return NextResponse.json(
+      { error: "Too many requests. Try again later." },
+      { status: 429, headers: { "Retry-After": String(rl.retryAfterSecs) } }
+    );
+  }
 
   let body: unknown;
   try {

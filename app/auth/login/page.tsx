@@ -11,7 +11,9 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 function LoginForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const from = searchParams.get("from") ?? "/dashboard";
+  const fromParam = searchParams.get("from") ?? "";
+  // Block protocol-relative URLs (//evil.com passes a naive startsWith("/") check)
+  const from = fromParam.startsWith("/") && !fromParam.startsWith("//") ? fromParam : "/dashboard";
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -36,7 +38,7 @@ function LoginForm() {
         return;
       }
 
-      router.push(from.startsWith("/") ? from : "/dashboard");
+      router.push(from);
       router.refresh();
     } catch {
       setError("A network error occurred. Please try again.");

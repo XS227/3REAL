@@ -58,7 +58,17 @@ export async function consumeAuthToken(rawToken: string, type: TokenType) {
       usedAt: null,
       expiresAt: { gt: new Date() },
     },
-    include: { user: true },
+    include: {
+      user: {
+        select: {
+          id: true,
+          emailVerified: true,
+          isActive: true,
+          role: true,
+          kycTier: true,
+        },
+      },
+    },
   });
 
   if (!record) return null;

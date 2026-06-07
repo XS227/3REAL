@@ -5,9 +5,18 @@ import { createAuthToken, generateReferralCode } from "@/lib/auth/tokens";
 import { registerSchema } from "@/lib/validators/auth";
 import { sendEmail, verificationEmail } from "@/lib/email";
 import { audit, ipFromRequest } from "@/lib/audit";
+import { checkRateLimit } from "@/lib/rate-limit";
 
 export async function POST(req: NextRequest) {
   const ip = ipFromRequest(req);
+
+  const rl = checkRateLimit(`register:${ip}`, 5, 60 * 60 * 1000);
+  if (!rl.allowed) {
+    return NextResponse.json(
+      { error: "Too many registration attempts. Try again later." },
+      { status: 429, headers: { "Retry-After": String(rl.retryAfterSecs) } }
+    );
+  }
 
   let body: unknown;
   try {

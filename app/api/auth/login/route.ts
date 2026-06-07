@@ -4,9 +4,18 @@ import { verifyPassword } from "@/lib/auth/password";
 import { signToken, cookieOptions, SESSION_COOKIE } from "@/lib/auth/jwt";
 import { loginSchema } from "@/lib/validators/auth";
 import { audit, ipFromRequest } from "@/lib/audit";
+import { checkRateLimit } from "@/lib/rate-limit";
 
 export async function POST(req: NextRequest) {
   const ip = ipFromRequest(req);
+
+  const rl = checkRateLimit(`login:${ip}`, 10, 15 * 60 * 1000);
+  if (!rl.allowed) {
+    return NextResponse.json(
+      { error: "Too many login attempts. Try again later." },
+      { status: 429, headers: { "Retry-After": String(rl.retryAfterSecs) } }
+    );
+  }
 
   let body: unknown;
   try {
