@@ -39,10 +39,27 @@ sudo -u postgres psql -c "CREATE DATABASE threereal_db OWNER threereal;"
 sudo -u postgres psql -c "GRANT ALL PRIVILEGES ON DATABASE threereal_db TO threereal;"
 ```
 
-### 4. Run database migrations
+### 4. Run database migrations and seed
 
 ```bash
-npx prisma migrate dev --name init
+# Run migrations (creates all 17 tables)
+npx prisma migrate dev
+
+# Seed initial data (ecosystems, platform accounts, admin user, fee tiers, settings)
+npx prisma db seed
+```
+
+**Seed creates:**
+- 4 ecosystems: 3REAL (active), Shahnameh, TrustAI, SETAEI Pay (inactive)
+- 10 platform accounts (REAL/USDT/TON/EUR/NOK float, escrows, rewards pool, fees, equity)
+- 1 admin user: `admin@3real.no` / `ChangeMe@3REAL!2026` — **change before production**
+- 8 fee tiers (REAL, USDT, TON — deposit/withdrawal/conversion)
+- 15 platform settings (referral rewards, KYC limits)
+- Rewards pool seeded with 500,000 REAL via double-entry ledger
+
+**PostgreSQL user needs CREATEDB permission for Prisma shadow database:**
+```bash
+sudo -u postgres psql -c "ALTER USER threereal CREATEDB;"
 ```
 
 ### 5. Start development server
@@ -92,12 +109,25 @@ uploads/
 
 ---
 
+## npm Scripts
+
+```bash
+npm run dev         # Start dev server
+npm run build       # Production build
+npm run db:migrate  # Run Prisma migrations
+npm run db:seed     # Run seed data
+npm run db:reset    # Reset DB and re-run migrations + seed
+npm run db:studio   # Open Prisma Studio (visual DB browser)
+```
+
 ## Build Phases
 
 | Phase | Description | Status |
 |---|---|---|
 | 1 | Project Scaffold | ✅ Done |
-| 2 | Database Schema | ⬜ Pending |
+| 1.5 | Architecture Review | ✅ Done |
+| 2 | Database Schema | ✅ Done |
+| 3 | Authentication | ⬜ Pending |
 | 3 | Authentication | ⬜ Pending |
 | 4 | Landing Page | ⬜ Pending |
 | 5 | User Dashboard | ⬜ Pending |
