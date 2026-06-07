@@ -1,36 +1,129 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# 3REAL — Digital Asset Portal
 
-## Getting Started
+Internal REAL token management portal. Part of the SETAEI ecosystem.
 
-First, run the development server:
+---
+
+## Prerequisites
+
+| Tool | Version |
+|---|---|
+| Node.js | ≥ 20 |
+| npm | ≥ 10 |
+| PostgreSQL | ≥ 14 |
+
+---
+
+## Local Setup
+
+### 1. Clone and install
+
+```bash
+git clone <repo-url> /var/www/3real
+cd /var/www/3real
+npm install
+```
+
+### 2. Configure environment
+
+```bash
+cp .env.example .env
+# Edit .env — fill in DATABASE_URL and JWT_SECRET
+```
+
+### 3. Set up PostgreSQL
+
+```bash
+sudo -u postgres psql -c "CREATE USER threereal WITH PASSWORD 'your_password';"
+sudo -u postgres psql -c "CREATE DATABASE threereal_db OWNER threereal;"
+sudo -u postgres psql -c "GRANT ALL PRIVILEGES ON DATABASE threereal_db TO threereal;"
+```
+
+### 4. Run database migrations
+
+```bash
+npx prisma migrate dev --name init
+```
+
+### 5. Start development server
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+App: http://localhost:3000  
+Health check: http://localhost:3000/api/health
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+---
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Project Structure
 
-## Learn More
+```
+app/
+  (public)/          Landing page and public routes
+  (auth)/            Login, register, email verify
+  (dashboard)/       Protected user routes (wallet, KYC, referrals)
+  (admin)/           Admin panel routes
+  api/               REST API handlers
+    health/          GET /api/health — liveness + DB check
 
-To learn more about Next.js, take a look at the following resources:
+components/
+  ui/                shadcn/ui base components
+  layout/            Shell, sidebar, header, footer
+  dashboard/
+  wallet/
+  kyc/
+  admin/
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+lib/
+  prisma.ts          Prisma client singleton
+  ledger/            Double-entry ledger core (Phase 6)
+  auth/              JWT + bcrypt helpers (Phase 3)
+  kyc/               KYC file handling (Phase 8)
+  utils/
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+prisma/
+  schema.prisma      Database schema
+  migrations/
 
-## Deploy on Vercel
+uploads/
+  kyc/               KYC documents (outside web root)
+```
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+---
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Build Phases
+
+| Phase | Description | Status |
+|---|---|---|
+| 1 | Project Scaffold | ✅ Done |
+| 2 | Database Schema | ⬜ Pending |
+| 3 | Authentication | ⬜ Pending |
+| 4 | Landing Page | ⬜ Pending |
+| 5 | User Dashboard | ⬜ Pending |
+| 6 | Wallet & Transactions | ⬜ Pending |
+| 7 | Referral System | ⬜ Pending |
+| 8 | KYC Module | ⬜ Pending |
+| 9 | Admin Panel | ⬜ Pending |
+| 10 | Notifications | ⬜ Pending |
+| 11 | Production Deployment | ⬜ Pending |
+
+---
+
+## Production (Phase 11)
+
+Nginx reverse proxy + PM2 process manager on Ubuntu VPS. DNS/CDN via Cloudflare.
+
+```bash
+npm run build
+pm2 start ecosystem.config.js
+```
+
+---
+
+## Tech Stack
+
+- **Next.js 16** · TypeScript · App Router
+- **Tailwind CSS** + **shadcn/ui**
+- **Prisma** ORM + **PostgreSQL** (double-entry ledger)
+- **JWT** + **bcrypt** (custom auth, no vendor lock-in)
