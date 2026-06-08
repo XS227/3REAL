@@ -3,6 +3,7 @@ import { prisma } from "@/lib/prisma";
 import { consumeAuthToken } from "@/lib/auth/tokens";
 import { verifyEmailSchema } from "@/lib/validators/auth";
 import { audit, ipFromRequest } from "@/lib/audit";
+import { issueEmailVerifyReward } from "@/lib/referral/engine";
 
 export async function POST(req: NextRequest) {
   const ip = ipFromRequest(req);
@@ -45,6 +46,9 @@ export async function POST(req: NextRequest) {
     ipAddress: ip,
     userAgent: req.headers.get("user-agent") ?? undefined,
   });
+
+  // Fire-and-forget — never blocks the response
+  issueEmailVerifyReward(record.userId).catch(() => {});
 
   return NextResponse.json({
     success: true,

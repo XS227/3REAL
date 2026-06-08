@@ -28,7 +28,7 @@ const NAV: NavItem[] = [
   { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
   { href: "/dashboard/wallet", label: "Wallet", icon: Wallet },
   { href: "/dashboard/withdraw", label: "Withdraw", icon: ArrowUpRight },
-  { href: "/dashboard/referrals", label: "Referrals", icon: Users, soon: true },
+  { href: "/dashboard/referrals", label: "Referrals", icon: Users },
   { href: "/dashboard/kyc", label: "Verification", icon: BadgeCheck },
   { href: "/dashboard/settings", label: "Settings", icon: Settings, soon: true },
   { href: "/admin", label: "Admin", icon: Shield, adminOnly: true },

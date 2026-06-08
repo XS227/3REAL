@@ -1,6 +1,7 @@
 import { prisma } from "@/lib/prisma";
 import { audit } from "@/lib/audit";
 import { createNotification } from "@/lib/notifications";
+import { issueKycReward } from "@/lib/referral/engine";
 
 export async function approveKYC(profileId: string, reviewerId: string): Promise<void> {
   await prisma.$transaction(async (tx) => {
@@ -50,6 +51,9 @@ export async function approveKYC(profileId: string, reviewerId: string): Promise
     referenceId: profileId,
     referenceType: "kyc_profile",
   });
+
+  // Fire-and-forget referral bonus
+  issueKycReward(profile.userId).catch(() => {});
 }
 
 export async function rejectKYC(

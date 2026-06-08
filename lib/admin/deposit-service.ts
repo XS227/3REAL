@@ -2,6 +2,7 @@ import { prisma } from "@/lib/prisma";
 import { audit } from "@/lib/audit";
 import { createNotification } from "@/lib/notifications";
 import { getOrCreateUserAccount } from "@/lib/ledger/accounts";
+import { issueFirstDepositReward } from "@/lib/referral/engine";
 import type { AssetCode } from "@/lib/generated/prisma/enums";
 
 // ── approveDeposit ────────────────────────────────────────────────────────────
@@ -120,6 +121,9 @@ export async function approveDeposit(txId: string, adminId: string): Promise<voi
     referenceId: txId,
     referenceType: "transaction",
   });
+
+  // Fire-and-forget first-deposit referral bonus
+  issueFirstDepositReward(userId!).catch(() => {});
 }
 
 // ── rejectDeposit ─────────────────────────────────────────────────────────────

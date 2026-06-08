@@ -9,6 +9,7 @@ import {
   ArrowDownLeft,
   ArrowUpRight,
   Users,
+  Gift,
   Shield,
   Menu,
   X,
@@ -20,6 +21,7 @@ const NAV = [
   { href: "/admin/kyc", label: "KYC Review", icon: BadgeCheck },
   { href: "/admin/deposits", label: "Deposits", icon: ArrowDownLeft },
   { href: "/admin/withdrawals", label: "Withdrawals", icon: ArrowUpRight },
+  { href: "/admin/referrals", label: "Referrals", icon: Gift },
   { href: "/admin/users", label: "Users", icon: Users },
 ];
 
