@@ -365,6 +365,28 @@ async function seedExchangeRates() {
 
 // ─── Main ─────────────────────────────────────────────────────────────────────
 
+async function seedTonSettings() {
+  log("Seeding TON global settings...");
+
+  const defaults = [
+    { key: "ton.jetton_master", value: "EQDhq_DjQUMJqfXLP8K8J6SlOvon08XQQK0T49xon2e0xU8p" },
+    { key: "ton.network",       value: "mainnet" },
+    { key: "ton.api_key",       value: "" },
+  ];
+
+  for (const s of defaults) {
+    const existing = await prisma.setting.findFirst({
+      where: { key: s.key, ecosystemId: null },
+      select: { id: true },
+    });
+    if (!existing) {
+      await prisma.setting.create({ data: { key: s.key, value: s.value } });
+    }
+  }
+
+  log(`  ✓ ${defaults.length} TON settings (jetton_master, network, api_key)`);
+}
+
 async function main() {
   process.stdout.write("\n🌱 3REAL Database Seed\n\n");
 
@@ -375,6 +397,7 @@ async function main() {
   await seedSettings(ecosystem.id);
   await seedRewardsPool(ecosystem.id);
   await seedExchangeRates();
+  await seedTonSettings();
 
   process.stdout.write("\n✅ Seed complete.\n\n");
 }

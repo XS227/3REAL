@@ -4,6 +4,7 @@ import { ASSET_ORDER, ASSETS } from "@/lib/wallet/assets";
 import { AssetCard } from "@/components/wallet/AssetCard";
 import { AccountExplorer } from "@/components/wallet/AccountExplorer";
 import { getTonWallets } from "@/lib/ton/queries";
+import { TonWalletBalances } from "@/components/ton/TonWalletBalances";
 import Link from "next/link";
 import { Wallet, Plus, Star, ShieldCheck } from "lucide-react";
 
@@ -82,7 +83,7 @@ export default async function WalletPage() {
                 >
                   <Wallet className="h-4 w-4 shrink-0 text-zinc-500" />
                   <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-2 mb-1">
                       <code className="text-sm font-mono text-zinc-200">{short}</code>
                       {w.isPrimary && (
                         <span className="flex items-center gap-1 rounded border border-amber-500/30 bg-amber-500/10 px-1.5 py-0.5 text-[10px] font-semibold text-amber-400">
@@ -91,16 +92,17 @@ export default async function WalletPage() {
                         </span>
                       )}
                     </div>
-                    <p className="text-xs text-zinc-600 flex items-center gap-1">
+                    <TonWalletBalances walletId={w.id} />
+                    <p className="text-xs text-zinc-600 flex items-center gap-1 mt-1">
                       <ShieldCheck className="h-3 w-3 text-emerald-600" />
                       {w.network} · verified {new Date(w.verifiedAt).toLocaleDateString()}
                     </p>
                   </div>
                   <Link
-                    href="/dashboard/wallet/connect"
+                    href={`/dashboard/wallet/ton/${w.id}`}
                     className="text-xs text-zinc-600 hover:text-zinc-400 transition-colors"
                   >
-                    Manage
+                    Details
                   </Link>
                 </li>
               );
