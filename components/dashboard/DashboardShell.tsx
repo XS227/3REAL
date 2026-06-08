@@ -25,7 +25,7 @@ type NavItem = {
 
 const NAV: NavItem[] = [
   { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
-  { href: "/dashboard/wallet", label: "Wallet", icon: Wallet, soon: true },
+  { href: "/dashboard/wallet", label: "Wallet", icon: Wallet },
   { href: "/dashboard/referrals", label: "Referrals", icon: Users, soon: true },
   { href: "/dashboard/kyc", label: "Verification", icon: BadgeCheck, soon: true },
   { href: "/dashboard/settings", label: "Settings", icon: Settings, soon: true },
