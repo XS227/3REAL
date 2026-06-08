@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { ArrowRight } from "lucide-react";
+import { ArrowRight, ArrowDownLeft } from "lucide-react";
 import type { AssetMeta } from "@/lib/wallet/assets";
 import { fmtAsset } from "@/lib/wallet/assets";
 import type { AssetBalance } from "@/lib/ledger/balance";
@@ -64,13 +64,22 @@ export function AssetCard({ meta, balance }: Props) {
         </div>
       </div>
 
-      {/* View details link */}
-      <Link
-        href={`/dashboard/wallet/${meta.code.toLowerCase()}`}
-        className={`inline-flex items-center gap-1 text-xs font-medium ${meta.accentClass} opacity-60 transition-opacity group-hover:opacity-100`}
-      >
-        View details <ArrowRight className="h-3 w-3" />
-      </Link>
+      {/* Actions */}
+      <div className="flex items-center justify-between gap-2">
+        <Link
+          href={`/dashboard/wallet/${meta.code.toLowerCase()}`}
+          className={`inline-flex items-center gap-1 text-xs font-medium ${meta.accentClass} opacity-60 transition-opacity group-hover:opacity-100`}
+        >
+          View details <ArrowRight className="h-3 w-3" />
+        </Link>
+        <Link
+          href={`/dashboard/deposit?asset=${meta.code}`}
+          className="inline-flex items-center gap-1 rounded-lg border border-zinc-700 bg-zinc-800 px-2.5 py-1.5 text-xs font-medium text-zinc-300 hover:border-zinc-600 hover:text-zinc-100 transition-colors"
+        >
+          <ArrowDownLeft className="h-3 w-3" />
+          Deposit
+        </Link>
+      </div>
     </div>
   );
 }

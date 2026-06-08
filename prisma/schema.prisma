@@ -385,6 +385,7 @@ model Transaction {
   ledgerTxId    String?           @db.Uuid
   paymentMethod PaymentMethod?
   paymentRef    String?           @db.VarChar(255)
+  proofFilePath String?           @db.VarChar(512)  // optional uploaded payment/transfer proof
   adminNote     String?           @db.Text
   chainTxHash   String?           @db.VarChar(128)
   createdAt     DateTime          @default(now())

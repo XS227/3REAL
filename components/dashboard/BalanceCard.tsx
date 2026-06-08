@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { TrendingUp, Clock } from "lucide-react";
 import { fmtAmount, type AssetBalance } from "@/lib/ledger/balance";
 
@@ -44,19 +45,18 @@ export function BalanceCard({ real }: Props) {
         </div>
       </div>
 
-      {/* Deposit/Withdraw — disabled coming soon */}
+      {/* Deposit / Withdraw */}
       <div className="mt-5 grid grid-cols-2 gap-2">
-        <button
-          disabled
-          className="flex items-center justify-center rounded-lg border border-zinc-700 bg-zinc-800/50 py-2 text-xs font-medium text-zinc-500 cursor-not-allowed"
-          title="Coming in Phase 6"
+        <Link
+          href="/dashboard/deposit?asset=REAL"
+          className="flex items-center justify-center rounded-lg border border-amber-500/30 bg-amber-500/10 py-2 text-xs font-medium text-amber-400 hover:bg-amber-500/20 transition-colors"
         >
-          Deposit — soon
-        </button>
+          Deposit
+        </Link>
         <button
           disabled
           className="flex items-center justify-center rounded-lg border border-zinc-700 bg-zinc-800/50 py-2 text-xs font-medium text-zinc-500 cursor-not-allowed"
-          title="Coming in Phase 6"
+          title="Withdrawals coming soon"
         >
           Withdraw — soon
         </button>
