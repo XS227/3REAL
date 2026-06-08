@@ -14,14 +14,20 @@ export async function GET(
 
   // Prevent path traversal
   const relativePath = segments.join("/");
-  if (relativePath.includes("..") || !relativePath.startsWith("kyc/")) {
+  const isKyc = relativePath.startsWith("kyc/");
+  const isDeposit = relativePath.startsWith("deposits/");
+  if (relativePath.includes("..") || (!isKyc && !isDeposit)) {
     return NextResponse.json({ error: "Not found" }, { status: 404 });
   }
 
-  // Regular users may only access their own documents
   const isAdmin = session.role === "super_admin" || session.role === "operator";
-  if (!isAdmin && !relativePath.startsWith(`kyc/${session.userId}/`)) {
-    return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+
+  // Regular users may only access their own files
+  if (!isAdmin) {
+    const owned = isKyc
+      ? relativePath.startsWith(`kyc/${session.userId}/`)
+      : relativePath.startsWith(`deposits/${session.userId}/`);
+    if (!owned) return NextResponse.json({ error: "Forbidden" }, { status: 403 });
   }
 
   const fullPath = path.join(process.cwd(), "storage", "uploads", relativePath);

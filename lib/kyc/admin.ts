@@ -1,5 +1,6 @@
 import { prisma } from "@/lib/prisma";
 import { audit } from "@/lib/audit";
+import { createNotification } from "@/lib/notifications";
 
 export async function approveKYC(profileId: string, reviewerId: string): Promise<void> {
   await prisma.$transaction(async (tx) => {
@@ -41,6 +42,14 @@ export async function approveKYC(profileId: string, reviewerId: string): Promise
     action: "kyc.approved",
     meta: { profileId, tierGranted: profile.tierRequested },
   });
+  await createNotification({
+    userId: profile.userId,
+    type: "kyc_approved",
+    title: "Identity Verification Approved",
+    body: `Your KYC submission has been approved. You are now verified at Tier ${profile.tierRequested}.`,
+    referenceId: profileId,
+    referenceType: "kyc_profile",
+  });
 }
 
 export async function rejectKYC(
@@ -73,6 +82,14 @@ export async function rejectKYC(
     targetType: "user",
     action: "kyc.rejected",
     meta: { profileId, reason },
+  });
+  await createNotification({
+    userId: profile.userId,
+    type: "kyc_rejected",
+    title: "Identity Verification Rejected",
+    body: `Your KYC submission was rejected. Reason: ${reason}`,
+    referenceId: profileId,
+    referenceType: "kyc_profile",
   });
 }
 
@@ -122,5 +139,13 @@ export async function requestUpdate(
     targetType: "user",
     action: "kyc.update_requested",
     meta: { profileId, reason, docIds },
+  });
+  await createNotification({
+    userId: profile.userId,
+    type: "kyc_update_requested",
+    title: "Identity Verification — Update Required",
+    body: `Your KYC submission requires an update. Reason: ${reason}`,
+    referenceId: profileId,
+    referenceType: "kyc_profile",
   });
 }
