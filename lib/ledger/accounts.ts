@@ -31,6 +31,32 @@ export async function getOrCreateUserAccount(
   });
 }
 
+export async function getOrCreateEscrowAccount(
+  client: TxClient,
+  assetCode: AssetCode,
+  ecosystemId: string,
+) {
+  return client.account.upsert({
+    where: {
+      ecosystemId_ownerType_ownerId_assetCode: {
+        ecosystemId,
+        ownerType: "platform",
+        ownerId: "withdrawals-pending",
+        assetCode,
+      },
+    },
+    update: {},
+    create: {
+      ecosystemId,
+      ownerType: "platform",
+      ownerId: "withdrawals-pending",
+      accountType: "liability",
+      assetCode,
+      label: `Withdrawal Escrow (${assetCode})`,
+    },
+  });
+}
+
 export type UserAccountSummary = {
   id: string;
   assetCode: AssetCode;

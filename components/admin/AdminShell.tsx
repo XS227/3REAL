@@ -7,6 +7,7 @@ import {
   LayoutDashboard,
   BadgeCheck,
   ArrowDownLeft,
+  ArrowUpRight,
   Users,
   Shield,
   Menu,
@@ -18,6 +19,7 @@ const NAV = [
   { href: "/admin", label: "Dashboard", icon: LayoutDashboard, exact: true },
   { href: "/admin/kyc", label: "KYC Review", icon: BadgeCheck },
   { href: "/admin/deposits", label: "Deposits", icon: ArrowDownLeft },
+  { href: "/admin/withdrawals", label: "Withdrawals", icon: ArrowUpRight },
   { href: "/admin/users", label: "Users", icon: Users },
 ];
 

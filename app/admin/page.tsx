@@ -1,6 +1,6 @@
 import { requireRole } from "@/lib/auth/guards";
 import { getAdminMetrics, getRecentAdminActivity } from "@/lib/admin/queries";
-import { Users, BadgeCheck, ArrowDownLeft, CheckCircle, XCircle } from "lucide-react";
+import { Users, BadgeCheck, ArrowDownLeft, ArrowUpRight, CheckCircle, XCircle } from "lucide-react";
 
 export const dynamic = "force-dynamic";
 
@@ -11,6 +11,9 @@ const ACTION_LABEL: Record<string, string> = {
   "deposit.created": "Deposit Submitted",
   "deposit.approved": "Deposit Approved",
   "deposit.rejected": "Deposit Rejected",
+  "withdrawal.created": "Withdrawal Submitted",
+  "withdrawal.approved": "Withdrawal Approved",
+  "withdrawal.rejected": "Withdrawal Rejected",
 };
 
 function metaSummary(meta: unknown): string {
@@ -60,6 +63,13 @@ export default async function AdminDashboardPage() {
       bg: metrics.pendingDeposits > 0 ? "bg-amber-500/10" : "bg-zinc-800/50",
     },
     {
+      label: "Pending Withdrawals",
+      value: metrics.pendingWithdrawals,
+      icon: ArrowUpRight,
+      color: metrics.pendingWithdrawals > 0 ? "text-amber-400" : "text-zinc-600",
+      bg: metrics.pendingWithdrawals > 0 ? "bg-amber-500/10" : "bg-zinc-800/50",
+    },
+    {
       label: "Approved Today",
       value: metrics.approvedToday,
       icon: CheckCircle,
@@ -87,7 +97,7 @@ export default async function AdminDashboardPage() {
       </div>
 
       {/* Metric cards */}
-      <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-5">
+      <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-6">
         {metricCards.map(({ label, value, icon: Icon, color, bg }) => (
           <div key={label} className={`rounded-xl border border-zinc-800 ${bg} p-4`}>
             <div className="mb-2 flex items-center justify-between">

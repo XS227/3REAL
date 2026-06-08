@@ -6,6 +6,7 @@ export type AdminMetrics = {
   totalUsers: number;
   pendingKyc: number;
   pendingDeposits: number;
+  pendingWithdrawals: number;
   approvedToday: number;
   rejectedToday: number;
 };
@@ -18,15 +19,21 @@ export async function getAdminMetrics(): Promise<AdminMetrics> {
     totalUsers,
     pendingKyc,
     pendingDeposits,
+    pendingWithdrawals,
     approvedKycToday,
     rejectedKycToday,
     approvedDepositsToday,
     rejectedDepositsToday,
+    approvedWithdrawalsToday,
+    rejectedWithdrawalsToday,
   ] = await Promise.all([
     prisma.user.count(),
     prisma.kycProfile.count({ where: { status: { in: ["pending", "under_review"] } } }),
     prisma.transaction.count({
       where: { type: "deposit", status: { in: ["pending", "under_review"] } },
+    }),
+    prisma.transaction.count({
+      where: { type: "withdrawal", status: { in: ["pending", "under_review"] } },
     }),
     prisma.kycProfile.count({
       where: { status: "approved", reviewedAt: { gte: todayStart } },
@@ -40,14 +47,21 @@ export async function getAdminMetrics(): Promise<AdminMetrics> {
     prisma.transaction.count({
       where: { type: "deposit", status: "rejected", updatedAt: { gte: todayStart } },
     }),
+    prisma.transaction.count({
+      where: { type: "withdrawal", status: "approved", updatedAt: { gte: todayStart } },
+    }),
+    prisma.transaction.count({
+      where: { type: "withdrawal", status: "rejected", updatedAt: { gte: todayStart } },
+    }),
   ]);
 
   return {
     totalUsers,
     pendingKyc,
     pendingDeposits,
-    approvedToday: approvedKycToday + approvedDepositsToday,
-    rejectedToday: rejectedKycToday + rejectedDepositsToday,
+    pendingWithdrawals,
+    approvedToday: approvedKycToday + approvedDepositsToday + approvedWithdrawalsToday,
+    rejectedToday: rejectedKycToday + rejectedDepositsToday + rejectedWithdrawalsToday,
   };
 }
 
@@ -72,6 +86,9 @@ export async function getRecentAdminActivity(limit = 20): Promise<RecentAdminAct
           "deposit.created",
           "deposit.approved",
           "deposit.rejected",
+          "withdrawal.created",
+          "withdrawal.approved",
+          "withdrawal.rejected",
         ],
       },
     },
@@ -294,6 +311,94 @@ export type AdminUserRow = {
   isActive: boolean;
   createdAt: Date;
 };
+
+// ── Withdrawal queue ──────────────────────────────────────────────────────────
+
+export type AdminWithdrawalQueueItem = {
+  id: string;
+  userId: string;
+  userEmail: string;
+  assetCode: string;
+  amount: string;
+  destination: string | null;
+  status: string;
+  createdAt: Date;
+};
+
+export async function getWithdrawalQueue(): Promise<AdminWithdrawalQueueItem[]> {
+  const rows = await prisma.transaction.findMany({
+    where: { type: "withdrawal" },
+    orderBy: { createdAt: "asc" },
+    include: { user: { select: { email: true } } },
+  });
+
+  return rows.map((r) => ({
+    id: r.id,
+    userId: r.userId,
+    userEmail: r.user.email,
+    assetCode: r.assetCode,
+    amount: r.amount.toString(),
+    destination: r.paymentRef,
+    status: r.status,
+    createdAt: r.createdAt,
+  }));
+}
+
+export type AdminWithdrawalReviewData = {
+  transaction: {
+    id: string;
+    assetCode: string;
+    amount: string;
+    status: string;
+    destination: string | null;
+    adminNote: string | null;
+    createdAt: Date;
+    ledgerTxId: string | null;
+  };
+  user: {
+    id: string;
+    email: string;
+    kycTier: number;
+    emailVerified: boolean;
+  };
+  kycProfile: { status: string; tierRequested: number } | null;
+};
+
+export async function getWithdrawalReviewData(
+  txId: string,
+): Promise<AdminWithdrawalReviewData | null> {
+  const tx = await prisma.transaction.findUnique({
+    where: { id: txId, type: "withdrawal" },
+    include: {
+      user: {
+        select: { id: true, email: true, kycTier: true, emailVerified: true },
+        include: { kycProfile: { select: { status: true, tierRequested: true } } },
+      },
+    },
+  });
+
+  if (!tx) return null;
+
+  return {
+    transaction: {
+      id: tx.id,
+      assetCode: tx.assetCode,
+      amount: tx.amount.toString(),
+      status: tx.status,
+      destination: tx.paymentRef,
+      adminNote: tx.adminNote,
+      createdAt: tx.createdAt,
+      ledgerTxId: tx.ledgerTxId,
+    },
+    user: {
+      id: tx.user.id,
+      email: tx.user.email,
+      kycTier: tx.user.kycTier,
+      emailVerified: tx.user.emailVerified,
+    },
+    kycProfile: tx.user.kycProfile,
+  };
+}
 
 export async function getAdminUserList(limit = 200): Promise<AdminUserRow[]> {
   const rows = await prisma.user.findMany({
