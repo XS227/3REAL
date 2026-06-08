@@ -123,6 +123,51 @@ Now the middleware rejects non-admin roles before the request even reaches the r
 
 ---
 
+## BUG-005 — getUserBalances Raw SQL Uses Snake-Case Column Names
+
+**Severity:** Critical  
+**File:** `lib/ledger/balance.ts`  
+**Discovered:** Phase 8.5 withdrawal E2E validation
+
+### Root Cause
+
+The raw SQL query inside `getUserBalances` referenced column names in snake_case (`account_id`, `ledger_transaction_id`, `owner_type`, `owner_id`, `asset_code`). The actual PostgreSQL schema stores all columns in camelCase as created by Prisma's migrations. PostgreSQL is case-sensitive for unquoted identifiers, so every query failed immediately with:
+
+```
+Raw query failed. Code: 42703
+Message: column le.account_id does not exist
+```
+
+### Impact
+
+- `GET /dashboard/wallet` — 500 on every load (wallet page calls `getUserBalances`)
+- `POST /api/withdrawals` — 500 on every submission (pre-submission balance check calls `getUserBalances`)
+- No withdrawal submissions were possible until this was fixed
+
+### Fix
+
+```diff
+- a.asset_code::text AS asset_code,
++ a."assetCode"::text AS asset_code,
+
+- JOIN accounts a ON le.account_id = a.id
++ JOIN accounts a ON le."accountId" = a.id
+
+- JOIN ledger_transactions lt ON le.ledger_transaction_id = lt.id
++ JOIN ledger_transactions lt ON le."ledgerTransactionId" = lt.id
+
+- WHERE a.owner_type::text = 'user'
+-   AND a.owner_id = ${userId}
+- GROUP BY a.asset_code
++ WHERE a."ownerType"::text = 'user'
++   AND a."ownerId" = ${userId}
++ GROUP BY a."assetCode"
+```
+
+Note: the authoritative balance check inside `lib/admin/withdrawal-service.ts` was written correctly with double-quoted camelCase from the start — only `getUserBalances` in `lib/ledger/balance.ts` was affected.
+
+---
+
 ## Test Coverage After Fixes
 
 Re-running BUG-001's scenario after the fix:

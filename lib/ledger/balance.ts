@@ -22,7 +22,7 @@ function defaultMap(): BalanceMap {
 export async function getUserBalances(userId: string): Promise<BalanceMap> {
   const rows = await prisma.$queryRaw<BalanceRow[]>`
     SELECT
-      a.asset_code::text AS asset_code,
+      a."assetCode"::text AS asset_code,
       COALESCE(
         SUM(le.amount) FILTER (WHERE lt.status = 'completed'),
         0
@@ -32,11 +32,11 @@ export async function getUserBalances(userId: string): Promise<BalanceMap> {
         0
       )::float8 AS pending
     FROM ledger_entries le
-    JOIN accounts a ON le.account_id = a.id
-    JOIN ledger_transactions lt ON le.ledger_transaction_id = lt.id
-    WHERE a.owner_type::text = 'user'
-      AND a.owner_id = ${userId}
-    GROUP BY a.asset_code
+    JOIN accounts a ON le."accountId" = a.id
+    JOIN ledger_transactions lt ON le."ledgerTransactionId" = lt.id
+    WHERE a."ownerType"::text = 'user'
+      AND a."ownerId" = ${userId}
+    GROUP BY a."assetCode"
   `;
 
   const map = defaultMap();
