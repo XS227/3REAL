@@ -1,7 +1,7 @@
 # Deployment Guide — 3REAL
 
 **Stack:** Next.js 16 · PM2 · Nginx · PostgreSQL  
-**Phase:** 10.5 — VPS deployment, no domain required for first run
+**Phase:** 10.6 — Live on `http://3real.setaei.com` (SSL pending)
 
 ---
 
@@ -192,7 +192,7 @@ curl http://<YOUR_SERVER_IP>/api/health
 
 ```bash
 # Simple cron-based check every 5 minutes — alerts to a file
-*/5 * * * * curl -sf http://localhost:3010/api/health || echo "$(date) 3REAL DOWN" >> /var/log/3real-health.log
+*/5 * * * * curl -sf http://localhost:3020/api/health || echo "$(date) 3REAL DOWN" >> /var/log/3real-health.log
 ```
 
 ---
@@ -284,7 +284,65 @@ pm2 restart 3real --update-env
 ```bash
 # Check if Next.js is actually running
 pm2 status
-curl http://localhost:3010/api/health   # should return 200
+curl http://localhost:3020/api/health   # should return 200
 # If not running, start it:
 pm2 start ecosystem.config.js --env production
 ```
+
+---
+
+## 9. Phase 10.6 — Subdomain Setup (2026-06-08)
+
+### What changed
+
+| Item | Before | After |
+|------|--------|-------|
+| 3real port | 3010 (conflicted with another Next.js app) | **3020** |
+| `ecosystem.config.js` args | `next start -p 3010` | `next start -p 3020` |
+| `ecosystem.config.js` PORT env | 3010 | 3020 |
+| Nginx vhost | `deploy/nginx-3real.conf` (template only) | `/etc/nginx/sites-available/3real.setaei.com` (live) |
+| Public URL | N/A | `http://3real.setaei.com` |
+
+### nginx SNI architecture on this VPS
+
+This server uses an nginx `stream {}` block in `/etc/nginx/nginx.conf` as a TLS SNI router. All HTTPS traffic hits port 443, nginx reads the SNI hostname, and routes to an internal port (8444–8451) where the real HTTP server listens with SSL + `proxy_protocol`.
+
+3real.setaei.com is **HTTP only** (port 80) and is not in the stream map. It will be added when SSL is configured:
+
+```
+# To add SSL for 3real.setaei.com in the future:
+# 1. Add to stream map in /etc/nginx/nginx.conf:
+#       3real.setaei.com   127.0.0.1:8452;
+# 2. Add listener to /etc/nginx/sites-available/3real.setaei.com:
+#       listen 127.0.0.1:8452 ssl proxy_protocol;
+#       real_ip_header proxy_protocol;
+#       set_real_ip_from 127.0.0.1;
+# 3. Obtain cert: certbot certonly --webroot -d 3real.setaei.com -w /var/www/3real/public
+# 4. Add ssl_certificate lines, nginx -t, service nginx reload
+```
+
+### Port map (current)
+
+| Port | Service |
+|------|---------|
+| 80 | nginx HTTP (all sites) |
+| 443 | nginx stream SNI router |
+| 3020 | 3real Next.js (this app) |
+| 4443 | xray |
+| 8444 | shahnameh.setaei.com (SSL backend) |
+| 8445 | trustai.no (SSL backend) |
+| 8447 | setai.no (SSL backend) |
+| 8448 | lashinebeauty.com (SSL backend) |
+| 8449 | somi.setai.no (SSL backend) |
+| 8450 | stapay.setai.no (SSL backend) |
+| 8451 | dadashi.no (SSL backend) |
+
+### nginx config conflict resolved (2026-06-08)
+
+On startup, nginx failed because `dadashi.no` had `listen 443 ssl;` from a Certbot-managed block, conflicting with the stream server's `listen 443`. The fix:
+
+- `dadashi.no`: Changed `listen 443 ssl;` → `listen 127.0.0.1:8451 ssl proxy_protocol;` (same pattern as all other sites)
+- `nginx.conf` stream map: Added `dadashi.no → 127.0.0.1:8451` and `www.dadashi.no → 127.0.0.1:8451`
+- Site behavior and SSL certificates for dadashi.no are unchanged
+
+This was a dormant conflict (pre-existing since Certbot last ran on dadashi.no) that only surfaced when nginx was fully stopped and restarted.

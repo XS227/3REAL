@@ -4,7 +4,7 @@ module.exports = {
     {
       name: "3real",
       script: "node_modules/.bin/next",
-      args: "start -p 3010",
+      args: "start -p 3020",
       cwd: "/var/www/3real",
 
       // Single process — Next.js handles its own internal concurrency.
@@ -31,7 +31,7 @@ module.exports = {
 
       env_production: {
         NODE_ENV: "production",
-        PORT: "3010",
+        PORT: "3020",
       },
     },
   ],
