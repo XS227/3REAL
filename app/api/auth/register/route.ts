@@ -84,6 +84,8 @@ export async function POST(req: NextRequest) {
           code:        referralCode!.trim().toUpperCase(),
           referralLevel: 1,
           registeredAt: new Date(),
+          clickAt: new Date(),
+          clickIp: ip,
           status: "registered",
         },
       });
@@ -106,6 +108,8 @@ export async function POST(req: NextRequest) {
             referralLevel:   2,
             parentReferralId: referrerReferral.id,
             registeredAt:    new Date(),
+            clickAt:         new Date(),
+            clickIp:         ip,
             status: "registered",
           },
         });

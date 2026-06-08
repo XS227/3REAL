@@ -46,11 +46,11 @@ async function issueRewardForReferral(
   rewardAmount: number,
   ecosystemId: string,
   label: string,
-): Promise<void> {
+): Promise<boolean> {
   const pool = await getRewardsPoolAccount(ecosystemId);
   if (!pool) {
     console.error("[referral] Rewards pool account not found, cannot issue reward");
-    return;
+    return false;
   }
 
   const poolBal = await getPoolBalance(ecosystemId);
@@ -61,7 +61,7 @@ async function issueRewardForReferral(
       action: "referral.pool_depleted",
       meta: { needed: rewardAmount, available: poolBal },
     });
-    return;
+    return false;
   }
 
   const userAccount = await getOrCreateUserAccount(
@@ -109,6 +109,8 @@ async function issueRewardForReferral(
       },
     });
   });
+
+  return true;
 }
 
 // ── issueEmailVerifyReward ────────────────────────────────────────────────────
@@ -137,13 +139,14 @@ export async function issueEmailVerifyReward(referredUserId: string): Promise<vo
       const amount = ref.referralLevel === 1 ? level1Amount : level2Amount;
       if (amount <= 0) continue;
 
-      await issueRewardForReferral(
+      const issued = await issueRewardForReferral(
         ref.id,
         ref.referrerId,
         amount,
         ecosystemId,
         `Level ${ref.referralLevel} referral reward`,
       );
+      if (!issued) continue;
 
       await audit({
         ecosystemId,

@@ -168,6 +168,99 @@ Note: the authoritative balance check inside `lib/admin/withdrawal-service.ts` w
 
 ---
 
+---
+
+## BUG-006 — clickIp Never Written to Referral Records
+
+**Severity:** Medium  
+**File:** `app/api/auth/register/route.ts`  
+**Discovered:** Phase 9.5 referral E2E validation
+
+### Root Cause
+
+The fraud detection system in `getAdminReferralData` queries `referrals."clickIp"` to find IPs with 3+ registrations in 24 hours. The `clickIp` and `clickAt` fields exist in the schema but were never populated at registration time — both L1 and L2 referral `create` calls omitted these fields. As a result, every `clickIp` was NULL and the fraud queue was always empty.
+
+### Impact
+
+- Admin fraud queue on `/admin/referrals` never surfaced any suspicious IPs
+- IP-based Sybil attack clustering was undetectable
+
+### Fix
+
+Added `clickAt: new Date()` and `clickIp: ip` to both the L1 and L2 referral creation blocks inside the registration transaction:
+
+```diff
+  await tx.referral.create({
+    data: {
+      ecosystemId: ecosystem.id,
+      referrerId:  referrer.id,
+      referredId:  created.id,
+      code:        referralCode!.trim().toUpperCase(),
+      referralLevel: 1,
+      registeredAt: new Date(),
++     clickAt: new Date(),
++     clickIp: ip,
+      status: "registered",
+    },
+  });
+```
+
+The same two fields were added to the L2 referral create. Now every registration originating from a referral link stamps both `clickAt` and `clickIp`, making IP clustering queries accurate.
+
+---
+
+## BUG-007 — Notifications and Audits Created Even When Reward Skipped
+
+**Severity:** Medium  
+**File:** `lib/referral/engine.ts`  
+**Discovered:** Phase 9.5 referral E2E validation
+
+### Root Cause
+
+`issueRewardForReferral` returned `void` and used `return` (with no value) on early exits (pool depleted, account not found). The caller `issueEmailVerifyReward` looped over referrals and, after calling `issueRewardForReferral`, unconditionally created an audit log entry and a notification — even though no ledger transaction was created.
+
+When the rewards pool was depleted, this produced spurious `referral_reward` notifications and `referral.reward_issued` audit entries for rewards that were never actually issued.
+
+### Impact
+
+- Referrers received "Referral Reward Earned" notifications when no reward was paid
+- Audit log showed `referral.reward_issued` entries without corresponding ledger transactions
+- Trust violation: user dashboard could show phantom rewards
+
+### Fix
+
+Changed `issueRewardForReferral` return type from `Promise<void>` to `Promise<boolean>`. Returns `false` on pool depletion or missing account, `true` on successful ledger transaction creation.
+
+```diff
+- async function issueRewardForReferral(...): Promise<void> {
++ async function issueRewardForReferral(...): Promise<boolean> {
+    if (!pool) {
+-     return;
++     return false;
+    }
+    if (poolBal < rewardAmount) {
+      await audit({ action: "referral.pool_depleted", ... });
+-     return;
++     return false;
+    }
+    // ... create ledger tx ...
++   return true;
+  }
+```
+
+Caller now gates on the return value:
+
+```diff
+  const issued = await issueRewardForReferral(...);
++ if (!issued) continue;
+  await audit({ action: "referral.reward_issued", ... });
+  await createNotification({ type: "referral_reward", ... });
+```
+
+Notifications and audit logs are now only created when a ledger entry was actually written.
+
+---
+
 ## Test Coverage After Fixes
 
 Re-running BUG-001's scenario after the fix:
