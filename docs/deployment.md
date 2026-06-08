@@ -1,7 +1,7 @@
 # Deployment Guide — 3REAL
 
 **Stack:** Next.js 16 · PM2 · Nginx · PostgreSQL  
-**Phase:** 10.6 — Live on `http://3real.setaei.com` (SSL pending)
+**Phase:** 11 — Live on `https://3real.setaei.com` (TLS via Let's Encrypt)
 
 ---
 
@@ -346,3 +346,83 @@ On startup, nginx failed because `dadashi.no` had `listen 443 ssl;` from a Certb
 - Site behavior and SSL certificates for dadashi.no are unchanged
 
 This was a dormant conflict (pre-existing since Certbot last ran on dadashi.no) that only surfaced when nginx was fully stopped and restarted.
+
+---
+
+## 10. Phase 11 — SSL / HTTPS Setup (2026-06-08)
+
+### What changed
+
+| Item | Before | After |
+|------|--------|-------|
+| Protocol | HTTP only | **HTTPS + HTTP→HTTPS redirect** |
+| TLS certificate | None | Let's Encrypt (expires 2026-09-06) |
+| Stream SNI map | No 3real entry | `3real.setaei.com → 127.0.0.1:8452` |
+| Nginx vhost listener | `listen 80` only | `listen 127.0.0.1:8452 ssl proxy_protocol` added |
+| `NEXT_PUBLIC_APP_URL` | `http://3real.setaei.com` | `https://3real.setaei.com` |
+| HSTS | None | `max-age=63072000; includeSubDomains` |
+
+### Certificate details
+
+```
+Domain:  3real.setaei.com
+Issuer:  Let's Encrypt R2 / R11
+Expires: 2026-09-06
+Path:    /etc/letsencrypt/live/3real.setaei.com/
+```
+
+Auto-renewal is managed by the Certbot systemd timer (`certbot.timer`). On renewal, certbot will replace the cert files in place; PM2 does not need to be restarted, but nginx must reload to pick up the new cert:
+
+```bash
+# Post-renewal hook (add to /etc/letsencrypt/renewal-hooks/post/reload-nginx.sh)
+#!/bin/bash
+service nginx reload
+```
+
+### How cert was obtained
+
+Because this VPS uses a stream SNI proxy, certbot cannot modify the nginx HTTPS config automatically. The `certonly` flag was used to get the cert without touching nginx:
+
+```bash
+certbot certonly --nginx -d 3real.setaei.com
+```
+
+The HTTPS vhost was then wired manually in `/etc/nginx/sites-available/3real.setaei.com` following the same `listen 127.0.0.1:PORT ssl proxy_protocol` pattern used by all other sites.
+
+### Port map (updated)
+
+| Port | Service |
+|------|---------|
+| 80 | nginx HTTP (all sites, HTTP→HTTPS redirect) |
+| 443 | nginx stream SNI router |
+| 3020 | 3real Next.js app |
+| 4443 | xray |
+| 8444 | shahnameh.setaei.com (SSL backend) |
+| 8445 | trustai.no (SSL backend) |
+| 8447 | setai.no (SSL backend) |
+| 8448 | lashinebeauty.com (SSL backend) |
+| 8449 | somi.setai.no (SSL backend) |
+| 8450 | stapay.setai.no (SSL backend) |
+| 8451 | dadashi.no (SSL backend) |
+| **8452** | **3real.setaei.com (SSL backend)** |
+
+### Verification
+
+```bash
+# HTTPS health check
+curl https://3real.setaei.com/api/health
+# → {"status":"ok","app":"3real",...}
+
+# HTTP → HTTPS redirect
+curl -sI http://3real.setaei.com/ | grep -E 'HTTP|Location'
+# → HTTP/1.1 301 Moved Permanently
+# → Location: https://3real.setaei.com/
+
+# Check HSTS header
+curl -sI https://3real.setaei.com/ | grep Strict
+# → Strict-Transport-Security: max-age=63072000; includeSubDomains
+
+# Verify cert
+echo | openssl s_client -connect 3real.setaei.com:443 -servername 3real.setaei.com 2>/dev/null \
+  | openssl x509 -noout -subject -issuer -dates
+```
