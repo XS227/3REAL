@@ -269,6 +269,7 @@ model User {
   reviewedKycDocs        KycDocument[]          @relation("KycDocumentReviewer")
   updatedSettings        Setting[]              @relation("SettingUpdater")
   setExchangeRates       ExchangeRate[]         @relation("ExchangeRateSetter")
+  tonWallets             TonWallet[]
 
   @@index([email])
   @@index([referralCode])
@@ -655,7 +656,29 @@ model DepositAddress {
   @@map("deposit_addresses")
 }
 
-// 17 ─ WITHDRAWAL DESTINATION (new in Phase 1.5 review)
+// 17 ─ TON WALLET
+// TON wallet addresses linked to user accounts via ton_proof verification.
+// walletAddress stores the raw address in "workchain:hexhash" format.
+// publicKey stores the 32-byte Ed25519 public key (hex) for future withdrawal signing.
+model TonWallet {
+  id              String   @id @default(uuid()) @db.Uuid
+  userId          String   @db.Uuid
+  walletAddress   String   @db.VarChar(66)    // raw "0:hexhash" — 66 chars max
+  network         String   @default("mainnet") @db.VarChar(16)  // "mainnet" or "testnet"
+  publicKey       String?  @db.VarChar(64)    // hex Ed25519 public key (for withdrawal signing)
+  isPrimary       Boolean  @default(false)
+  verifiedAt      DateTime @default(now())    // when ton_proof was last verified
+  lastConnectedAt DateTime @default(now())
+  createdAt       DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id])
+
+  @@unique([userId, walletAddress])
+  @@index([userId])
+  @@map("ton_wallets")
+}
+
+// 18 ─ WITHDRAWAL DESTINATION (new in Phase 1.5 review)
 // Saved withdrawal addresses/bank accounts per user.
 // Reduces re-entry errors and allows admin to flag novel vs known destinations.
 model WithdrawalDestination {
