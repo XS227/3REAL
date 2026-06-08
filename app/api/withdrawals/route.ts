@@ -5,6 +5,7 @@ import { audit } from "@/lib/audit";
 import { getUserBalances } from "@/lib/ledger/balance";
 import { getWithdrawalHistory } from "@/lib/withdrawals/queries";
 import { WITHDRAWAL_MINIMUMS } from "@/lib/withdrawals/destinations";
+import { parseTonAddress } from "@/lib/ton/withdrawals";
 import type { AssetCode } from "@/lib/generated/prisma/enums";
 
 export const dynamic = "force-dynamic";
@@ -72,6 +73,19 @@ export async function POST(req: NextRequest) {
     );
   }
 
+  // For REAL withdrawals: validate and normalise the TON destination address
+  let normalizedDestination = destination.trim();
+  if (assetCode === "REAL") {
+    const parsed = parseTonAddress(normalizedDestination);
+    if (!parsed) {
+      return NextResponse.json(
+        { error: "Invalid TON address. Must be in EQ…, UQ…, or 0:hex format." },
+        { status: 422 },
+      );
+    }
+    normalizedDestination = parsed.friendly; // store canonical bounceable form
+  }
+
   // Check available balance
   const balances = await getUserBalances(userId);
   const available = balances[assetCode]?.available ?? 0;
@@ -88,6 +102,8 @@ export async function POST(req: NextRequest) {
     select: { id: true },
   });
 
+  const paymentMethod = assetCode === "REAL" ? "ton" : undefined;
+
   const transaction = await prisma.transaction.create({
     data: {
       ecosystemId: ecosystem.id,
@@ -96,7 +112,8 @@ export async function POST(req: NextRequest) {
       assetCode,
       amount: amount.toString(),
       status: "pending",
-      paymentRef: destination.trim(),
+      paymentRef: normalizedDestination,
+      paymentMethod: paymentMethod as typeof paymentMethod,
     },
     select: { id: true, status: true },
   });
@@ -106,7 +123,7 @@ export async function POST(req: NextRequest) {
     targetId: transaction.id,
     targetType: "transaction",
     action: "withdrawal.created",
-    meta: { txId: transaction.id, assetCode, amount, destination: destination.trim() },
+    meta: { txId: transaction.id, assetCode, amount, destination: normalizedDestination },
     ipAddress: req.headers.get("x-forwarded-for") ?? req.headers.get("x-real-ip") ?? undefined,
     userAgent: req.headers.get("user-agent") ?? undefined,
   });

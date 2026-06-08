@@ -8,6 +8,9 @@ type Settings = {
   "ton.network": string;
   "ton.api_key": string;
   "ton.deposit_address": string;
+  "ton.hot_wallet_address": string;
+  "ton.withdrawals_enabled": string;
+  "ton.manual_withdrawal_mode": string;
 };
 
 export function TonSettingsForm({ initial }: { initial: Settings }) {
@@ -107,6 +110,61 @@ export function TonSettingsForm({ initial }: { initial: Settings }) {
         <p className="mt-1 text-xs text-gray-500">
           Users send REAL to this address. Leave blank to disable automated REAL deposits.
         </p>
+      </div>
+
+      <hr className="border-gray-700" />
+      <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider">
+        Withdrawal Settings
+      </p>
+
+      <div>
+        <label className="block text-sm font-medium text-gray-300 mb-1">
+          Platform Hot Wallet Address
+          <span className="ml-2 text-xs text-gray-500">(address that holds REAL for payouts)</span>
+        </label>
+        <input
+          type="text"
+          value={form["ton.hot_wallet_address"]}
+          onChange={(e) => set("ton.hot_wallet_address", e.target.value)}
+          className="w-full rounded-lg bg-gray-800 border border-gray-700 px-3 py-2 text-sm text-white font-mono focus:ring-2 focus:ring-blue-500 focus:outline-none"
+          placeholder="EQ… or leave blank — no automatic signing"
+        />
+        <p className="mt-1 text-xs text-gray-500">
+          Display only — shown in the admin withdrawal review page. No private keys are stored here.
+          Admins use Tonkeeper or TON Space to sign withdrawal transactions manually.
+        </p>
+      </div>
+
+      <div className="flex items-center gap-3">
+        <input
+          type="checkbox"
+          id="withdrawals_enabled"
+          checked={form["ton.withdrawals_enabled"] === "true"}
+          onChange={(e) => set("ton.withdrawals_enabled", e.target.checked ? "true" : "false")}
+          className="h-4 w-4 rounded border-gray-600 bg-gray-700 text-blue-500 focus:ring-blue-500"
+        />
+        <label htmlFor="withdrawals_enabled" className="text-sm text-gray-300">
+          Enable REAL withdrawals
+          <span className="ml-2 text-xs text-gray-500">(currently informational — no auto-signing)</span>
+        </label>
+      </div>
+
+      <div className="flex items-center gap-3">
+        <input
+          type="checkbox"
+          id="manual_withdrawal_mode"
+          checked={form["ton.manual_withdrawal_mode"] === "true"}
+          onChange={(e) =>
+            set("ton.manual_withdrawal_mode", e.target.checked ? "true" : "false")
+          }
+          className="h-4 w-4 rounded border-gray-600 bg-gray-700 text-blue-500 focus:ring-blue-500"
+        />
+        <label htmlFor="manual_withdrawal_mode" className="text-sm text-gray-300">
+          Manual withdrawal mode
+          <span className="ml-2 text-xs text-gray-500">
+            (admin manually sends REAL and confirms tx hash)
+          </span>
+        </label>
       </div>
 
       {msg && (

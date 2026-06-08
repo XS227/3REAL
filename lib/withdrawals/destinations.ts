@@ -21,10 +21,10 @@ export const WITHDRAWAL_CONFIG: Record<AssetCode, WithdrawalConfig> = {
         id: "address",
         label: "TON Wallet Address",
         placeholder: "EQC...",
-        hint: "Your TON wallet address that holds or can receive REAL Jettons.",
+        hint: "Your TON wallet address (EQ…, UQ…, or 0:hex format). Must support Jetton tokens.",
       },
     ],
-    note: "REAL tokens are sent to TON wallets. Ensure your wallet supports Jetton tokens.",
+    note: "REAL withdrawals are processed manually. Once approved, the platform will send REAL to your TON wallet — no action required from you. Processing time: 1–24 hours.",
   },
   TON: {
     destinationLabel: "TON Wallet Address",

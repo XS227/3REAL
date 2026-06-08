@@ -1,4 +1,6 @@
 import { prisma } from "@/lib/prisma";
+import { getUserBalances } from "@/lib/ledger/balance";
+import { getTonSettings } from "@/lib/ton/settings";
 
 // ── Dashboard metrics ─────────────────────────────────────────────────────────
 
@@ -355,6 +357,7 @@ export type AdminWithdrawalReviewData = {
     status: string;
     destination: string | null;
     adminNote: string | null;
+    chainTxHash: string | null;
     createdAt: Date;
     ledgerTxId: string | null;
   };
@@ -365,6 +368,8 @@ export type AdminWithdrawalReviewData = {
     emailVerified: boolean;
   };
   kycProfile: { status: string; tierRequested: number } | null;
+  userRealBalance: number | null; // only populated for REAL withdrawals
+  tonHotWallet: string | null;    // only populated for REAL withdrawals
 };
 
 export async function getWithdrawalReviewData(
@@ -382,6 +387,18 @@ export async function getWithdrawalReviewData(
 
   if (!tx) return null;
 
+  let userRealBalance: number | null = null;
+  let tonHotWallet: string | null = null;
+
+  if (tx.assetCode === "REAL") {
+    const [balances, tonSettings] = await Promise.all([
+      getUserBalances(tx.userId),
+      getTonSettings(),
+    ]);
+    userRealBalance = balances["REAL"]?.available ?? 0;
+    tonHotWallet = tonSettings.hotWalletAddress || null;
+  }
+
   return {
     transaction: {
       id: tx.id,
@@ -390,6 +407,7 @@ export async function getWithdrawalReviewData(
       status: tx.status,
       destination: tx.paymentRef,
       adminNote: tx.adminNote,
+      chainTxHash: tx.chainTxHash,
       createdAt: tx.createdAt,
       ledgerTxId: tx.ledgerTxId,
     },
@@ -400,6 +418,8 @@ export async function getWithdrawalReviewData(
       emailVerified: tx.user.emailVerified,
     },
     kycProfile: tx.user.kycProfile,
+    userRealBalance,
+    tonHotWallet,
   };
 }
 

@@ -76,6 +76,7 @@ export function WithdrawalForm({ initialAsset, kycTier, emailVerified, balances 
       setAmount("");
       setDestination("");
       router.refresh();
+      return;
     } catch {
       setErrorMsg("Network error. Please try again.");
       setState("error");
@@ -106,7 +107,9 @@ export function WithdrawalForm({ initialAsset, kycTier, emailVerified, balances 
           <p className="text-sm font-medium text-emerald-400">Withdrawal request submitted</p>
         </div>
         <p className="text-sm text-zinc-500">
-          Your request is pending admin review. You will receive a notification once it is processed.
+          {asset === "REAL"
+            ? "Your REAL withdrawal is pending admin review. Once approved, the admin will send REAL to your TON wallet and confirm the transaction. You will receive a notification when complete."
+            : "Your request is pending admin review. You will receive a notification once it is processed."}
         </p>
         <button
           onClick={() => setState("idle")}

@@ -369,10 +369,13 @@ async function seedTonSettings() {
   log("Seeding TON global settings...");
 
   const defaults = [
-    { key: "ton.jetton_master",   value: "EQDhq_DjQUMJqfXLP8K8J6SlOvon08XQQK0T49xon2e0xU8p" },
-    { key: "ton.network",         value: "mainnet" },
-    { key: "ton.api_key",         value: "" },
-    { key: "ton.deposit_address", value: "" },   // set in Admin → TON Settings before go-live
+    { key: "ton.jetton_master",          value: "EQDhq_DjQUMJqfXLP8K8J6SlOvon08XQQK0T49xon2e0xU8p" },
+    { key: "ton.network",                value: "mainnet" },
+    { key: "ton.api_key",                value: "" },
+    { key: "ton.deposit_address",        value: "" },   // set in Admin → TON Settings before go-live
+    { key: "ton.hot_wallet_address",     value: "" },   // platform hot wallet — display only, no signing
+    { key: "ton.withdrawals_enabled",    value: "false" }, // safety: off until hot wallet is configured
+    { key: "ton.manual_withdrawal_mode", value: "true" },  // admin manually sends + confirms tx hash
   ];
 
   for (const s of defaults) {
@@ -385,7 +388,7 @@ async function seedTonSettings() {
     }
   }
 
-  log(`  ✓ ${defaults.length} TON settings (jetton_master, network, api_key, deposit_address)`);
+  log(`  ✓ ${defaults.length} TON settings (jetton_master, network, api_key, deposit_address, hot_wallet_address, withdrawals_enabled, manual_withdrawal_mode)`);
 }
 
 async function main() {
