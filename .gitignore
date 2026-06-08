@@ -46,3 +46,4 @@ next-env.d.ts
 
 # KYC uploads (user documents — never commit)
 /uploads/
+/storage/uploads/kyc/
