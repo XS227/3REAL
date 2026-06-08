@@ -21,22 +21,21 @@ const PLATFORM_BANK_NAME = "3REAL Platform Bank";
 
 export const DEPOSIT_INSTRUCTIONS: Record<AssetCode, DepositInstruction> = {
   REAL: {
-    paymentMethod: "manual",
+    paymentMethod: "ton",
     steps: [
-      "Send REAL tokens from your TON wallet to the platform wallet address below.",
-      "Include your reference code in the transfer memo/comment field.",
-      "Enter the transaction hash and submit this form.",
-      "Your deposit will be credited after manual verification (1–24 hours).",
+      "Connect a TON wallet on the Wallet page.",
+      "Send REAL Jetton from your connected wallet to the platform deposit address shown on the deposit page.",
+      'Return here and click "Check for Deposit" -- your balance is credited automatically.',
     ],
     details: [
-      { label: "Platform TON Wallet", value: PLATFORM_TON_WALLET },
       { label: "Token", value: "REAL (TON Jetton)" },
       { label: "Network", value: "The Open Network (TON)" },
+      { label: "Minimum Deposit", value: "1 REAL" },
     ],
-    refLabel: "Transaction Hash",
+    refLabel: "Transaction Hash (optional)",
     refRequired: false,
-    proofLabel: "Screenshot / proof of transfer",
-    note: "Automated blockchain monitoring is not active. Include your reference code in the memo to speed up processing.",
+    proofLabel: "Screenshot (optional)",
+    note: "Only transfers from verified linked wallets are accepted. Credits are automatic — no manual review required.",
   },
   TON: {
     paymentMethod: "ton",

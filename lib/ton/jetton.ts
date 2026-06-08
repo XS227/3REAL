@@ -1,5 +1,5 @@
-import { Address } from "@ton/ton";
 import { tonapiGet, toUrlAddress, TonApiError } from "./client";
+import { toRawHash } from "./address";
 
 const REAL_SYMBOL = "REAL";
 const REAL_DECIMALS = 9;
@@ -89,17 +89,6 @@ export type JettonTransfer = {
 };
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
-
-function toRawHash(addr: string): string {
-  try {
-    if (addr.startsWith("0:") || addr.startsWith("-1:")) {
-      return addr.split(":")[1].toLowerCase();
-    }
-    return Address.parseFriendly(addr).address.hash.toString("hex").toLowerCase();
-  } catch {
-    return addr.toLowerCase();
-  }
-}
 
 function addressesMatch(a: string, b: string): boolean {
   return toRawHash(a) === toRawHash(b);

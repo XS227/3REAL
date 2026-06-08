@@ -369,9 +369,10 @@ async function seedTonSettings() {
   log("Seeding TON global settings...");
 
   const defaults = [
-    { key: "ton.jetton_master", value: "EQDhq_DjQUMJqfXLP8K8J6SlOvon08XQQK0T49xon2e0xU8p" },
-    { key: "ton.network",       value: "mainnet" },
-    { key: "ton.api_key",       value: "" },
+    { key: "ton.jetton_master",   value: "EQDhq_DjQUMJqfXLP8K8J6SlOvon08XQQK0T49xon2e0xU8p" },
+    { key: "ton.network",         value: "mainnet" },
+    { key: "ton.api_key",         value: "" },
+    { key: "ton.deposit_address", value: "" },   // set in Admin → TON Settings before go-live
   ];
 
   for (const s of defaults) {
@@ -384,7 +385,7 @@ async function seedTonSettings() {
     }
   }
 
-  log(`  ✓ ${defaults.length} TON settings (jetton_master, network, api_key)`);
+  log(`  ✓ ${defaults.length} TON settings (jetton_master, network, api_key, deposit_address)`);
 }
 
 async function main() {

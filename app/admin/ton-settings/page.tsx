@@ -14,6 +14,7 @@ export default async function TonSettingsPage() {
     "ton.jetton_master": settings.jettonMaster,
     "ton.network": settings.network,
     "ton.api_key": settings.apiKey,
+    "ton.deposit_address": settings.depositAddress,
   } as const;
 
   return (

@@ -7,6 +7,7 @@ type Settings = {
   "ton.jetton_master": string;
   "ton.network": string;
   "ton.api_key": string;
+  "ton.deposit_address": string;
 };
 
 export function TonSettingsForm({ initial }: { initial: Settings }) {
@@ -89,6 +90,23 @@ export function TonSettingsForm({ initial }: { initial: Settings }) {
           placeholder="Leave blank for unauthenticated access"
           autoComplete="off"
         />
+      </div>
+
+      <div>
+        <label className="block text-sm font-medium text-gray-300 mb-1">
+          Platform Deposit Address
+          <span className="ml-2 text-xs text-gray-500">(TON address for receiving REAL deposits)</span>
+        </label>
+        <input
+          type="text"
+          value={form["ton.deposit_address"]}
+          onChange={(e) => set("ton.deposit_address", e.target.value)}
+          className="w-full rounded-lg bg-gray-800 border border-gray-700 px-3 py-2 text-sm text-white font-mono focus:ring-2 focus:ring-blue-500 focus:outline-none"
+          placeholder="EQ… or leave blank to disable"
+        />
+        <p className="mt-1 text-xs text-gray-500">
+          Users send REAL to this address. Leave blank to disable automated REAL deposits.
+        </p>
       </div>
 
       {msg && (

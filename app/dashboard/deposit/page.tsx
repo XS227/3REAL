@@ -1,11 +1,14 @@
 import { requireAuth } from "@/lib/auth/guards";
 import { prisma } from "@/lib/prisma";
 import { getDepositHistory } from "@/lib/deposits/queries";
+import { getRealDepositHistory } from "@/lib/ton/deposits";
+import { getTonSettings } from "@/lib/ton/settings";
+import { getTonWallets } from "@/lib/ton/queries";
 import { DepositForm } from "@/components/deposits/DepositForm";
 import { DepositHistory } from "@/components/deposits/DepositHistory";
+import { RealDepositSection } from "@/components/ton/RealDepositSection";
 import { ArrowDownLeft } from "lucide-react";
 import type { AssetCode } from "@/lib/generated/prisma/enums";
-import { ASSETS } from "@/lib/wallet/assets";
 
 export const dynamic = "force-dynamic";
 
@@ -22,17 +25,23 @@ export default async function DepositPage({
   ]);
 
   const assetCode =
-    VALID_ASSETS.find(
-      (a) => a === (assetParam ?? "").toUpperCase(),
-    ) ?? "REAL";
+    VALID_ASSETS.find((a) => a === (assetParam ?? "").toUpperCase()) ?? "REAL";
 
-  const [user, deposits] = await Promise.all([
+  const isRealBlockchain = assetCode === "REAL";
+
+  // Parallel data fetch — only load blockchain data when REAL is selected
+  const [user, deposits, tonWallets, tonSettings, realDeposits] = await Promise.all([
     prisma.user.findUniqueOrThrow({
       where: { id: session.userId },
       select: { emailVerified: true, kycTier: true, referralCode: true },
     }),
     getDepositHistory(session.userId),
+    isRealBlockchain ? getTonWallets(session.userId) : Promise.resolve([]),
+    isRealBlockchain ? getTonSettings() : Promise.resolve(null),
+    isRealBlockchain ? getRealDepositHistory(session.userId, 20) : Promise.resolve([]),
   ]);
+
+  const depositAddress = tonSettings?.depositAddress ?? "";
 
   return (
     <div className="space-y-8 max-w-2xl">
@@ -43,23 +52,57 @@ export default async function DepositPage({
           <h1 className="text-2xl font-bold text-zinc-100">Deposit</h1>
         </div>
         <p className="text-sm text-zinc-500">
-          Submit a deposit request. Funds are credited after manual admin approval.
+          {isRealBlockchain
+            ? "Send REAL Jetton from a connected TON wallet. Credits are automatic."
+            : "Submit a deposit request. Funds are credited after admin approval."}
         </p>
       </div>
 
-      {/* Deposit form */}
-      <DepositForm
-        initialAsset={assetCode}
-        kycTier={session.kycTier}
-        emailVerified={user.emailVerified}
-        referralCode={user.referralCode}
-      />
+      {/* REAL asset: blockchain deposit flow */}
+      {isRealBlockchain && depositAddress ? (
+        <RealDepositSection
+          depositAddress={depositAddress}
+          walletCount={tonWallets.length}
+          initialDeposits={realDeposits.map((d) => ({
+            ...d,
+            createdAt: d.createdAt.toISOString(),
+          }))}
+        />
+      ) : isRealBlockchain ? (
+        /* No deposit address configured yet — fall through to manual form */
+        <div className="rounded-xl border border-zinc-800 bg-zinc-900/40 p-5">
+          <p className="text-sm text-zinc-400">
+            Automated REAL deposits are not yet configured. Use the manual form below to
+            submit a deposit request.
+          </p>
+        </div>
+      ) : null}
 
-      {/* Deposit history */}
-      <div>
-        <h2 className="mb-3 text-sm font-medium text-zinc-400">Your Deposits</h2>
-        <DepositHistory deposits={deposits} />
-      </div>
+      {/* Non-REAL assets or fallback manual form */}
+      {(!isRealBlockchain || !depositAddress) && (
+        <DepositForm
+          initialAsset={assetCode}
+          kycTier={session.kycTier}
+          emailVerified={user.emailVerified}
+          referralCode={user.referralCode}
+        />
+      )}
+
+      {/* Deposit history (all assets except REAL blockchain — shown in RealDepositSection) */}
+      {!isRealBlockchain && (
+        <div>
+          <h2 className="mb-3 text-sm font-medium text-zinc-400">Your Deposits</h2>
+          <DepositHistory deposits={deposits} />
+        </div>
+      )}
+
+      {/* For REAL, show the full deposit history below the section */}
+      {isRealBlockchain && deposits.length > 0 && (
+        <div>
+          <h2 className="mb-3 text-sm font-medium text-zinc-400">All Deposit History</h2>
+          <DepositHistory deposits={deposits} />
+        </div>
+      )}
     </div>
   );
 }

@@ -18,6 +18,7 @@ import {
   Scale,
   ScrollText,
   Gem,
+  Coins,
 } from "lucide-react";
 import { LogoutButton } from "@/components/auth/LogoutButton";
 
@@ -32,6 +33,7 @@ const NAV = [
   { href: "/admin/analytics", label: "Analytics", icon: TrendingUp },
   { href: "/admin/reconciliation", label: "Reconciliation", icon: Scale },
   { href: "/admin/audit-log", label: "Audit Log", icon: ScrollText },
+  { href: "/admin/ton-deposits", label: "TON Deposits", icon: Coins },
   { href: "/admin/ton-settings", label: "TON Settings", icon: Gem },
 ];
 
