@@ -420,3 +420,42 @@ export async function getAdminUserList(limit = 200): Promise<AdminUserRow[]> {
   });
   return rows;
 }
+
+// ── Audit log (paginated) ──────────────────────────────────────────────────────
+
+export type AuditLogEntry = {
+  id: string;
+  action: string;
+  actorId: string | null;
+  targetId: string | null;
+  targetType: string | null;
+  ipAddress: string | null;
+  meta: unknown;
+  createdAt: Date;
+};
+
+export async function getAuditLog(page: number, pageSize = 50): Promise<{
+  entries: AuditLogEntry[];
+  total: number;
+}> {
+  const skip = (page - 1) * pageSize;
+  const [entries, total] = await Promise.all([
+    prisma.activityLog.findMany({
+      orderBy: { createdAt: "desc" },
+      skip,
+      take: pageSize,
+      select: {
+        id: true,
+        action: true,
+        actorId: true,
+        targetId: true,
+        targetType: true,
+        ipAddress: true,
+        meta: true,
+        createdAt: true,
+      },
+    }),
+    prisma.activityLog.count(),
+  ]);
+  return { entries, total };
+}

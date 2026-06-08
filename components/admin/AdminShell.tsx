@@ -16,6 +16,7 @@ import {
   BarChart2,
   TrendingUp,
   Scale,
+  ScrollText,
 } from "lucide-react";
 import { LogoutButton } from "@/components/auth/LogoutButton";
 
@@ -29,6 +30,7 @@ const NAV = [
   { href: "/admin/reports", label: "Reports", icon: BarChart2 },
   { href: "/admin/analytics", label: "Analytics", icon: TrendingUp },
   { href: "/admin/reconciliation", label: "Reconciliation", icon: Scale },
+  { href: "/admin/audit-log", label: "Audit Log", icon: ScrollText },
 ];
 
 type Props = { email: string; role: string; children: React.ReactNode };
