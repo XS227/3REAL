@@ -27,13 +27,13 @@ export async function approveDeposit(txId: string, adminId: string): Promise<voi
       },
     });
 
-    if (deposit.status !== "pending" && deposit.status !== "under_review") {
-      throw new Error("INVALID_STATE");
-    }
-
-    // Idempotency guard — a deposit must never be credited twice
+    // Idempotency guard first — catches both race conditions and sequential retries
     if (deposit.ledgerTxId) {
       throw new Error("ALREADY_SETTLED");
+    }
+
+    if (deposit.status !== "pending" && deposit.status !== "under_review") {
+      throw new Error("INVALID_STATE");
     }
 
     userId = deposit.userId;

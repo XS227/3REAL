@@ -18,7 +18,7 @@ const PUBLIC_PATHS = [
   "/api/health",
 ];
 
-const ADMIN_PATHS = ["/admin"];
+const ADMIN_PATHS = ["/admin", "/api/admin"];
 
 function getSecret() {
   const secret = process.env.JWT_SECRET;

@@ -117,7 +117,11 @@ export async function POST(req: NextRequest) {
 
   // Create email verification token
   const rawToken = await createAuthToken(user.id, "email_verify", ip);
-  const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000";
+  // Use request Host header in dev so the URL matches whatever port Next.js picked
+  const appUrl =
+    process.env.NODE_ENV !== "production"
+      ? `${req.nextUrl.protocol}//${req.headers.get("host") ?? "localhost:3000"}`
+      : (process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000");
   const verifyUrl = `${appUrl}/auth/verify-email?token=${rawToken}`;
 
   await sendEmail(verificationEmail(normalizedEmail, verifyUrl));

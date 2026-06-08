@@ -34,7 +34,7 @@ export async function POST(req: NextRequest) {
 
   await prisma.user.update({
     where: { id: record.userId },
-    data: { emailVerified: true, kycTier: 1 },
+    data: { emailVerified: true, kycTier: 1, sessionVersion: { increment: 1 } },
   });
 
   await audit({
