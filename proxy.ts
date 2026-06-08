@@ -16,6 +16,7 @@ const PUBLIC_PATHS = [
   "/api/auth/reset-password",
   "/api/auth/verify-email",
   "/api/health",
+  "/api/ton/health",
 ];
 
 const ADMIN_PATHS = ["/admin", "/api/admin"];

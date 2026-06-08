@@ -1,3 +1,4 @@
+import { Address } from "@ton/ton";
 import { tonapiGet, toUrlAddress, TonApiError } from "./client";
 
 const REAL_SYMBOL = "REAL";
@@ -89,16 +90,19 @@ export type JettonTransfer = {
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
-function normaliseAddress(addr: string): string {
-  // Normalise to lowercase hex for comparison
-  return addr.toLowerCase().replace(/[^0-9a-f:]/g, "");
+function toRawHash(addr: string): string {
+  try {
+    if (addr.startsWith("0:") || addr.startsWith("-1:")) {
+      return addr.split(":")[1].toLowerCase();
+    }
+    return Address.parseFriendly(addr).address.hash.toString("hex").toLowerCase();
+  } catch {
+    return addr.toLowerCase();
+  }
 }
 
 function addressesMatch(a: string, b: string): boolean {
-  // Compare the hash part only (ignore bounceable/non-bounceable prefix)
-  const hashA = normaliseAddress(a).split(":").pop() ?? normaliseAddress(a);
-  const hashB = normaliseAddress(b).split(":").pop() ?? normaliseAddress(b);
-  return hashA === hashB;
+  return toRawHash(a) === toRawHash(b);
 }
 
 function fromNano(nano: string, decimals: number): number {
