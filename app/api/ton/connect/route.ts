@@ -10,7 +10,7 @@ export const dynamic = "force-dynamic";
 
 const APP_DOMAIN = process.env.NEXT_PUBLIC_APP_URL
   ? new URL(process.env.NEXT_PUBLIC_APP_URL).hostname
-  : "3real.setaei.com";
+  : "3real.no";
 
 export async function POST(req: NextRequest) {
   const session = await requireAuth();

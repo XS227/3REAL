@@ -15,6 +15,7 @@ const PUBLIC_PATHS = [
   "/api/auth/forgot-password",
   "/api/auth/reset-password",
   "/api/auth/verify-email",
+  "/api/auth/google",
   "/api/health",
   "/api/ton/health",
 ];

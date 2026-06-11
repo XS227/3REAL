@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { GoogleButton } from "@/components/auth/GoogleButton";
 
 function RegisterForm() {
   const router = useRouter();
@@ -76,6 +77,12 @@ function RegisterForm() {
               {error}
             </div>
           )}
+          <GoogleButton referralCode={referralCode.trim() || undefined} label="Sign up with Google" />
+          <div className="flex items-center gap-3">
+            <div className="h-px flex-1 bg-border" />
+            <span className="text-xs text-muted-foreground uppercase">or</span>
+            <div className="h-px flex-1 bg-border" />
+          </div>
           <div className="space-y-1.5">
             <Label htmlFor="email">Email</Label>
             <Input
