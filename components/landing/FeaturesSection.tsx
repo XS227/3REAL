@@ -1,4 +1,4 @@
-import { Wallet2, Users, ShieldCheck, BadgeCheck, Coins } from "lucide-react";
+import { Wallet2, Users, ShieldCheck, BadgeCheck, Coins, Bot } from "lucide-react";
 import type { LandingDict } from "@/lib/i18n/en";
 
 const ICON_MAP = {
@@ -7,6 +7,7 @@ const ICON_MAP = {
   ShieldCheck,
   BadgeCheck,
   Coins,
+  Bot,
 } as const;
 
 type IconKey = keyof typeof ICON_MAP;

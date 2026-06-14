@@ -2,21 +2,76 @@ export const en = {
   nav: {
     logo: "3REAL",
     links: [
+      { label: "Market", href: "#market" },
       { label: "Ecosystem", href: "#ecosystem" },
       { label: "Features", href: "#features" },
       { label: "How It Works", href: "#how-it-works" },
       { label: "FAQ", href: "#faq" },
     ],
-    cta: { signIn: "Sign In", register: "Create Account" },
+    cta: { signIn: "Sign In", register: "Get Started" },
   },
 
   hero: {
-    badge: "Powered by REAL",
+    badge: "Powered by REAL — live on TON",
     title: "3REAL",
     tagline: "Secure. Rewarding. Connected.",
     description:
       "The digital asset portal of the SETAEI ecosystem. Manage your REAL tokens, grow your network, and access tomorrow's financial infrastructure — today.",
-    cta: { primary: "Create Account", secondary: "Learn More" },
+    cta: { primary: "Continue with Google", secondary: "Explore the Market" },
+    stats: {
+      price: "REAL Price",
+      change30d: "30d Change",
+      holders: "Holders",
+      mcap: "Market Cap",
+    },
+  },
+
+  market: {
+    title: "REAL Token — Live Market",
+    subtitle:
+      "REAL is a jetton on The Open Network. Its price is set by the open market — live data straight from the blockchain.",
+    liveBadge: "Live market data",
+    chartTitle: "REAL / USD",
+    chartSubtitle: "30-day market price — live via DYOR",
+    chartRangeLabel: "30D",
+    realCard: {
+      title: "REAL Token",
+      liveLabel: "Live",
+      holders: "Holders",
+      marketCap: "Market cap",
+      liquidity: "Liquidity",
+      change7d: "7d",
+      change30d: "30d",
+      viewOnDyor: "View REAL on DYOR",
+      note: "REAL trades on the open market on The Open Network. 3REAL does not set the price — data via dyor.io, refreshed every 5 minutes.",
+    },
+    change24h: "24h",
+    updatedPrefix: "Updated",
+    sourceNote:
+      "REAL market data via dyor.io · other prices via CoinGecko · refreshed every 5 minutes.",
+    unavailable: "Live market data is temporarily unavailable.",
+    assets: {
+      ton: "Toncoin",
+      btc: "Bitcoin",
+      eth: "Ethereum",
+      usdt: "Tether",
+    },
+  },
+
+  marketOverview: {
+    title: "Global Market Overview",
+    subtitle:
+      "Live prices for the digital assets supported on 3REAL — refreshed every 5 minutes.",
+    chartTitle: "TON / USD",
+    chartSubtitle: "30-day price — The Open Network",
+    chartRangeLabel: "30D",
+    unavailable: "Live market data is temporarily unavailable.",
+    assets: {
+      ton: "Toncoin",
+      btc: "Bitcoin",
+      eth: "Ethereum",
+      usdt: "Tether",
+    },
   },
 
   ecosystem: {
@@ -26,33 +81,51 @@ export const en = {
     products: [
       {
         name: "3REAL",
+        initial: "3",
+        brand: "3real",
+        status: "flagship",
         tag: "Active",
         description:
           "Digital asset portal. Manage, earn, and use REAL tokens within the SETAEI ecosystem.",
-        active: true,
+        href: "",
       },
       {
         name: "Shahnameh",
-        tag: "Coming Soon",
+        initial: "S",
+        brand: "shahnameh",
+        status: "live",
+        tag: "Live",
         description:
-          "A cultural commerce platform bridging Persian heritage and the digital economy.",
-        active: false,
+          "The Rebuilding of the Realm — a cultural bridge between ancient Persian wisdom and AI + blockchain. Home of the REAL token, powered by Hakim AI.",
+        href: "https://shahnameh.setaei.com/",
       },
       {
         name: "TrustAI",
-        tag: "Coming Soon",
+        initial: "T",
+        brand: "trustai",
+        status: "live",
+        tag: "Live",
         description:
-          "AI-powered trust and verification services for individuals and organizations.",
-        active: false,
+          "Referral infrastructure for modern merchants — ambassador programs with live onboarding, analytics, payouts and Shopify integration.",
+        href: "https://trustai.no/",
       },
       {
         name: "SETAEI Pay",
+        initial: "P",
+        brand: "pay",
+        status: "soon",
         tag: "Coming Soon",
         description:
           "Seamless cross-ecosystem payment infrastructure, powered by the REAL token.",
-        active: false,
+        href: "",
       },
     ],
+    aiAgents: {
+      badge: "In Development",
+      title: "AI Trading Agents",
+      description:
+        "We are building autonomous AI agents that watch the markets around the clock, analyse on-chain data, and act on opportunities the moment they appear. One step ahead of the market — coming to the SETAEI ecosystem.",
+    },
   },
 
   features: {
@@ -82,7 +155,7 @@ export const en = {
         icon: "BadgeCheck",
         title: "KYC Verification",
         description:
-          "Tiered verification unlocks higher limits progressively. Start with email — upgrade when you're ready.",
+          "Tiered verification unlocks higher limits progressively. Tier 1 is unlocked instantly with Google sign-in — upgrade when you're ready.",
       },
       {
         icon: "Coins",
@@ -90,24 +163,30 @@ export const en = {
         description:
           "REAL, USDT (TRC-20), TON, and more. One portal for your entire digital asset portfolio.",
       },
+      {
+        icon: "Bot",
+        title: "AI Trading Agents",
+        description:
+          "Autonomous market agents are in development — 24/7 analysis and execution, one step ahead of the market.",
+      },
     ],
   },
 
   howItWorks: {
     title: "How It Works",
-    subtitle: "From sign-up to earning REAL in four steps.",
+    subtitle: "From sign-in to earning REAL in four steps.",
     steps: [
       {
         number: "01",
-        title: "Create Account",
+        title: "Sign in with Google",
         description:
-          "Sign up with your email address. Account creation takes less than a minute.",
+          "One click with your Google account — no passwords, no forms. Your account is ready in seconds.",
       },
       {
         number: "02",
         title: "Verify Identity",
         description:
-          "Confirm your email for Tier 1 access. Submit a government ID to unlock higher transaction limits.",
+          "Google sign-in unlocks Tier 1 instantly. Submit a government ID to unlock higher transaction limits.",
       },
       {
         number: "03",
@@ -151,7 +230,7 @@ export const en = {
         icon: "ShieldCheck",
         title: "Session Protection",
         description:
-          "JWT sessions with version-based invalidation. Password resets and account changes immediately revoke all active sessions across all devices.",
+          "JWT sessions with version-based invalidation. Account changes immediately revoke all active sessions across all devices.",
       },
     ],
   },
@@ -168,7 +247,12 @@ export const en = {
       {
         question: "What is the REAL token?",
         answer:
-          "REAL is the native utility token of the SETAEI ecosystem. It powers transactions, rewards, and access across 3REAL, Shahnameh, TrustAI, and SETAEI Pay. REAL is earned through participation and the referral program.",
+          "REAL is the utility token of the SETAEI ecosystem, born in the Shahnameh game. It is a jetton on The Open Network (TON) and trades on the open market — its price is set by supply and demand, not by 3REAL. Live price and chart data are available on DYOR.",
+      },
+      {
+        question: "How do I sign in?",
+        answer:
+          "3REAL uses Google sign-in only. Click any sign-in button and you'll be taken straight to Google — one click and your account is ready. No passwords to remember, no forms to fill in.",
       },
       {
         question: "How does the referral program work?",
@@ -178,27 +262,27 @@ export const en = {
       {
         question: "What KYC verification is required?",
         answer:
-          "KYC is tiered. Tier 1 requires email verification only and unlocks basic access. Tier 2 requires a government-issued photo ID. Tier 3 requires full identity verification and unlocks the highest transaction limits.",
+          "KYC is tiered. Tier 1 is unlocked automatically with Google sign-in. Tier 2 requires a government-issued photo ID. Tier 3 requires full identity verification and unlocks the highest transaction limits.",
       },
       {
         question: "Which digital assets are supported?",
         answer:
-          "Currently supported: REAL (native token), USDT (TRC-20 network), and TON (The Open Network). Additional assets will be added as the platform grows.",
+          "Currently supported: REAL (TON jetton), USDT (TRC-20 network), and TON (The Open Network). Additional assets will be added as the platform grows.",
       },
       {
         question: "Is 3REAL a cryptocurrency exchange?",
         answer:
-          "No. 3REAL is a digital asset portal — not an exchange. We do not operate a trading engine, order book, or price discovery mechanism. Peer-to-peer asset trading is not supported through 3REAL.",
+          "No. 3REAL is a digital asset portal — not an exchange. We do not operate a trading engine, order book, or price discovery mechanism. REAL trades on the open TON market; 3REAL only reflects that market data.",
       },
       {
-        question: "When will Shahnameh, TrustAI, and SETAEI Pay launch?",
+        question: "What is live in the ecosystem today?",
         answer:
-          "These ecosystem products are currently in development. Launch timelines will be announced through official SETAEI channels. REAL tokens earned now will be usable across all ecosystem products at launch.",
+          "Shahnameh (shahnameh.setaei.com) and TrustAI (trustai.no) are live today. SETAEI Pay and our AI trading agents are in active development. REAL tokens earned now are usable across the ecosystem as it expands.",
       },
       {
         question: "How are my assets protected?",
         answer:
-          "All assets are tracked through a double-entry accounting ledger — identical to the method used by licensed financial institutions. Every transaction must balance. We use end-to-end encryption, immutable audit logs, and session-version invalidation so that a password reset immediately revokes all active sessions.",
+          "All assets are tracked through a double-entry accounting ledger — identical to the method used by licensed financial institutions. Every transaction must balance. We use end-to-end encryption, immutable audit logs, and session-version invalidation.",
       },
     ],
   },
@@ -210,8 +294,12 @@ export const en = {
       platform: {
         title: "Platform",
         items: [
-          { label: "Create Account", href: "/auth/register" },
-          { label: "Sign In", href: "/auth/login" },
+          { label: "Get Started", href: "/api/auth/google" },
+          { label: "Sign In", href: "/api/auth/google" },
+          {
+            label: "REAL on DYOR",
+            href: "https://dyor.io/token/EQDhq_DjQUMJqfXLP8K8J6SlOvon08XQQK0T49xon2e0xU8p",
+          },
         ],
       },
       legal: {
@@ -224,15 +312,15 @@ export const en = {
       ecosystem: {
         title: "Ecosystem",
         items: [
-          { label: "SETAEI", href: "#" },
-          { label: "Shahnameh", href: "#" },
-          { label: "TrustAI", href: "#" },
+          { label: "SETAEI", href: "https://setaei.com" },
+          { label: "Shahnameh", href: "https://shahnameh.setaei.com/" },
+          { label: "TrustAI", href: "https://trustai.no/" },
           { label: "SETAEI Pay", href: "#" },
         ],
       },
     },
     copyright: "© 2026 SETAEI. All rights reserved.",
   },
-} as const;
+};
 
 export type LandingDict = typeof en;

@@ -1,7 +1,16 @@
 import Link from "next/link";
+import { ArrowUpRight } from "lucide-react";
 import type { LandingDict } from "@/lib/i18n/en";
+import type { LandingLang } from "@/lib/i18n";
+import { LangSwitcher } from "@/components/landing/LangSwitcher";
 
-export function Footer({ t }: { t: LandingDict["footer"] }) {
+export function Footer({
+  t,
+  lang,
+}: {
+  t: LandingDict["footer"];
+  lang: LandingLang;
+}) {
   const cols = [t.links.platform, t.links.legal, t.links.ecosystem] as const;
 
   return (
@@ -17,22 +26,23 @@ export function Footer({ t }: { t: LandingDict["footer"] }) {
             <p className="mt-3 text-sm text-amber-400/80 font-medium">{t.tagline}</p>
             <p className="mt-1 text-sm text-zinc-500">{t.description}</p>
 
-            {/* Language selector placeholder */}
-            <div className="mt-6 flex gap-2">
-              {(["EN", "NO", "FA"] as const).map((lang) => (
-                <button
-                  key={lang}
-                  disabled={lang !== "EN"}
-                  className={`text-xs px-2 py-1 rounded border transition-colors ${
-                    lang === "EN"
-                      ? "border-amber-500/50 text-amber-400 bg-amber-500/10"
-                      : "border-zinc-800 text-zinc-600 cursor-not-allowed"
-                  }`}
-                  title={lang !== "EN" ? "Coming soon" : undefined}
-                >
-                  {lang}
-                </button>
-              ))}
+            {/* SETAEI — ستائی */}
+            <a
+              href="https://setaei.com"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="mt-4 inline-flex items-baseline gap-2 text-sm text-zinc-400 transition-colors hover:text-white"
+            >
+              <span className="font-semibold tracking-wide">SETAEI</span>
+              <span dir="rtl" lang="fa" className="font-fa text-base text-amber-400/90">
+                ستائی
+              </span>
+              <ArrowUpRight className="h-3.5 w-3.5 self-center opacity-60" />
+            </a>
+
+            {/* Language switcher */}
+            <div className="mt-5">
+              <LangSwitcher current={lang} />
             </div>
           </div>
 
@@ -43,16 +53,31 @@ export function Footer({ t }: { t: LandingDict["footer"] }) {
                 {col.title}
               </h3>
               <ul className="space-y-2.5">
-                {col.items.map((item) => (
-                  <li key={item.label}>
-                    <Link
-                      href={item.href}
-                      className="text-sm text-zinc-400 hover:text-white transition-colors"
-                    >
-                      {item.label}
-                    </Link>
-                  </li>
-                ))}
+                {col.items.map((item) => {
+                  const external = item.href.startsWith("http");
+                  return (
+                    <li key={item.label}>
+                      {external ? (
+                        <a
+                          href={item.href}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="inline-flex items-center gap-1 text-sm text-zinc-400 hover:text-white transition-colors"
+                        >
+                          {item.label}
+                          <ArrowUpRight className="h-3 w-3 opacity-50 rtl:-scale-x-100" />
+                        </a>
+                      ) : (
+                        <Link
+                          href={item.href}
+                          className="text-sm text-zinc-400 hover:text-white transition-colors"
+                        >
+                          {item.label}
+                        </Link>
+                      )}
+                    </li>
+                  );
+                })}
               </ul>
             </div>
           ))}

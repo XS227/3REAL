@@ -4,6 +4,58 @@
 
 @custom-variant dark (&:is(.dark *));
 
+@theme {
+  --animate-marquee: marquee 36s linear infinite;
+
+  @keyframes marquee {
+    from {
+      transform: translateX(0);
+    }
+    to {
+      transform: translateX(-50%);
+    }
+  }
+
+  --animate-hero-float: hero-float 9s ease-in-out infinite;
+
+  @keyframes hero-float {
+    0%,
+    100% {
+      transform: translateY(-10px) rotate(-2deg);
+    }
+    50% {
+      transform: translateY(12px) rotate(2deg);
+    }
+  }
+
+  --animate-glow-drift: glow-drift 14s ease-in-out infinite;
+
+  @keyframes glow-drift {
+    0%,
+    100% {
+      opacity: 0.55;
+      transform: translate3d(0, 0, 0) scale(1);
+    }
+    50% {
+      opacity: 1;
+      transform: translate3d(0, -24px, 0) scale(1.08);
+    }
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-hero-float,
+  .animate-glow-drift,
+  .animate-marquee {
+    animation: none;
+  }
+}
+
+/* Persian (RTL) landing typography */
+.font-fa {
+  font-family: var(--font-vazirmatn), var(--font-geist-sans), system-ui, sans-serif;
+}
+
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);

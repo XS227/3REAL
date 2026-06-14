@@ -5,8 +5,10 @@ import Link from "next/link";
 import { Menu, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import type { LandingDict } from "@/lib/i18n/en";
+import type { LandingLang } from "@/lib/i18n";
+import { LangSwitcher } from "@/components/landing/LangSwitcher";
 
-export function Navbar({ t }: { t: LandingDict["nav"] }) {
+export function Navbar({ t, lang }: { t: LandingDict["nav"]; lang: LandingLang }) {
   const [open, setOpen] = useState(false);
 
   return (
@@ -34,7 +36,9 @@ export function Navbar({ t }: { t: LandingDict["nav"] }) {
 
           {/* Desktop CTAs */}
           <div className="hidden md:flex items-center gap-3">
-            <Link href="/auth/login">
+            <LangSwitcher current={lang} />
+            {/* Auth is Google-only: CTAs go straight to the OAuth flow */}
+            <a href="/api/auth/google">
               <Button
                 variant="ghost"
                 size="sm"
@@ -42,26 +46,29 @@ export function Navbar({ t }: { t: LandingDict["nav"] }) {
               >
                 {t.cta.signIn}
               </Button>
-            </Link>
-            <Link href="/auth/register">
+            </a>
+            <a href="/api/auth/google">
               <Button
                 size="sm"
                 className="bg-amber-500 hover:bg-amber-400 text-zinc-950 font-semibold"
               >
                 {t.cta.register}
               </Button>
-            </Link>
+            </a>
           </div>
 
-          {/* Mobile hamburger */}
-          <button
-            className="md:hidden rounded-md p-2 text-zinc-400 hover:text-white hover:bg-zinc-800 transition-colors"
-            onClick={() => setOpen(!open)}
-            aria-label="Toggle navigation menu"
-            aria-expanded={open}
-          >
-            {open ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
-          </button>
+          {/* Mobile: language switcher + hamburger */}
+          <div className="flex items-center gap-1 md:hidden">
+            <LangSwitcher current={lang} />
+            <button
+              className="rounded-md p-2 text-zinc-400 hover:text-white hover:bg-zinc-800 transition-colors"
+              onClick={() => setOpen(!open)}
+              aria-label="Toggle navigation menu"
+              aria-expanded={open}
+            >
+              {open ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+            </button>
+          </div>
         </div>
 
         {/* Mobile menu */}
@@ -80,23 +87,23 @@ export function Navbar({ t }: { t: LandingDict["nav"] }) {
               ))}
             </nav>
             <div className="flex flex-col gap-2 pt-3 border-t border-zinc-800">
-              <Link href="/auth/login" onClick={() => setOpen(false)}>
+              <a href="/api/auth/google" onClick={() => setOpen(false)}>
                 <Button
                   variant="outline"
                   size="sm"
-                  className="w-full border-zinc-700 text-zinc-300 hover:bg-zinc-800"
+                  className="w-full border-zinc-700 bg-transparent text-zinc-300 hover:bg-zinc-800 hover:text-white"
                 >
                   {t.cta.signIn}
                 </Button>
-              </Link>
-              <Link href="/auth/register" onClick={() => setOpen(false)}>
+              </a>
+              <a href="/api/auth/google" onClick={() => setOpen(false)}>
                 <Button
                   size="sm"
                   className="w-full bg-amber-500 hover:bg-amber-400 text-zinc-950 font-semibold"
                 >
                   {t.cta.register}
                 </Button>
-              </Link>
+              </a>
             </div>
           </div>
         )}
