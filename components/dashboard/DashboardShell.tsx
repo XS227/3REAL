@@ -11,10 +11,12 @@ import {
   BadgeCheck,
   Settings,
   Shield,
+  Bell,
   Menu,
   X,
 } from "lucide-react";
 import { LogoutButton } from "@/components/auth/LogoutButton";
+import { NotificationBell } from "@/components/dashboard/NotificationBell";
 
 type NavItem = {
   href: string;
@@ -30,6 +32,7 @@ const NAV: NavItem[] = [
   { href: "/dashboard/withdraw", label: "Withdraw", icon: ArrowUpRight },
   { href: "/dashboard/referrals", label: "Referrals", icon: Users },
   { href: "/dashboard/kyc", label: "Verification", icon: BadgeCheck },
+  { href: "/dashboard/notifications", label: "Notifications", icon: Bell },
   { href: "/dashboard/settings", label: "Settings", icon: Settings, soon: true },
   { href: "/admin", label: "Admin", icon: Shield, adminOnly: true },
 ];
@@ -66,10 +69,11 @@ function NavLink({ item, active, onClick }: { item: NavItem; active: boolean; on
 type Props = {
   email: string;
   role: string;
+  initialUnread?: number;
   children: React.ReactNode;
 };
 
-export function DashboardShell({ email, role, children }: Props) {
+export function DashboardShell({ email, role, initialUnread = 0, children }: Props) {
   const [open, setOpen] = useState(false);
   const pathname = usePathname();
   const isAdmin = role === "super_admin" || role === "operator";
@@ -83,12 +87,15 @@ export function DashboardShell({ email, role, children }: Props) {
         <Link href="/dashboard" className="text-xl font-bold tracking-tight text-amber-400">
           3REAL
         </Link>
-        <button
-          className="rounded p-1 text-zinc-500 hover:text-zinc-300 md:hidden"
-          onClick={() => setOpen(false)}
-        >
-          <X className="h-5 w-5" />
-        </button>
+        <div className="flex items-center gap-1">
+          <NotificationBell initialUnread={initialUnread} />
+          <button
+            className="rounded p-1 text-zinc-500 hover:text-zinc-300 md:hidden"
+            onClick={() => setOpen(false)}
+          >
+            <X className="h-5 w-5" />
+          </button>
+        </div>
       </div>
 
       {/* Nav */}
@@ -121,12 +128,15 @@ export function DashboardShell({ email, role, children }: Props) {
         <Link href="/dashboard" className="font-bold text-amber-400">
           3REAL
         </Link>
-        <button
-          onClick={() => setOpen(true)}
-          className="rounded p-1.5 text-zinc-400 hover:bg-zinc-800"
-        >
-          <Menu className="h-5 w-5" />
-        </button>
+        <div className="flex items-center gap-1">
+          <NotificationBell initialUnread={initialUnread} />
+          <button
+            onClick={() => setOpen(true)}
+            className="rounded p-1.5 text-zinc-400 hover:bg-zinc-800"
+          >
+            <Menu className="h-5 w-5" />
+          </button>
+        </div>
       </div>
 
       {/* Desktop sidebar */}
