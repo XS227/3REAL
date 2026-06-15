@@ -1,4 +1,5 @@
 import { Coins, BookOpen, Brain, CreditCard, ArrowRight } from "lucide-react";
+import type { DashboardDict } from "@/lib/i18n/dashboard";
 
 const PRODUCTS = [
   {
@@ -47,11 +48,11 @@ const PRODUCTS = [
   },
 ] as const;
 
-export function EcosystemCards() {
+export function EcosystemCards({ t }: { t: DashboardDict["dashboard"]["ecosystem"] }) {
   return (
     <div>
       <h2 className="mb-4 text-sm font-medium text-zinc-500 uppercase tracking-widest">
-        SETAEI Ecosystem
+        {t.title}
       </h2>
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
         {PRODUCTS.map(({ code, name, tagline, icon: Icon, accent, border, bg, active, href }) => (
@@ -63,12 +64,12 @@ export function EcosystemCards() {
           >
             {active && (
               <span className="absolute right-3 top-3 rounded-full bg-amber-500/20 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-amber-400">
-                Active
+                {t.active}
               </span>
             )}
             {!active && (
               <span className="absolute right-3 top-3 rounded-full bg-zinc-800 px-2 py-0.5 text-[10px] font-medium text-zinc-500">
-                Soon
+                {t.comingSoon}
               </span>
             )}
 

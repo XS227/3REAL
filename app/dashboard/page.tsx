@@ -1,3 +1,4 @@
+import { cookies } from "next/headers";
 import { requireAuth } from "@/lib/auth/guards";
 import { getDashboardData } from "@/lib/dashboard/queries";
 import { BalanceCard } from "@/components/dashboard/BalanceCard";
@@ -7,21 +8,21 @@ import { ProfileCard } from "@/components/dashboard/ProfileCard";
 import { RecentActivity } from "@/components/dashboard/RecentActivity";
 import { RecentTransactions } from "@/components/dashboard/RecentTransactions";
 import { EcosystemCards } from "@/components/dashboard/EcosystemCards";
+import { dashboardDicts, resolveDashboardLang } from "@/lib/i18n/dashboard";
 
 export default async function DashboardPage() {
   const session = await requireAuth();
+  const cookieStore = await cookies();
+  const lang = resolveDashboardLang(cookieStore.get("lang")?.value);
+  const t = dashboardDicts[lang];
+
   const data = await getDashboardData(session.userId);
   const { user, balances, referralStats, recentActivity, recentTransactions, kycProfile } = data;
 
   const baseUrl = process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000";
   const displayName = user.displayName ?? user.email.split("@")[0];
 
-  const kycLabel: Record<number, string> = {
-    0: "Not verified",
-    1: "Email tier",
-    2: "ID verified",
-    3: "Full KYC",
-  };
+  const dateLocale = lang === "fa" ? "fa-IR" : "en-US";
 
   return (
     <div className="space-y-8">
@@ -29,10 +30,10 @@ export default async function DashboardPage() {
       <div className="flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h1 className="text-2xl font-bold text-zinc-100">
-            Welcome back, {displayName}
+            {t.dashboard.welcomeBack}، {displayName}
           </h1>
           <p className="text-sm text-zinc-500">
-            {new Date().toLocaleDateString("en-US", {
+            {new Date().toLocaleDateString(dateLocale, {
               weekday: "long",
               year: "numeric",
               month: "long",
@@ -40,19 +41,16 @@ export default async function DashboardPage() {
             })}
           </p>
         </div>
-        {/* Quick status chips */}
         <div className="flex flex-wrap items-center gap-2">
-          <span
-            className={`rounded-full border px-3 py-1 text-xs font-medium ${
-              user.emailVerified
-                ? "border-emerald-500/30 bg-emerald-500/10 text-emerald-400"
-                : "border-zinc-700 bg-zinc-800 text-zinc-500"
-            }`}
-          >
-            {user.emailVerified ? "Email verified" : "Email unverified"}
+          <span className={`rounded-full border px-3 py-1 text-xs font-medium ${
+            user.emailVerified
+              ? "border-emerald-500/30 bg-emerald-500/10 text-emerald-400"
+              : "border-zinc-700 bg-zinc-800 text-zinc-500"
+          }`}>
+            {user.emailVerified ? t.dashboard.emailVerified : t.dashboard.emailUnverified}
           </span>
           <span className="rounded-full border border-zinc-700 bg-zinc-800 px-3 py-1 text-xs font-medium text-zinc-400">
-            KYC: {kycLabel[user.kycTier] ?? `Tier ${user.kycTier}`}
+            {t.dashboard.kyc}: {t.dashboard.kycLabels[user.kycTier] ?? `Tier ${user.kycTier}`}
           </span>
           <span className="rounded-full border border-amber-500/30 bg-amber-500/10 px-3 py-1 text-xs font-medium text-amber-400 capitalize">
             {user.role.replace(/_/g, " ")}
@@ -60,10 +58,10 @@ export default async function DashboardPage() {
         </div>
       </div>
 
-      {/* Main grid: balance + profile */}
+      {/* Balance + profile */}
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
         <div className="lg:col-span-2">
-          <BalanceCard real={balances.REAL} />
+          <BalanceCard real={balances.REAL} t={t.dashboard.balanceCard} />
         </div>
         <div>
           <ProfileCard
@@ -71,6 +69,7 @@ export default async function DashboardPage() {
             kycTier={user.kycTier}
             twoFaEnabled={user.twoFaEnabled}
             kycProfile={kycProfile}
+            t={t.dashboard.profileCard}
           />
         </div>
       </div>
@@ -78,24 +77,25 @@ export default async function DashboardPage() {
       {/* Wallet + referral */}
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
         <div className="lg:col-span-2">
-          <WalletCard balances={balances} />
+          <WalletCard balances={balances} t={t.dashboard.walletCard} />
         </div>
         <div>
           <ReferralCard
             referralCode={user.referralCode}
             baseUrl={baseUrl}
             stats={referralStats}
+            t={t.dashboard.referralCard}
           />
         </div>
       </div>
 
       {/* Ecosystem */}
-      <EcosystemCards />
+      <EcosystemCards t={t.dashboard.ecosystem} />
 
       {/* Activity + transactions */}
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
-        <RecentTransactions transactions={recentTransactions} />
-        <RecentActivity entries={recentActivity} />
+        <RecentTransactions transactions={recentTransactions} t={t.dashboard.recentTransactions} />
+        <RecentActivity entries={recentActivity} t={t.dashboard.recentActivity} />
       </div>
     </div>
   );

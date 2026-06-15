@@ -1,0 +1,605 @@
+export type Lang = "en" | "fa";
+
+export interface DashboardDict {
+  nav: {
+    dashboard: string;
+    wallet: string;
+    deposit: string;
+    withdraw: string;
+    referrals: string;
+    verification: string;
+    notifications: string;
+    settings: string;
+    admin: string;
+    soon: string;
+  };
+  user: {
+    logout: string;
+  };
+  lang: {
+    toggle: string; // label shown on the switcher button
+  };
+  dashboard: {
+    welcomeBack: string;
+    emailVerified: string;
+    emailUnverified: string;
+    kyc: string;
+    kycLabels: Record<number, string>;
+    balanceCard: {
+      title: string;
+      available: string;
+      pending: string;
+      deposit: string;
+      withdraw: string;
+    };
+    walletCard: {
+      title: string;
+      available: string;
+      pending: string;
+      viewHistory: string;
+    };
+    referralCard: {
+      title: string;
+      yourCode: string;
+      copyLink: string;
+      copied: string;
+      invited: string;
+      pending: string;
+      earned: string;
+      shareVia: string;
+    };
+    profileCard: {
+      title: string;
+      completion: string;
+      emailVerified: string;
+      kycApproved: string;
+      twoFa: string;
+      completeKyc: string;
+      kycStatus: Record<string, string>;
+      kycTier: Record<number, string>;
+    };
+    recentActivity: {
+      title: string;
+      noActivity: string;
+      actions: Record<string, string>;
+    };
+    recentTransactions: {
+      title: string;
+      noTransactions: string;
+      deposit: string;
+      withdrawal: string;
+      statusLabels: Record<string, string>;
+    };
+    ecosystem: {
+      title: string;
+      comingSoon: string;
+      active: string;
+    };
+  };
+  wallet: {
+    title: string;
+    subtitle: string;
+    available: string;
+    pending: string;
+    viewHistory: string;
+    noHistory: string;
+    ledgerHistory: string;
+    accountExplorer: string;
+    assets: Record<string, string>;
+  };
+  deposit: {
+    title: string;
+    subtitle: string;
+    autoCredit: string;
+    manualApproval: string;
+    selectAsset: string;
+    yourDeposits: string;
+    allHistory: string;
+    form: {
+      amount: string;
+      reference: string;
+      proof: string;
+      submit: string;
+      submitting: string;
+      success: string;
+      minAmount: string;
+      requiresKyc: string;
+    };
+    status: Record<string, string>;
+  };
+  withdraw: {
+    title: string;
+    subtitle: string;
+    yourWithdrawals: string;
+    form: {
+      amount: string;
+      destination: string;
+      available: string;
+      submit: string;
+      submitting: string;
+      success: string;
+      requiresKyc: string;
+    };
+    status: Record<string, string>;
+  };
+  kyc: {
+    title: string;
+    subtitle: string;
+    docLabels: Record<string, string>;
+    status: Record<string, string>;
+    upload: string;
+    reupload: string;
+    submit: string;
+    submitting: string;
+  };
+  referrals: {
+    title: string;
+    subtitle: string;
+    stats: {
+      invited: string;
+      pending: string;
+      earned: string;
+      tier1: string;
+      tier2: string;
+    };
+    shareTitle: string;
+    yourLink: string;
+    copy: string;
+    copied: string;
+    qrCode: string;
+    calculator: string;
+    inviteTable: string;
+    rewardHistory: string;
+  };
+  notifications: {
+    title: string;
+    markAllRead: string;
+    empty: string;
+    types: Record<string, string>;
+  };
+}
+
+const statusLabels = {
+  en: {
+    pending: "Pending",
+    under_review: "Under Review",
+    approved: "Approved",
+    rejected: "Rejected",
+    completed: "Completed",
+    processing: "Processing",
+    cancelled: "Cancelled",
+  },
+  fa: {
+    pending: "در انتظار",
+    under_review: "در حال بررسی",
+    approved: "تأیید شده",
+    rejected: "رد شده",
+    completed: "تکمیل شده",
+    processing: "در حال پردازش",
+    cancelled: "لغو شده",
+  },
+};
+
+export const dashboardDicts: Record<Lang, DashboardDict> = {
+  en: {
+    nav: {
+      dashboard: "Dashboard",
+      wallet: "Wallet",
+      deposit: "Deposit",
+      withdraw: "Withdraw",
+      referrals: "Referrals",
+      verification: "Verification",
+      notifications: "Notifications",
+      settings: "Settings",
+      admin: "Admin",
+      soon: "Soon",
+    },
+    user: { logout: "Sign out" },
+    lang: { toggle: "فارسی" },
+    dashboard: {
+      welcomeBack: "Welcome back",
+      emailVerified: "Email verified",
+      emailUnverified: "Email unverified",
+      kyc: "KYC",
+      kycLabels: { 0: "Not verified", 1: "Email tier", 2: "ID verified", 3: "Full KYC" },
+      balanceCard: {
+        title: "REAL Balance",
+        available: "Available",
+        pending: "Pending",
+        deposit: "Deposit",
+        withdraw: "Withdraw",
+      },
+      walletCard: {
+        title: "Multi-Asset Wallet",
+        available: "Available",
+        pending: "Pending",
+        viewHistory: "View history",
+      },
+      referralCard: {
+        title: "Referral Program",
+        yourCode: "Your referral code",
+        copyLink: "Copy link",
+        copied: "Copied!",
+        invited: "Invited",
+        pending: "Pending",
+        earned: "Earned",
+        shareVia: "Share via",
+      },
+      profileCard: {
+        title: "Profile",
+        completion: "completion",
+        emailVerified: "Email verified",
+        kycApproved: "KYC approved",
+        twoFa: "2FA enabled",
+        completeKyc: "Complete KYC",
+        kycStatus: {
+          not_started: "Not submitted",
+          pending: "Pending review",
+          under_review: "Under review",
+          approved: "Approved",
+          rejected: "Rejected",
+          update_requested: "Update requested",
+        },
+        kycTier: { 0: "Not verified", 1: "Email tier", 2: "ID verified", 3: "Full KYC" },
+      },
+      recentActivity: {
+        title: "Recent Activity",
+        noActivity: "No activity yet",
+        actions: {
+          "auth.register": "Registered account",
+          "auth.login": "Signed in",
+          "auth.logout": "Signed out",
+          "auth.email_verified": "Email verified",
+          "auth.password_reset_requested": "Password reset requested",
+          "auth.password_reset": "Password reset",
+          "auth.failed_login": "Failed sign-in attempt",
+          "auth.google_linked": "Google account linked",
+          "kyc.submitted": "KYC submitted",
+          "kyc.approved": "KYC approved",
+          "kyc.rejected": "KYC rejected",
+          "kyc.update_requested": "KYC update requested",
+          "deposit.submitted": "Deposit submitted",
+          "deposit.approved": "Deposit approved",
+          "deposit.rejected": "Deposit rejected",
+          "withdrawal.submitted": "Withdrawal submitted",
+          "withdrawal.approved": "Withdrawal approved",
+          "withdrawal.rejected": "Withdrawal rejected",
+        },
+      },
+      recentTransactions: {
+        title: "Recent Transactions",
+        noTransactions: "No transactions yet",
+        deposit: "Deposit",
+        withdrawal: "Withdrawal",
+        statusLabels: statusLabels.en,
+      },
+      ecosystem: {
+        title: "SETAEI Ecosystem",
+        comingSoon: "Coming soon",
+        active: "Active",
+      },
+    },
+    wallet: {
+      title: "Wallet",
+      subtitle: "Your multi-asset balances and transaction history",
+      available: "Available",
+      pending: "Pending",
+      viewHistory: "View history",
+      noHistory: "No transactions yet",
+      ledgerHistory: "Ledger History",
+      accountExplorer: "Account Explorer",
+      assets: {
+        REAL: "REAL Token",
+        TON: "Toncoin",
+        USDT: "Tether USD",
+        EUR: "Euro",
+        NOK: "Norwegian Krone",
+        TRY: "Turkish Lira",
+      },
+    },
+    deposit: {
+      title: "Deposit",
+      subtitle: "Add funds to your 3REAL account",
+      autoCredit: "Send REAL Jetton from a connected TON wallet. Credits are automatic.",
+      manualApproval: "Submit a deposit request. Funds are credited after admin approval.",
+      selectAsset: "Select asset",
+      yourDeposits: "Your Deposits",
+      allHistory: "All Deposit History",
+      form: {
+        amount: "Amount",
+        reference: "Payment reference",
+        proof: "Proof of payment",
+        submit: "Submit deposit",
+        submitting: "Submitting…",
+        success: "Deposit submitted successfully",
+        minAmount: "Minimum amount",
+        requiresKyc: "Requires KYC verification",
+      },
+      status: statusLabels.en,
+    },
+    withdraw: {
+      title: "Withdraw",
+      subtitle: "Withdraw funds from your 3REAL account",
+      yourWithdrawals: "Your Withdrawals",
+      form: {
+        amount: "Amount",
+        destination: "Destination address / account",
+        available: "Available",
+        submit: "Submit withdrawal",
+        submitting: "Submitting…",
+        success: "Withdrawal submitted successfully",
+        requiresKyc: "Requires KYC tier 2 or higher",
+      },
+      status: statusLabels.en,
+    },
+    kyc: {
+      title: "Identity Verification",
+      subtitle: "Upload your documents to unlock higher limits",
+      docLabels: {
+        id_front: "Passport",
+        id_back: "National ID",
+        selfie: "Selfie with Document",
+        address_proof: "Proof of Address",
+      },
+      status: {
+        not_started: "Not started",
+        pending: "Pending review",
+        under_review: "Under review",
+        approved: "Approved",
+        rejected: "Rejected",
+        update_requested: "Update requested",
+      },
+      upload: "Upload",
+      reupload: "Re-upload",
+      submit: "Submit for review",
+      submitting: "Submitting…",
+    },
+    referrals: {
+      title: "Referral Program",
+      subtitle: "Earn REAL by inviting friends",
+      stats: {
+        invited: "Invited",
+        pending: "Pending",
+        earned: "Earned (REAL)",
+        tier1: "Tier 1",
+        tier2: "Tier 2",
+      },
+      shareTitle: "Share your link",
+      yourLink: "Your referral link",
+      copy: "Copy",
+      copied: "Copied!",
+      qrCode: "QR Code",
+      calculator: "Earnings Calculator",
+      inviteTable: "Your Invites",
+      rewardHistory: "Reward History",
+    },
+    notifications: {
+      title: "Notifications",
+      markAllRead: "Mark all read",
+      empty: "No notifications yet",
+      types: {
+        kyc_approved: "KYC Approved",
+        kyc_rejected: "KYC Rejected",
+        kyc_update_requested: "KYC Update Requested",
+        deposit_approved: "Deposit Approved",
+        deposit_rejected: "Deposit Rejected",
+        withdrawal_approved: "Withdrawal Approved",
+        withdrawal_rejected: "Withdrawal Rejected",
+        referral_reward: "Referral Reward",
+      },
+    },
+  },
+
+  fa: {
+    nav: {
+      dashboard: "داشبورد",
+      wallet: "کیف پول",
+      deposit: "واریز",
+      withdraw: "برداشت",
+      referrals: "معرفی دوستان",
+      verification: "احراز هویت",
+      notifications: "اعلان‌ها",
+      settings: "تنظیمات",
+      admin: "مدیریت",
+      soon: "به زودی",
+    },
+    user: { logout: "خروج" },
+    lang: { toggle: "EN" },
+    dashboard: {
+      welcomeBack: "خوش آمدید",
+      emailVerified: "ایمیل تأیید شده",
+      emailUnverified: "ایمیل تأیید نشده",
+      kyc: "احراز هویت",
+      kycLabels: { 0: "تأیید نشده", 1: "سطح ایمیل", 2: "هویت تأیید شده", 3: "KYC کامل" },
+      balanceCard: {
+        title: "موجودی REAL",
+        available: "موجود",
+        pending: "در انتظار",
+        deposit: "واریز",
+        withdraw: "برداشت",
+      },
+      walletCard: {
+        title: "کیف پول چند دارایی",
+        available: "موجود",
+        pending: "در انتظار",
+        viewHistory: "مشاهده تاریخچه",
+      },
+      referralCard: {
+        title: "برنامه معرفی",
+        yourCode: "کد معرفی شما",
+        copyLink: "کپی لینک",
+        copied: "کپی شد!",
+        invited: "دعوت شده",
+        pending: "در انتظار",
+        earned: "کسب شده",
+        shareVia: "اشتراک‌گذاری از طریق",
+      },
+      profileCard: {
+        title: "پروفایل",
+        completion: "تکمیل شده",
+        emailVerified: "ایمیل تأیید شده",
+        kycApproved: "احراز هویت تأیید شده",
+        twoFa: "احراز دو مرحله‌ای فعال",
+        completeKyc: "تکمیل احراز هویت",
+        kycStatus: {
+          not_started: "ارسال نشده",
+          pending: "در انتظار بررسی",
+          under_review: "در حال بررسی",
+          approved: "تأیید شده",
+          rejected: "رد شده",
+          update_requested: "نیاز به بروزرسانی",
+        },
+        kycTier: { 0: "تأیید نشده", 1: "سطح ایمیل", 2: "هویت تأیید شده", 3: "KYC کامل" },
+      },
+      recentActivity: {
+        title: "فعالیت‌های اخیر",
+        noActivity: "هنوز فعالیتی ثبت نشده",
+        actions: {
+          "auth.register": "ثبت‌نام حساب",
+          "auth.login": "ورود به سیستم",
+          "auth.logout": "خروج از سیستم",
+          "auth.email_verified": "ایمیل تأیید شد",
+          "auth.password_reset_requested": "درخواست بازنشانی رمز عبور",
+          "auth.password_reset": "رمز عبور بازنشانی شد",
+          "auth.failed_login": "تلاش ناموفق برای ورود",
+          "auth.google_linked": "حساب گوگل متصل شد",
+          "kyc.submitted": "احراز هویت ارسال شد",
+          "kyc.approved": "احراز هویت تأیید شد",
+          "kyc.rejected": "احراز هویت رد شد",
+          "kyc.update_requested": "درخواست بروزرسانی احراز هویت",
+          "deposit.submitted": "واریز ثبت شد",
+          "deposit.approved": "واریز تأیید شد",
+          "deposit.rejected": "واریز رد شد",
+          "withdrawal.submitted": "برداشت ثبت شد",
+          "withdrawal.approved": "برداشت تأیید شد",
+          "withdrawal.rejected": "برداشت رد شد",
+        },
+      },
+      recentTransactions: {
+        title: "تراکنش‌های اخیر",
+        noTransactions: "هنوز تراکنشی ثبت نشده",
+        deposit: "واریز",
+        withdrawal: "برداشت",
+        statusLabels: statusLabels.fa,
+      },
+      ecosystem: {
+        title: "اکوسیستم SETAEI",
+        comingSoon: "به زودی",
+        active: "فعال",
+      },
+    },
+    wallet: {
+      title: "کیف پول",
+      subtitle: "موجودی چند دارایی و تاریخچه تراکنش‌های شما",
+      available: "موجود",
+      pending: "در انتظار",
+      viewHistory: "مشاهده تاریخچه",
+      noHistory: "هنوز تراکنشی ثبت نشده",
+      ledgerHistory: "تاریخچه دفتر",
+      accountExplorer: "مرورگر حساب",
+      assets: {
+        REAL: "توکن REAL",
+        TON: "Toncoin",
+        USDT: "تتر USD",
+        EUR: "یورو",
+        NOK: "کرون نروژ",
+        TRY: "لیر ترکیه",
+      },
+    },
+    deposit: {
+      title: "واریز",
+      subtitle: "افزودن وجه به حساب 3REAL شما",
+      autoCredit: "REAL Jetton را از کیف پول TON متصل ارسال کنید. اعتبار به صورت خودکار انجام می‌شود.",
+      manualApproval: "درخواست واریز ارسال کنید. وجوه پس از تأیید مدیر به حساب می‌رسد.",
+      selectAsset: "انتخاب دارایی",
+      yourDeposits: "واریزهای شما",
+      allHistory: "تمام تاریخچه واریز",
+      form: {
+        amount: "مبلغ",
+        reference: "مرجع پرداخت",
+        proof: "مدرک پرداخت",
+        submit: "ارسال واریز",
+        submitting: "در حال ارسال…",
+        success: "واریز با موفقیت ثبت شد",
+        minAmount: "حداقل مبلغ",
+        requiresKyc: "نیاز به احراز هویت دارد",
+      },
+      status: statusLabels.fa,
+    },
+    withdraw: {
+      title: "برداشت",
+      subtitle: "برداشت وجه از حساب 3REAL شما",
+      yourWithdrawals: "برداشت‌های شما",
+      form: {
+        amount: "مبلغ",
+        destination: "آدرس مقصد / حساب",
+        available: "موجود",
+        submit: "ارسال درخواست برداشت",
+        submitting: "در حال ارسال…",
+        success: "درخواست برداشت با موفقیت ثبت شد",
+        requiresKyc: "نیاز به احراز هویت سطح ۲ یا بالاتر دارد",
+      },
+      status: statusLabels.fa,
+    },
+    kyc: {
+      title: "احراز هویت",
+      subtitle: "مدارک خود را برای افزایش سقف تراکنش آپلود کنید",
+      docLabels: {
+        id_front: "پاسپورت",
+        id_back: "کارت ملی",
+        selfie: "سلفی با مدرک",
+        address_proof: "مدرک آدرس",
+      },
+      status: {
+        not_started: "شروع نشده",
+        pending: "در انتظار بررسی",
+        under_review: "در حال بررسی",
+        approved: "تأیید شده",
+        rejected: "رد شده",
+        update_requested: "نیاز به بروزرسانی",
+      },
+      upload: "آپلود",
+      reupload: "آپلود مجدد",
+      submit: "ارسال برای بررسی",
+      submitting: "در حال ارسال…",
+    },
+    referrals: {
+      title: "برنامه معرفی",
+      subtitle: "با دعوت دوستان REAL کسب کنید",
+      stats: {
+        invited: "دعوت شده",
+        pending: "در انتظار",
+        earned: "کسب شده (REAL)",
+        tier1: "سطح ۱",
+        tier2: "سطح ۲",
+      },
+      shareTitle: "لینک خود را به اشتراک بگذارید",
+      yourLink: "لینک معرفی شما",
+      copy: "کپی",
+      copied: "کپی شد!",
+      qrCode: "کد QR",
+      calculator: "ماشین حساب درآمد",
+      inviteTable: "دعوت‌های شما",
+      rewardHistory: "تاریخچه پاداش",
+    },
+    notifications: {
+      title: "اعلان‌ها",
+      markAllRead: "همه را خوانده علامت بزن",
+      empty: "هنوز اعلانی وجود ندارد",
+      types: {
+        kyc_approved: "احراز هویت تأیید شد",
+        kyc_rejected: "احراز هویت رد شد",
+        kyc_update_requested: "درخواست بروزرسانی احراز هویت",
+        deposit_approved: "واریز تأیید شد",
+        deposit_rejected: "واریز رد شد",
+        withdrawal_approved: "برداشت تأیید شد",
+        withdrawal_rejected: "برداشت رد شد",
+        referral_reward: "پاداش معرفی",
+      },
+    },
+  },
+};
+
+export function resolveDashboardLang(value: string | undefined): Lang {
+  return value === "fa" ? "fa" : "en";
+}

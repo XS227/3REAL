@@ -1,21 +1,11 @@
 import { Activity } from "lucide-react";
 import type { ActivityEntry } from "@/lib/dashboard/queries";
+import type { DashboardDict } from "@/lib/i18n/dashboard";
 
-type Props = { entries: ActivityEntry[] };
-
-const ACTION_LABEL: Record<string, string> = {
-  "auth.register": "Registered account",
-  "auth.login": "Signed in",
-  "auth.logout": "Signed out",
-  "auth.email_verified": "Email verified",
-  "auth.password_reset_requested": "Password reset requested",
-  "auth.password_reset": "Password reset",
-  "auth.failed_login": "Failed sign-in attempt",
+type Props = {
+  entries: ActivityEntry[];
+  t: DashboardDict["dashboard"]["recentActivity"];
 };
-
-function formatAction(action: string): string {
-  return ACTION_LABEL[action] ?? action.replace(/\./g, " › ");
-}
 
 function timeAgo(date: Date): string {
   const seconds = Math.floor((Date.now() - date.getTime()) / 1000);
@@ -29,22 +19,24 @@ function timeAgo(date: Date): string {
   return date.toLocaleDateString("en-US", { month: "short", day: "numeric" });
 }
 
-export function RecentActivity({ entries }: Props) {
+export function RecentActivity({ entries, t }: Props) {
   return (
     <div className="rounded-xl border border-zinc-800 bg-zinc-900 p-6">
       <div className="mb-4 flex items-center gap-2">
         <Activity className="h-4 w-4 text-zinc-400" />
-        <h2 className="text-sm font-medium text-zinc-300">Recent Activity</h2>
+        <h2 className="text-sm font-medium text-zinc-300">{t.title}</h2>
       </div>
 
       {entries.length === 0 ? (
-        <p className="py-6 text-center text-sm text-zinc-600">No activity yet</p>
+        <p className="py-6 text-center text-sm text-zinc-600">{t.noActivity}</p>
       ) : (
         <ul className="divide-y divide-zinc-800">
           {entries.map((entry) => (
             <li key={entry.id} className="flex items-center justify-between py-3">
               <div>
-                <p className="text-sm text-zinc-300">{formatAction(entry.action)}</p>
+                <p className="text-sm text-zinc-300">
+                  {t.actions[entry.action] ?? entry.action.replace(/\./g, " › ")}
+                </p>
                 {entry.ipAddress && (
                   <p className="text-xs text-zinc-600">{entry.ipAddress}</p>
                 )}

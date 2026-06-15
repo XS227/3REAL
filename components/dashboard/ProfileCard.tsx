@@ -1,56 +1,27 @@
 import { CheckCircle, XCircle, Circle, User } from "lucide-react";
 import type { KycSummary } from "@/lib/dashboard/queries";
+import type { DashboardDict } from "@/lib/i18n/dashboard";
 
 type Props = {
   emailVerified: boolean;
   kycTier: number;
   twoFaEnabled: boolean;
   kycProfile: KycSummary;
+  t: DashboardDict["dashboard"]["profileCard"];
 };
 
-type CheckItem = {
-  label: string;
-  done: boolean;
-  sublabel?: string;
-};
+type CheckItem = { label: string; done: boolean; sublabel?: string };
 
-const KYC_TIER_LABEL: Record<number, string> = {
-  0: "Not submitted",
-  1: "Email tier",
-  2: "ID verified",
-  3: "Full KYC",
-};
-
-const KYC_STATUS_LABEL: Record<string, string> = {
-  pending: "Pending review",
-  under_review: "Under review",
-  approved: "Approved",
-  rejected: "Rejected",
-  update_requested: "Update required",
-};
-
-export function ProfileCard({ emailVerified, kycTier, twoFaEnabled, kycProfile }: Props) {
+export function ProfileCard({ emailVerified, kycTier, twoFaEnabled, kycProfile, t }: Props) {
   const kycDone = kycTier >= 2;
   const kycSub = kycProfile
-    ? KYC_STATUS_LABEL[kycProfile.status] ?? kycProfile.status
-    : KYC_TIER_LABEL[kycTier];
+    ? t.kycStatus[kycProfile.status] ?? kycProfile.status
+    : t.kycTier[kycTier];
 
   const items: CheckItem[] = [
-    {
-      label: "Email verified",
-      done: emailVerified,
-      sublabel: emailVerified ? "Verified" : "Check your inbox",
-    },
-    {
-      label: "Identity verified",
-      done: kycDone,
-      sublabel: kycSub,
-    },
-    {
-      label: "Two-factor authentication",
-      done: twoFaEnabled,
-      sublabel: twoFaEnabled ? "Enabled" : "Coming soon",
-    },
+    { label: t.emailVerified, done: emailVerified },
+    { label: t.kycApproved, done: kycDone, sublabel: kycSub },
+    { label: t.twoFa, done: twoFaEnabled },
   ];
 
   const doneCount = items.filter((i) => i.done).length;
@@ -60,8 +31,8 @@ export function ProfileCard({ emailVerified, kycTier, twoFaEnabled, kycProfile }
     <div className="rounded-xl border border-zinc-800 bg-zinc-900 p-6">
       <div className="mb-4 flex items-center gap-2">
         <User className="h-4 w-4 text-zinc-400" />
-        <h2 className="text-sm font-medium text-zinc-300">Profile Completion</h2>
-        <span className="ml-auto text-sm font-bold text-amber-400">{pct}%</span>
+        <h2 className="text-sm font-medium text-zinc-300">{t.title}</h2>
+        <span className="ml-auto text-sm font-bold text-amber-400">{pct}% {t.completion}</span>
       </div>
 
       {/* Progress bar */}

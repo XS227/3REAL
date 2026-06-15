@@ -1,27 +1,36 @@
 import { Wallet } from "lucide-react";
 import { fmtAmount, type BalanceMap } from "@/lib/ledger/balance";
+import type { DashboardDict } from "@/lib/i18n/dashboard";
 
-type Props = { balances: BalanceMap };
+type Props = {
+  balances: BalanceMap;
+  t: DashboardDict["dashboard"]["walletCard"];
+};
 
 const ASSETS = [
-  { code: "REAL", label: "REAL Token", symbol: "REAL", decimals: 2, accent: "text-amber-400" },
-  { code: "TON", label: "Toncoin", symbol: "TON", decimals: 4, accent: "text-sky-400" },
-  { code: "USDT", label: "Tether USD", symbol: "USDT", decimals: 2, accent: "text-emerald-400" },
-  { code: "EUR", label: "Euro", symbol: "€", decimals: 2, accent: "text-blue-400" },
-  { code: "NOK", label: "Norwegian Krone", symbol: "kr", decimals: 2, accent: "text-violet-400" },
-  { code: "TRY", label: "Turkish Lira", symbol: "₺", decimals: 2, accent: "text-orange-400" },
+  { code: "REAL", symbol: "REAL", decimals: 2, accent: "text-amber-400" },
+  { code: "TON", symbol: "TON", decimals: 4, accent: "text-sky-400" },
+  { code: "USDT", symbol: "USDT", decimals: 2, accent: "text-emerald-400" },
+  { code: "EUR", symbol: "€", decimals: 2, accent: "text-blue-400" },
+  { code: "NOK", symbol: "kr", decimals: 2, accent: "text-violet-400" },
+  { code: "TRY", symbol: "₺", decimals: 2, accent: "text-orange-400" },
 ] as const;
 
-export function WalletCard({ balances }: Props) {
+const ASSET_LABELS: Record<string, string> = {
+  REAL: "REAL Token", TON: "Toncoin", USDT: "Tether USD",
+  EUR: "Euro", NOK: "Norwegian Krone", TRY: "Turkish Lira",
+};
+
+export function WalletCard({ balances, t }: Props) {
   return (
     <div className="rounded-xl border border-zinc-800 bg-zinc-900 p-6">
       <div className="mb-4 flex items-center gap-2">
         <Wallet className="h-4 w-4 text-zinc-400" />
-        <h2 className="text-sm font-medium text-zinc-300">Wallet Summary</h2>
+        <h2 className="text-sm font-medium text-zinc-300">{t.title}</h2>
       </div>
 
       <ul className="divide-y divide-zinc-800">
-        {ASSETS.map(({ code, label, symbol, decimals, accent }) => {
+        {ASSETS.map(({ code, symbol, decimals, accent }) => {
           const b = balances[code];
           const total = b.available + b.pending;
           const hasPending = b.pending !== 0;
@@ -34,7 +43,7 @@ export function WalletCard({ balances }: Props) {
                 </div>
                 <div>
                   <p className="text-sm font-medium text-zinc-200">{code}</p>
-                  <p className="text-xs text-zinc-600">{label}</p>
+                  <p className="text-xs text-zinc-600">{ASSET_LABELS[code]}</p>
                 </div>
               </div>
               <div className="text-right">
@@ -43,7 +52,7 @@ export function WalletCard({ balances }: Props) {
                 </p>
                 {hasPending && (
                   <p className="text-xs text-amber-500 tabular-nums">
-                    {fmtAmount(b.pending, decimals)} pending
+                    {fmtAmount(b.pending, decimals)} {t.pending}
                   </p>
                 )}
               </div>

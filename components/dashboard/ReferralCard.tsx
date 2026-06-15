@@ -2,26 +2,28 @@ import { Users, Gift, Clock } from "lucide-react";
 import { CopyButton } from "@/components/dashboard/CopyButton";
 import { fmtAmount } from "@/lib/ledger/balance";
 import type { ReferralStats } from "@/lib/dashboard/queries";
+import type { DashboardDict } from "@/lib/i18n/dashboard";
 
 type Props = {
   referralCode: string;
   baseUrl: string;
   stats: ReferralStats;
+  t: DashboardDict["dashboard"]["referralCard"];
 };
 
-export function ReferralCard({ referralCode, baseUrl, stats }: Props) {
+export function ReferralCard({ referralCode, baseUrl, stats, t }: Props) {
   const referralLink = `${baseUrl}/auth/register?ref=${referralCode}`;
 
   return (
     <div className="rounded-xl border border-zinc-800 bg-zinc-900 p-6">
       <div className="mb-4 flex items-center gap-2">
         <Gift className="h-4 w-4 text-amber-400" />
-        <h2 className="text-sm font-medium text-zinc-300">Referral Program</h2>
+        <h2 className="text-sm font-medium text-zinc-300">{t.title}</h2>
       </div>
 
       {/* Code */}
       <div className="mb-3">
-        <p className="mb-1.5 text-xs text-zinc-500">Your referral code</p>
+        <p className="mb-1.5 text-xs text-zinc-500">{t.yourCode}</p>
         <div className="flex items-center gap-2">
           <span className="rounded-md bg-zinc-800 px-3 py-2 font-mono text-base font-bold tracking-wider text-amber-400">
             {referralCode}
@@ -32,7 +34,7 @@ export function ReferralCard({ referralCode, baseUrl, stats }: Props) {
 
       {/* Link */}
       <div className="mb-5">
-        <p className="mb-1.5 text-xs text-zinc-500">Referral link</p>
+        <p className="mb-1.5 text-xs text-zinc-500">{t.copyLink}</p>
         <div className="flex items-center gap-2">
           <span className="flex-1 truncate rounded-md bg-zinc-800 px-3 py-2 text-xs text-zinc-400">
             {referralLink}
@@ -46,14 +48,14 @@ export function ReferralCard({ referralCode, baseUrl, stats }: Props) {
         <div className="text-center">
           <div className="flex items-center justify-center gap-1 text-xs text-zinc-500 mb-1">
             <Users className="h-3 w-3" />
-            Invited
+            {t.invited}
           </div>
           <p className="text-lg font-bold text-zinc-100">{stats.invitedCount}</p>
         </div>
         <div className="text-center">
           <div className="flex items-center justify-center gap-1 text-xs text-zinc-500 mb-1">
             <Clock className="h-3 w-3" />
-            Pending
+            {t.pending}
           </div>
           <p className="text-lg font-bold text-amber-400 tabular-nums">
             {fmtAmount(stats.pendingRewards)}
@@ -62,16 +64,13 @@ export function ReferralCard({ referralCode, baseUrl, stats }: Props) {
         <div className="text-center">
           <div className="flex items-center justify-center gap-1 text-xs text-zinc-500 mb-1">
             <Gift className="h-3 w-3" />
-            Earned
+            {t.earned}
           </div>
           <p className="text-lg font-bold text-emerald-400 tabular-nums">
             {fmtAmount(stats.earnedRewards)}
           </p>
         </div>
       </div>
-      <p className="mt-3 text-center text-xs text-zinc-600">
-        50 REAL per direct referral · 15 REAL per indirect
-      </p>
     </div>
   );
 }
