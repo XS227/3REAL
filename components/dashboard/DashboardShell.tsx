@@ -16,6 +16,7 @@ import {
   Menu,
   X,
   Languages,
+  ClipboardList,
 } from "lucide-react";
 import { LogoutButton } from "@/components/auth/LogoutButton";
 import { NotificationBell } from "@/components/dashboard/NotificationBell";
@@ -58,11 +59,12 @@ export function DashboardShell({ email, role, initialUnread = 0, lang, t, childr
   const NAV = [
     { href: "/dashboard", label: t.nav.dashboard, icon: LayoutDashboard },
     { href: "/dashboard/wallet", label: t.nav.wallet, icon: Wallet },
+    { href: "/dashboard/transactions", label: t.nav.transactions, icon: ClipboardList },
     { href: "/dashboard/withdraw", label: t.nav.withdraw, icon: ArrowUpRight },
     { href: "/dashboard/referrals", label: t.nav.referrals, icon: Users },
     { href: "/dashboard/kyc", label: t.nav.verification, icon: BadgeCheck },
     { href: "/dashboard/notifications", label: t.nav.notifications, icon: Bell },
-    { href: "/dashboard/settings", label: t.nav.settings, icon: Settings, soon: true },
+    { href: "/dashboard/settings", label: t.nav.settings, icon: Settings },
     { href: "/admin", label: t.nav.admin, icon: Shield, adminOnly: true },
   ];
 
@@ -94,20 +96,8 @@ export function DashboardShell({ email, role, initialUnread = 0, lang, t, childr
             ? pathname === "/dashboard"
             : pathname.startsWith(item.href);
           const cls = `group flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors
-            ${active ? "bg-amber-500/10 text-amber-400" : "text-zinc-400 hover:bg-zinc-800 hover:text-zinc-100"}
-            ${item.soon ? "pointer-events-none opacity-50" : ""}`;
+            ${active ? "bg-amber-500/10 text-amber-400" : "text-zinc-400 hover:bg-zinc-800 hover:text-zinc-100"}`;
 
-          if (item.soon) {
-            return (
-              <div key={item.href} className={cls}>
-                <Icon className="h-4 w-4 shrink-0" />
-                <span className="flex-1">{item.label}</span>
-                <span className="rounded-full bg-zinc-800 px-1.5 py-0.5 text-[10px] text-zinc-500">
-                  {t.nav.soon}
-                </span>
-              </div>
-            );
-          }
           return (
             <Link key={item.href} href={item.href} className={cls} onClick={() => setOpen(false)}>
               <Icon className="h-4 w-4 shrink-0" />

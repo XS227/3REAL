@@ -5,6 +5,7 @@ export interface DashboardDict {
     dashboard: string;
     wallet: string;
     deposit: string;
+    transactions: string;
     withdraw: string;
     referrals: string;
     verification: string;
@@ -216,6 +217,7 @@ export const dashboardDicts: Record<Lang, DashboardDict> = {
       dashboard: "Dashboard",
       wallet: "Wallet",
       deposit: "Deposit",
+      transactions: "Transactions",
       withdraw: "Withdraw",
       referrals: "Referrals",
       verification: "Verification",
@@ -465,6 +467,7 @@ export const dashboardDicts: Record<Lang, DashboardDict> = {
       dashboard: "داشبورد",
       wallet: "کیف پول",
       deposit: "واریز",
+      transactions: "تراکنش‌ها",
       withdraw: "برداشت",
       referrals: "معرفی دوستان",
       verification: "احراز هویت",
