@@ -441,6 +441,121 @@ export async function getAdminUserList(limit = 200): Promise<AdminUserRow[]> {
   return rows;
 }
 
+// ── User detail ───────────────────────────────────────────────────────────────
+
+export type AdminUserDetail = {
+  id: string;
+  email: string;
+  displayName: string | null;
+  role: string;
+  kycTier: number;
+  emailVerified: boolean;
+  isActive: boolean;
+  referralCode: string;
+  googleId: string | null;
+  createdAt: Date;
+  kycProfile: {
+    id: string;
+    status: string;
+    tierRequested: number;
+    rejectionReason: string | null;
+    reviewedAt: Date | null;
+    createdAt: Date;
+  } | null;
+  referralStats: {
+    invitedCount: number;
+    earnedRewards: number;
+  };
+  recentDeposits: {
+    id: string;
+    assetCode: string;
+    amount: string;
+    status: string;
+    createdAt: Date;
+  }[];
+  recentWithdrawals: {
+    id: string;
+    assetCode: string;
+    amount: string;
+    status: string;
+    createdAt: Date;
+  }[];
+  recentActivity: {
+    id: string;
+    action: string;
+    ipAddress: string | null;
+    meta: unknown;
+    createdAt: Date;
+  }[];
+};
+
+export async function getAdminUserDetail(userId: string): Promise<AdminUserDetail | null> {
+  const user = await prisma.user.findUnique({
+    where: { id: userId },
+    select: {
+      id: true,
+      email: true,
+      displayName: true,
+      role: true,
+      kycTier: true,
+      emailVerified: true,
+      isActive: true,
+      referralCode: true,
+      googleId: true,
+      createdAt: true,
+      kycProfile: {
+        select: {
+          id: true,
+          status: true,
+          tierRequested: true,
+          rejectionReason: true,
+          reviewedAt: true,
+          createdAt: true,
+        },
+      },
+    },
+  });
+
+  if (!user) return null;
+
+  const [deposits, withdrawals, activity, referralAgg] = await Promise.all([
+    prisma.transaction.findMany({
+      where: { userId, type: "deposit" },
+      orderBy: { createdAt: "desc" },
+      take: 20,
+      select: { id: true, assetCode: true, amount: true, status: true, createdAt: true },
+    }),
+    prisma.transaction.findMany({
+      where: { userId, type: "withdrawal" },
+      orderBy: { createdAt: "desc" },
+      take: 20,
+      select: { id: true, assetCode: true, amount: true, status: true, createdAt: true },
+    }),
+    prisma.activityLog.findMany({
+      where: { OR: [{ actorId: userId }, { targetId: userId }] },
+      orderBy: { createdAt: "desc" },
+      take: 25,
+      select: { id: true, action: true, ipAddress: true, meta: true, createdAt: true },
+    }),
+    prisma.referral.aggregate({
+      where: { referrerId: userId },
+      _count: { id: true },
+      _sum: { rewardAmount: true },
+    }),
+  ]);
+
+  return {
+    ...user,
+    referralStats: {
+      invitedCount: referralAgg._count.id,
+      earnedRewards: Number(referralAgg._sum.rewardAmount ?? 0),
+    },
+    recentDeposits: deposits.map((d) => ({ ...d, amount: d.amount.toString() })),
+    recentWithdrawals: withdrawals.map((w) => ({ ...w, amount: w.amount.toString() })),
+    recentActivity: activity,
+  };
+}
+
 // ── Audit log (paginated) ──────────────────────────────────────────────────────
 
 export type AuditLogEntry = {

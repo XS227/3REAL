@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { requireRole } from "@/lib/auth/guards";
 import { getAdminUserList } from "@/lib/admin/queries";
 import { StatusBadge } from "@/components/admin/StatusBadge";
@@ -39,7 +40,7 @@ export default async function AdminUsersPage() {
           <table className="min-w-full">
             <thead>
               <tr className="border-b border-zinc-800 text-left">
-                {["Email", "Role", "KYC", "Verified", "Status", "Joined", "Actions"].map((h) => (
+                {["Email", "Role", "KYC", "Verified", "Status", "Joined", "Actions", ""].map((h) => (
                   <th
                     key={h}
                     className="px-5 py-3 text-xs font-medium uppercase tracking-wider text-zinc-500"
@@ -113,6 +114,15 @@ export default async function AdminUsersPage() {
                       ) : (
                         <span className="text-xs text-zinc-700">—</span>
                       )}
+                    </td>
+
+                    <td className="px-5 py-3">
+                      <Link
+                        href={`/admin/users/${user.id}`}
+                        className="text-xs text-zinc-500 hover:text-amber-400 transition-colors whitespace-nowrap"
+                      >
+                        View →
+                      </Link>
                     </td>
                   </tr>
                 );
