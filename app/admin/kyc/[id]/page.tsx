@@ -65,7 +65,17 @@ function DocumentCard({
               src={fileUrl}
               alt={DOC_LABELS[doc.docType] ?? doc.docType}
               className="w-full max-h-64 rounded-lg object-contain bg-zinc-950 border border-zinc-800"
+              onError={(e) => {
+                const el = e.currentTarget;
+                el.style.display = "none";
+                const msg = el.nextElementSibling as HTMLElement | null;
+                if (msg) msg.style.display = "flex";
+              }}
             />
+            <div className="hidden items-center gap-2 rounded-lg border border-amber-500/30 bg-amber-500/5 px-4 py-3 text-sm text-amber-400">
+              <FileText className="h-5 w-5 shrink-0" />
+              File missing — user must re-upload this document
+            </div>
           </a>
         ) : (
           <a

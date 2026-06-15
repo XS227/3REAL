@@ -6,6 +6,8 @@ set -euo pipefail
 BACKUP_DIR="/var/backups/3real/db"
 DB_NAME="${DB_NAME:-threereal_db}"
 DB_USER="${DB_USER:-threereal}"
+DB_HOST="${DB_HOST:-127.0.0.1}"
+DB_PASS="${DB_PASS:-flTrHMKSxHpQJhwiR4IfM9kZIUg}"
 KEEP_DAYS="${KEEP_DAYS:-7}"
 TIMESTAMP=$(date +"%Y%m%d_%H%M%S")
 FILENAME="${BACKUP_DIR}/${DB_NAME}_${TIMESTAMP}.sql.gz"
@@ -14,7 +16,7 @@ mkdir -p "$BACKUP_DIR"
 
 echo "[$(date -Iseconds)] Starting backup of $DB_NAME → $FILENAME"
 
-pg_dump -U "$DB_USER" "$DB_NAME" | gzip > "$FILENAME"
+PGPASSWORD="$DB_PASS" pg_dump -h "$DB_HOST" -U "$DB_USER" "$DB_NAME" | gzip > "$FILENAME"
 
 SIZE=$(du -sh "$FILENAME" | cut -f1)
 echo "[$(date -Iseconds)] Backup complete: $FILENAME ($SIZE)"
