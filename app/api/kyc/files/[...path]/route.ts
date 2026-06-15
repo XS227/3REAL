@@ -30,7 +30,8 @@ export async function GET(
     if (!owned) return NextResponse.json({ error: "Forbidden" }, { status: 403 });
   }
 
-  const fullPath = path.join(process.cwd(), "storage", "uploads", relativePath);
+  const uploadDir = process.env.UPLOAD_DIR ?? path.join(process.cwd(), "storage", "uploads");
+  const fullPath = path.join(uploadDir, relativePath);
 
   try {
     const buffer = await fs.readFile(fullPath);

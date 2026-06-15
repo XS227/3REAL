@@ -6,7 +6,7 @@ export class LocalStorageProvider implements StorageProvider {
   private root: string;
 
   constructor() {
-    this.root = path.join(process.cwd(), "storage", "uploads");
+    this.root = process.env.UPLOAD_DIR ?? path.join(process.cwd(), "storage", "uploads");
   }
 
   async upload(file: Blob, relativePath: string): Promise<string> {

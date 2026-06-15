@@ -3,12 +3,12 @@
 # Run via cron: 0 4 * * * /var/www/3real/deploy/backup-uploads.sh
 set -euo pipefail
 
-APP_DIR="${APP_DIR:-/var/www/3real}"
+UPLOAD_DIR="${UPLOAD_DIR:-/var/uploads/3real}"
 BACKUP_DIR="/var/backups/3real/uploads"
 KEEP_DAYS="${KEEP_DAYS:-14}"
 TIMESTAMP=$(date +"%Y%m%d_%H%M%S")
 FILENAME="${BACKUP_DIR}/uploads_${TIMESTAMP}.tar.gz"
-SOURCE="${APP_DIR}/storage/uploads"
+SOURCE="$UPLOAD_DIR"
 
 mkdir -p "$BACKUP_DIR"
 
@@ -19,7 +19,7 @@ fi
 
 echo "[$(date -Iseconds)] Archiving $SOURCE → $FILENAME"
 
-tar -czf "$FILENAME" -C "$APP_DIR" storage/uploads
+tar -czf "$FILENAME" -C "$(dirname "$SOURCE")" "$(basename "$SOURCE")"
 
 SIZE=$(du -sh "$FILENAME" | cut -f1)
 echo "[$(date -Iseconds)] Archive complete: $FILENAME ($SIZE)"

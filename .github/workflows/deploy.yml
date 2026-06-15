@@ -37,6 +37,7 @@ jobs:
           GOOGLE_CLIENT_ID: ${{ secrets.GOOGLE_CLIENT_ID }}
           GOOGLE_CLIENT_SECRET: ${{ secrets.GOOGLE_CLIENT_SECRET }}
           RESEND_API_KEY: ${{ secrets.RESEND_API_KEY }}
+          UPLOAD_DIR: ${{ secrets.UPLOAD_DIR }}
         run: npm run build
 
       - name: Deploy .next to server
@@ -68,6 +69,7 @@ jobs:
           username: ${{ secrets.SERVER_USER }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
+            mkdir -p /var/uploads/3real
             rm -rf /var/www/3real/.next
             mv /var/www/3real/.next.new /var/www/3real/.next
             pm2 restart 3real
