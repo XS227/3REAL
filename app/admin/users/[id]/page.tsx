@@ -17,6 +17,7 @@ import {
   CalendarDays,
   Mail,
   Globe,
+  BookOpen,
 } from "lucide-react";
 
 export const dynamic = "force-dynamic";
@@ -152,7 +153,19 @@ export default async function AdminUserDetailPage({
 
       {/* Balances */}
       <div className="rounded-xl border border-zinc-800 bg-zinc-900 p-6">
-        <SectionHeader icon={<Wallet className="h-4 w-4" />} title="Asset Balances" />
+        <div className="flex items-center justify-between border-b border-zinc-800 pb-3 mb-4">
+          <div className="flex items-center gap-2">
+            <span className="text-zinc-400"><Wallet className="h-4 w-4" /></span>
+            <h2 className="text-sm font-semibold text-zinc-200">Asset Balances</h2>
+          </div>
+          <Link
+            href={`/admin/users/${user.id}/ledger`}
+            className="inline-flex items-center gap-1.5 text-xs text-zinc-500 hover:text-amber-400 transition-colors"
+          >
+            <BookOpen className="h-3.5 w-3.5" />
+            View full ledger
+          </Link>
+        </div>
         <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
           {ASSET_ORDER.map((code) => {
             const b = balances[code];

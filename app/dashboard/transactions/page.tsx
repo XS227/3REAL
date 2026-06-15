@@ -105,7 +105,7 @@ export default async function TransactionsPage({
             <table className="w-full text-sm">
               <thead>
                 <tr className="border-b border-zinc-800">
-                  {["Date", "Type", "Asset", "Amount", "Status", "Reference"].map((h) => (
+                  {["Date", "Type", "Asset", "Amount", "Status", "Reference", ""].map((h) => (
                     <th key={h} className="px-4 py-3 text-left text-xs font-medium text-zinc-500">
                       {h}
                     </th>
@@ -164,6 +164,14 @@ export default async function TransactionsPage({
                             {tx.adminNote}
                           </span>
                         )}
+                      </td>
+                      <td className="px-4 py-3">
+                        <Link
+                          href={`/dashboard/transactions/${tx.id}`}
+                          className="text-xs text-zinc-600 hover:text-amber-400 transition-colors"
+                        >
+                          View →
+                        </Link>
                       </td>
                     </tr>
                   );
