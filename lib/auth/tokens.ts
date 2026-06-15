@@ -10,10 +10,9 @@ const TTL: Record<TokenType, number> = {
 };
 
 export function generateReferralCode(): string {
-  // 8-char uppercase alphanumeric — avoids look-alike chars (I/1/O/0)
-  const chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
-  const bytes = randomBytes(8);
-  return Array.from(bytes, (b) => chars[b % chars.length]).join("");
+  // Format: 3R-227-XXXXXXXX (matches SETAEI cross-project convention, e.g. SL-227-… in SetaLink)
+  const hex = randomBytes(4).toString("hex").toUpperCase();
+  return `3R-227-${hex}`;
 }
 
 export function hashToken(raw: string): string {

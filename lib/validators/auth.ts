@@ -12,7 +12,7 @@ export const registerSchema = z
     email: z.string().email("Invalid email address"),
     password: passwordSchema,
     confirmPassword: z.string(),
-    referralCode: z.string().max(16).optional().or(z.literal("")),
+    referralCode: z.string().max(16).optional().or(z.literal("")).transform((v) => v?.toUpperCase()),
   })
   .refine((d) => d.password === d.confirmPassword, {
     message: "Passwords do not match",
