@@ -5,13 +5,18 @@ import { AssetCard } from "@/components/wallet/AssetCard";
 import { AccountExplorer } from "@/components/wallet/AccountExplorer";
 import { getTonWallets } from "@/lib/ton/queries";
 import { TonWalletBalances } from "@/components/ton/TonWalletBalances";
+import { cookies } from "next/headers";
+import { resolveDashboardLang, dashboardDicts } from "@/lib/i18n/dashboard";
 import Link from "next/link";
 import { Wallet, Plus, Star, ShieldCheck } from "lucide-react";
 
 export const dynamic = "force-dynamic";
 
 export default async function WalletPage() {
-  const session = await requireAuth();
+  const [session, cookieStore] = await Promise.all([requireAuth(), cookies()]);
+  const lang = resolveDashboardLang(cookieStore.get("lang")?.value);
+  const t = dashboardDicts[lang].wallet;
+
   const [{ balances, accounts }, tonWallets] = await Promise.all([
     getWalletPageData(session.userId),
     getTonWallets(session.userId),
@@ -21,16 +26,14 @@ export default async function WalletPage() {
     <div className="space-y-8">
       {/* Header */}
       <div>
-        <h1 className="text-2xl font-bold text-zinc-100">Wallet</h1>
-        <p className="mt-1 text-sm text-zinc-500">
-          Your asset balances derived from the internal ledger
-        </p>
+        <h1 className="text-2xl font-bold text-zinc-100">{t.title}</h1>
+        <p className="mt-1 text-sm text-zinc-500">{t.subtitle}</p>
       </div>
 
       {/* Asset cards grid */}
       <section>
         <h2 className="mb-4 text-xs font-medium uppercase tracking-widest text-zinc-600">
-          Assets
+          {t.assetsSection}
         </h2>
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3">
           {ASSET_ORDER.map((code) => (
@@ -47,26 +50,26 @@ export default async function WalletPage() {
       <section>
         <div className="mb-4 flex items-center justify-between">
           <h2 className="text-xs font-medium uppercase tracking-widest text-zinc-600">
-            TON Wallets
+            {t.tonSection}
           </h2>
           <Link
             href="/dashboard/wallet/connect"
             className="flex items-center gap-1.5 rounded-lg border border-zinc-700 px-3 py-1.5 text-xs font-medium text-zinc-400 hover:bg-zinc-800 hover:text-zinc-200 transition-colors"
           >
             <Plus className="h-3.5 w-3.5" />
-            Connect Wallet
+            {t.connectWallet}
           </Link>
         </div>
         {tonWallets.length === 0 ? (
           <div className="rounded-xl border border-dashed border-zinc-800 p-6 text-center">
             <Wallet className="mx-auto mb-2 h-8 w-8 text-zinc-700" />
-            <p className="text-sm text-zinc-600">No TON wallets linked</p>
+            <p className="text-sm text-zinc-600">{t.noTonWallets}</p>
             <Link
               href="/dashboard/wallet/connect"
               className="mt-3 inline-flex items-center gap-1.5 rounded-lg bg-amber-500/10 border border-amber-500/20 px-3 py-1.5 text-xs font-medium text-amber-400 hover:bg-amber-500/20 transition-colors"
             >
               <Plus className="h-3.5 w-3.5" />
-              Connect a TON wallet
+              {t.connectTonCta}
             </Link>
           </div>
         ) : (
@@ -88,7 +91,7 @@ export default async function WalletPage() {
                       {w.isPrimary && (
                         <span className="flex items-center gap-1 rounded border border-amber-500/30 bg-amber-500/10 px-1.5 py-0.5 text-[10px] font-semibold text-amber-400">
                           <Star className="h-2.5 w-2.5" />
-                          Primary
+                          {t.primary}
                         </span>
                       )}
                     </div>
@@ -102,7 +105,7 @@ export default async function WalletPage() {
                     href={`/dashboard/wallet/ton/${w.id}`}
                     className="text-xs text-zinc-600 hover:text-zinc-400 transition-colors"
                   >
-                    Details
+                    {t.details}
                   </Link>
                 </li>
               );
@@ -114,7 +117,7 @@ export default async function WalletPage() {
       {/* Account explorer */}
       <section>
         <h2 className="mb-4 text-xs font-medium uppercase tracking-widest text-zinc-600">
-          Ledger Accounts
+          {t.ledgerSection}
         </h2>
         <AccountExplorer accounts={accounts} />
       </section>

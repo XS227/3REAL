@@ -86,6 +86,14 @@ export interface DashboardDict {
     ledgerHistory: string;
     accountExplorer: string;
     assets: Record<string, string>;
+    assetsSection: string;
+    tonSection: string;
+    connectWallet: string;
+    noTonWallets: string;
+    connectTonCta: string;
+    details: string;
+    primary: string;
+    ledgerSection: string;
   };
   deposit: {
     title: string;
@@ -131,6 +139,15 @@ export interface DashboardDict {
     reupload: string;
     submit: string;
     submitting: string;
+    whatUnlocked: string;
+    tier2Benefits: string[];
+    processTitle: string;
+    processSteps: string[];
+    uploadTitle: string;
+    submittedTitle: string;
+    underReviewNote: string;
+    approvedTitle: string;
+    approvedDesc: string;
   };
   referrals: {
     title: string;
@@ -141,20 +158,33 @@ export interface DashboardDict {
       earned: string;
       tier1: string;
       tier2: string;
+      totalInvites: string;
+      activeReferrals: string;
+      lifetimeReal: string;
+      awaitingActivity: string;
+      fromReferrals: string;
+      allReferralRewards: string;
     };
     shareTitle: string;
     yourLink: string;
+    yourCode: string;
     copy: string;
     copied: string;
     qrCode: string;
     calculator: string;
     inviteTable: string;
     rewardHistory: string;
+    poolBalance: string;
+    howItWorks: string;
   };
   notifications: {
     title: string;
     markAllRead: string;
     empty: string;
+    emptyDesc: string;
+    loadMore: string;
+    loading: string;
+    unreadSuffix: string;
     types: Record<string, string>;
   };
 }
@@ -296,6 +326,14 @@ export const dashboardDicts: Record<Lang, DashboardDict> = {
         NOK: "Norwegian Krone",
         TRY: "Turkish Lira",
       },
+      assetsSection: "Assets",
+      tonSection: "TON Wallets",
+      connectWallet: "Connect Wallet",
+      noTonWallets: "No TON wallets linked",
+      connectTonCta: "Connect a TON wallet",
+      details: "Details",
+      primary: "Primary",
+      ledgerSection: "Ledger Accounts",
     },
     deposit: {
       title: "Deposit",
@@ -353,30 +391,62 @@ export const dashboardDicts: Record<Lang, DashboardDict> = {
       reupload: "Re-upload",
       submit: "Submit for review",
       submitting: "Submitting…",
+      whatUnlocked: "What you unlock at KYC Tier 2",
+      tier2Benefits: [
+        "Full deposit & withdrawal access",
+        "Increased transaction limits",
+        "Reduced platform fees",
+        "Priority support",
+      ],
+      processTitle: "Verification Process",
+      processSteps: [
+        "Submit your identity documents using the form above.",
+        "Our compliance team reviews your submission within 1–3 business days.",
+        "You will be notified of the result. If updates are needed, you can re-submit.",
+        "Once approved, your KYC tier is upgraded instantly.",
+      ],
+      uploadTitle: "Upload Documents",
+      submittedTitle: "Submitted Documents",
+      underReviewNote: "Your documents are under review. You cannot make changes at this time.",
+      approvedTitle: "Verification Complete",
+      approvedDesc: "Your identity has been verified. You now have full access to all platform features.",
     },
     referrals: {
       title: "Referral Program",
-      subtitle: "Earn REAL by inviting friends",
+      subtitle: "Earn REAL by inviting friends · 50 REAL per direct referral · 15 REAL per indirect",
       stats: {
         invited: "Invited",
         pending: "Pending",
         earned: "Earned (REAL)",
         tier1: "Tier 1",
         tier2: "Tier 2",
+        totalInvites: "Total Invites",
+        activeReferrals: "Active Referrals",
+        lifetimeReal: "Lifetime REAL",
+        awaitingActivity: "Awaiting activity",
+        fromReferrals: "From referrals",
+        allReferralRewards: "All referral rewards",
       },
-      shareTitle: "Share your link",
-      yourLink: "Your referral link",
+      shareTitle: "Share Your Referral",
+      yourCode: "Your code",
+      yourLink: "Your link",
       copy: "Copy",
       copied: "Copied!",
       qrCode: "QR Code",
       calculator: "Earnings Calculator",
       inviteTable: "Your Invites",
       rewardHistory: "Reward History",
+      poolBalance: "Rewards pool balance",
+      howItWorks: "How it works",
     },
     notifications: {
       title: "Notifications",
-      markAllRead: "Mark all read",
+      markAllRead: "Mark all as read",
       empty: "No notifications yet",
+      emptyDesc: "You'll be notified about KYC reviews, deposits, withdrawals, and referral rewards.",
+      loadMore: "Load more",
+      loading: "Loading…",
+      unreadSuffix: "unread",
       types: {
         kyc_approved: "KYC Approved",
         kyc_rejected: "KYC Rejected",
@@ -505,6 +575,14 @@ export const dashboardDicts: Record<Lang, DashboardDict> = {
         NOK: "کرون نروژ",
         TRY: "لیر ترکیه",
       },
+      assetsSection: "دارایی‌ها",
+      tonSection: "کیف‌پول‌های TON",
+      connectWallet: "اتصال کیف پول",
+      noTonWallets: "کیف پول TON متصل نیست",
+      connectTonCta: "اتصال کیف پول TON",
+      details: "جزئیات",
+      primary: "اصلی",
+      ledgerSection: "حساب‌های دفتر",
     },
     deposit: {
       title: "واریز",
@@ -562,30 +640,62 @@ export const dashboardDicts: Record<Lang, DashboardDict> = {
       reupload: "آپلود مجدد",
       submit: "ارسال برای بررسی",
       submitting: "در حال ارسال…",
+      whatUnlocked: "چه چیزی در سطح ۲ احراز هویت باز می‌شود",
+      tier2Benefits: [
+        "دسترسی کامل به واریز و برداشت",
+        "افزایش سقف تراکنش",
+        "کاهش کارمزد پلتفرم",
+        "پشتیبانی اولویت‌دار",
+      ],
+      processTitle: "فرآیند تأیید هویت",
+      processSteps: [
+        "مدارک هویتی خود را از طریق فرم بالا ارسال کنید.",
+        "تیم انطباق ما در ظرف ۱ تا ۳ روز کاری بررسی می‌کند.",
+        "نتیجه به شما اطلاع داده می‌شود. در صورت نیاز به اصلاح می‌توانید مجدداً ارسال کنید.",
+        "پس از تأیید، سطح KYC شما فوری ارتقا می‌یابد.",
+      ],
+      uploadTitle: "آپلود مدارک",
+      submittedTitle: "مدارک ارسال شده",
+      underReviewNote: "مدارک شما در حال بررسی است. در حال حاضر امکان تغییر وجود ندارد.",
+      approvedTitle: "تأیید هویت کامل شد",
+      approvedDesc: "هویت شما تأیید شده است. اکنون به تمام امکانات پلتفرم دسترسی کامل دارید.",
     },
     referrals: {
       title: "برنامه معرفی",
-      subtitle: "با دعوت دوستان REAL کسب کنید",
+      subtitle: "با دعوت دوستان REAL کسب کنید · ۵۰ REAL به ازای هر معرفی مستقیم · ۱۵ REAL غیرمستقیم",
       stats: {
         invited: "دعوت شده",
         pending: "در انتظار",
         earned: "کسب شده (REAL)",
         tier1: "سطح ۱",
         tier2: "سطح ۲",
+        totalInvites: "مجموع دعوت‌ها",
+        activeReferrals: "معرفی‌های فعال",
+        lifetimeReal: "مجموع REAL",
+        awaitingActivity: "در انتظار فعالیت",
+        fromReferrals: "از معرفی‌ها",
+        allReferralRewards: "تمام پاداش‌های معرفی",
       },
-      shareTitle: "لینک خود را به اشتراک بگذارید",
-      yourLink: "لینک معرفی شما",
+      shareTitle: "معرفی خود را به اشتراک بگذارید",
+      yourCode: "کد شما",
+      yourLink: "لینک شما",
       copy: "کپی",
       copied: "کپی شد!",
       qrCode: "کد QR",
       calculator: "ماشین حساب درآمد",
       inviteTable: "دعوت‌های شما",
       rewardHistory: "تاریخچه پاداش",
+      poolBalance: "موجودی استخر پاداش",
+      howItWorks: "نحوه کار",
     },
     notifications: {
       title: "اعلان‌ها",
       markAllRead: "همه را خوانده علامت بزن",
       empty: "هنوز اعلانی وجود ندارد",
+      emptyDesc: "درباره بررسی KYC، واریز، برداشت و پاداش معرفی اطلاع‌رسانی می‌شوید.",
+      loadMore: "بارگذاری بیشتر",
+      loading: "در حال بارگذاری…",
+      unreadSuffix: "خوانده نشده",
       types: {
         kyc_approved: "احراز هویت تأیید شد",
         kyc_rejected: "احراز هویت رد شد",

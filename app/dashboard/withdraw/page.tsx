@@ -4,6 +4,8 @@ import { getUserBalances } from "@/lib/ledger/balance";
 import { getWithdrawalHistory } from "@/lib/withdrawals/queries";
 import { WithdrawalForm } from "@/components/dashboard/WithdrawalForm";
 import { WithdrawalHistory } from "@/components/dashboard/WithdrawalHistory";
+import { cookies } from "next/headers";
+import { resolveDashboardLang, dashboardDicts } from "@/lib/i18n/dashboard";
 import { ArrowUpRight } from "lucide-react";
 import type { AssetCode } from "@/lib/generated/prisma/enums";
 
@@ -16,10 +18,13 @@ export default async function WithdrawPage({
 }: {
   searchParams: Promise<{ asset?: string }>;
 }) {
-  const [session, { asset: assetParam }] = await Promise.all([
+  const [session, { asset: assetParam }, cookieStore] = await Promise.all([
     requireAuth(),
     searchParams,
+    cookies(),
   ]);
+  const lang = resolveDashboardLang(cookieStore.get("lang")?.value);
+  const t = dashboardDicts[lang].withdraw;
 
   const assetCode =
     VALID_ASSETS.find((a) => a === (assetParam ?? "").toUpperCase()) ?? "REAL";
@@ -39,11 +44,9 @@ export default async function WithdrawPage({
       <div>
         <div className="flex items-center gap-2 mb-1">
           <ArrowUpRight className="h-5 w-5 text-amber-400" />
-          <h1 className="text-2xl font-bold text-zinc-100">Withdraw</h1>
+          <h1 className="text-2xl font-bold text-zinc-100">{t.title}</h1>
         </div>
-        <p className="text-sm text-zinc-500">
-          Submit a withdrawal request. Funds are debited from your ledger after admin approval.
-        </p>
+        <p className="text-sm text-zinc-500">{t.subtitle}</p>
       </div>
 
       {/* Withdrawal form */}
@@ -56,7 +59,7 @@ export default async function WithdrawPage({
 
       {/* Withdrawal history */}
       <div>
-        <h2 className="mb-3 text-sm font-medium text-zinc-400">Your Withdrawals</h2>
+        <h2 className="mb-3 text-sm font-medium text-zinc-400">{t.yourWithdrawals}</h2>
         <WithdrawalHistory rows={withdrawals} />
       </div>
     </div>

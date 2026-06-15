@@ -13,6 +13,7 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import type { NotificationItem } from "@/lib/notifications/queries";
+import type { DashboardDict } from "@/lib/i18n/dashboard";
 
 type ApiResponse = {
   notifications: NotificationItem[];
@@ -45,7 +46,13 @@ function timeAgo(iso: string): string {
   return new Date(iso).toLocaleDateString("en-US", { month: "short", day: "numeric" });
 }
 
-export function NotificationsPageClient({ initialData }: { initialData: ApiResponse }) {
+export function NotificationsPageClient({
+  initialData,
+  t,
+}: {
+  initialData: ApiResponse;
+  t: DashboardDict["notifications"];
+}) {
   const [data, setData] = useState(initialData);
   const [loading, setLoading] = useState(false);
   const [, startTransition] = useTransition();
@@ -93,10 +100,10 @@ export function NotificationsPageClient({ initialData }: { initialData: ApiRespo
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-white">Notifications</h1>
+          <h1 className="text-2xl font-bold text-white">{t.title}</h1>
           {unreadCount > 0 && (
             <p className="mt-1 text-sm text-zinc-400">
-              {unreadCount} unread notification{unreadCount !== 1 ? "s" : ""}
+              {unreadCount} {t.unreadSuffix}
             </p>
           )}
         </div>
@@ -106,7 +113,7 @@ export function NotificationsPageClient({ initialData }: { initialData: ApiRespo
             className="flex items-center gap-2 rounded-lg border border-zinc-700 px-3 py-2 text-sm text-zinc-300 transition-colors hover:border-zinc-500 hover:bg-zinc-800 hover:text-white"
           >
             <CheckCheck className="h-4 w-4" />
-            Mark all as read
+            {t.markAllRead}
           </button>
         )}
       </div>
@@ -116,10 +123,8 @@ export function NotificationsPageClient({ initialData }: { initialData: ApiRespo
         {notifications.length === 0 ? (
           <div className="flex flex-col items-center gap-3 py-16 text-center">
             <Bell className="h-10 w-10 text-zinc-700" />
-            <p className="text-zinc-400">No notifications yet</p>
-            <p className="text-sm text-zinc-600">
-              You&apos;ll be notified about KYC reviews, deposits, withdrawals, and referral rewards.
-            </p>
+            <p className="text-zinc-400">{t.empty}</p>
+            <p className="text-sm text-zinc-600">{t.emptyDesc}</p>
           </div>
         ) : (
           notifications.map((n) => {
@@ -184,7 +189,7 @@ export function NotificationsPageClient({ initialData }: { initialData: ApiRespo
             disabled={loading}
             className="rounded-lg border border-zinc-700 px-4 py-2 text-sm text-zinc-400 transition-colors hover:border-zinc-500 hover:text-zinc-200 disabled:opacity-50"
           >
-            {loading ? "Loading…" : "Load more"}
+            {loading ? t.loading : t.loadMore}
           </button>
         </div>
       )}

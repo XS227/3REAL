@@ -7,6 +7,8 @@ import { getTonWallets } from "@/lib/ton/queries";
 import { DepositForm } from "@/components/deposits/DepositForm";
 import { DepositHistory } from "@/components/deposits/DepositHistory";
 import { RealDepositSection } from "@/components/ton/RealDepositSection";
+import { cookies } from "next/headers";
+import { resolveDashboardLang, dashboardDicts } from "@/lib/i18n/dashboard";
 import { ArrowDownLeft } from "lucide-react";
 import type { AssetCode } from "@/lib/generated/prisma/enums";
 
@@ -19,10 +21,13 @@ export default async function DepositPage({
 }: {
   searchParams: Promise<{ asset?: string }>;
 }) {
-  const [session, { asset: assetParam }] = await Promise.all([
+  const [session, { asset: assetParam }, cookieStore] = await Promise.all([
     requireAuth(),
     searchParams,
+    cookies(),
   ]);
+  const lang = resolveDashboardLang(cookieStore.get("lang")?.value);
+  const t = dashboardDicts[lang].deposit;
 
   const assetCode =
     VALID_ASSETS.find((a) => a === (assetParam ?? "").toUpperCase()) ?? "REAL";
@@ -49,12 +54,10 @@ export default async function DepositPage({
       <div>
         <div className="flex items-center gap-2 mb-1">
           <ArrowDownLeft className="h-5 w-5 text-emerald-400" />
-          <h1 className="text-2xl font-bold text-zinc-100">Deposit</h1>
+          <h1 className="text-2xl font-bold text-zinc-100">{t.title}</h1>
         </div>
         <p className="text-sm text-zinc-500">
-          {isRealBlockchain
-            ? "Send REAL Jetton from a connected TON wallet. Credits are automatic."
-            : "Submit a deposit request. Funds are credited after admin approval."}
+          {isRealBlockchain ? t.autoCredit : t.manualApproval}
         </p>
       </div>
 
@@ -91,7 +94,7 @@ export default async function DepositPage({
       {/* Deposit history (all assets except REAL blockchain — shown in RealDepositSection) */}
       {!isRealBlockchain && (
         <div>
-          <h2 className="mb-3 text-sm font-medium text-zinc-400">Your Deposits</h2>
+          <h2 className="mb-3 text-sm font-medium text-zinc-400">{t.yourDeposits}</h2>
           <DepositHistory deposits={deposits} />
         </div>
       )}
@@ -99,7 +102,7 @@ export default async function DepositPage({
       {/* For REAL, show the full deposit history below the section */}
       {isRealBlockchain && deposits.length > 0 && (
         <div>
-          <h2 className="mb-3 text-sm font-medium text-zinc-400">All Deposit History</h2>
+          <h2 className="mb-3 text-sm font-medium text-zinc-400">{t.allHistory}</h2>
           <DepositHistory deposits={deposits} />
         </div>
       )}
