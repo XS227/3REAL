@@ -3,7 +3,7 @@
 import { useState, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { ASSETS, ASSET_ORDER, fmtAsset } from "@/lib/wallet/assets";
-import { DEPOSIT_INSTRUCTIONS, DEPOSIT_KYC_TIER, DEPOSIT_MINIMUMS } from "@/lib/deposits/instructions";
+import { DEPOSIT_INSTRUCTIONS, DEPOSIT_KYC_TIER, DEPOSIT_MINIMUMS, type DepositInstruction } from "@/lib/deposits/instructions";
 import { DepositInstructions } from "./DepositInstructions";
 import type { AssetCode } from "@/lib/generated/prisma/enums";
 import { CheckCircle, Upload, X, FileText, AlertCircle, Info } from "lucide-react";
@@ -13,6 +13,7 @@ type Props = {
   kycTier: number;
   emailVerified: boolean;
   referralCode: string;
+  instructions?: Record<AssetCode, DepositInstruction>;
 };
 
 function PermissionBanner({
@@ -58,7 +59,7 @@ function PermissionBanner({
   return null;
 }
 
-export function DepositForm({ initialAsset, kycTier, emailVerified, referralCode }: Props) {
+export function DepositForm({ initialAsset, kycTier, emailVerified, referralCode, instructions }: Props) {
   const router = useRouter();
   const [selectedAsset, setSelectedAsset] = useState<AssetCode>(initialAsset);
   const [amount, setAmount] = useState("");
@@ -70,7 +71,7 @@ export function DepositForm({ initialAsset, kycTier, emailVerified, referralCode
   const [success, setSuccess] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const instruction = DEPOSIT_INSTRUCTIONS[selectedAsset];
+  const instruction = (instructions ?? DEPOSIT_INSTRUCTIONS)[selectedAsset];
   const requiredTier = DEPOSIT_KYC_TIER[selectedAsset];
   const minimum = DEPOSIT_MINIMUMS[selectedAsset];
   const meta = ASSETS[selectedAsset];
@@ -179,7 +180,7 @@ export function DepositForm({ initialAsset, kycTier, emailVerified, referralCode
       />
 
       {/* Instructions — always show so user knows what to do */}
-      <DepositInstructions assetCode={selectedAsset} referenceCode={referralCode} />
+      <DepositInstructions assetCode={selectedAsset} referenceCode={referralCode} details={instruction.details} />
 
       {/* Amount input */}
       <div>

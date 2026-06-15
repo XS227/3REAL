@@ -3,10 +3,15 @@ import type { AssetCode } from "@/lib/generated/prisma/enums";
 import { DEPOSIT_INSTRUCTIONS } from "@/lib/deposits/instructions";
 import { CopyButton } from "@/components/dashboard/CopyButton";
 
-type Props = { assetCode: AssetCode; referenceCode: string };
+type Props = {
+  assetCode: AssetCode;
+  referenceCode: string;
+  details?: { label: string; value: string }[];
+};
 
-export function DepositInstructions({ assetCode, referenceCode }: Props) {
+export function DepositInstructions({ assetCode, referenceCode, details }: Props) {
   const instr = DEPOSIT_INSTRUCTIONS[assetCode];
+  const resolvedDetails = details ?? instr.details;
 
   return (
     <div className="space-y-4 rounded-xl border border-zinc-800 bg-zinc-900 p-5">
@@ -26,7 +31,7 @@ export function DepositInstructions({ assetCode, referenceCode }: Props) {
 
       {/* Bank / wallet details */}
       <div className="space-y-2 rounded-lg bg-zinc-950/60 p-4">
-        {instr.details.map(({ label, value }) => (
+        {resolvedDetails.map(({ label, value }) => (
           <div key={label} className="flex items-start justify-between gap-3">
             <span className="shrink-0 text-xs text-zinc-500">{label}</span>
             <div className="flex items-center gap-1 min-w-0">

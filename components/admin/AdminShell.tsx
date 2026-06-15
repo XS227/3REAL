@@ -20,6 +20,7 @@ import {
   Gem,
   Coins,
   Languages,
+  SlidersHorizontal,
 } from "lucide-react";
 import { LogoutButton } from "@/components/auth/LogoutButton";
 import type { Lang, AdminDict } from "@/lib/i18n/admin";
@@ -63,6 +64,7 @@ export function AdminShell({ email, role, lang, t, children }: Props) {
     { href: "/admin/audit-log", label: t.nav.auditLog, icon: ScrollText },
     { href: "/admin/ton-deposits", label: t.nav.tonDeposits, icon: Coins },
     { href: "/admin/ton-settings", label: t.nav.tonSettings, icon: Gem },
+    { href: "/admin/settings", label: t.nav.settings, icon: SlidersHorizontal },
   ];
 
   const sidebar = (

@@ -1,4 +1,5 @@
 import type { AssetCode, PaymentMethod } from "@/lib/generated/prisma/enums";
+import type { PlatformSettings } from "@/lib/settings/platform";
 
 export type DepositInstruction = {
   paymentMethod: PaymentMethod;
@@ -148,3 +149,60 @@ export const DEPOSIT_KYC_TIER: Record<AssetCode, number> = {
   NOK: 2,
   TRY: 2,
 };
+
+// Build deposit instructions with live DB values merged in (call from server components)
+export function buildDepositInstructions(
+  platform: PlatformSettings
+): Record<AssetCode, DepositInstruction> {
+  const bank = platform["platform.bank_name"] || PLATFORM_BANK_NAME;
+  const tonWallet = platform["platform.ton_wallet"] || PLATFORM_TON_WALLET;
+  const tronWallet = platform["platform.tron_wallet"] || PLATFORM_TRON_WALLET;
+  const eurIban = platform["platform.eur_iban"] || PLATFORM_EUR_IBAN;
+  const eurBic = platform["platform.eur_bic"] || PLATFORM_EUR_BIC;
+  const nokAccount = platform["platform.nok_account"] || PLATFORM_NOK_ACCOUNT;
+  const tryIban = platform["platform.try_iban"] || PLATFORM_TRY_IBAN;
+
+  return {
+    ...DEPOSIT_INSTRUCTIONS,
+    TON: {
+      ...DEPOSIT_INSTRUCTIONS.TON,
+      details: [
+        { label: "Platform TON Wallet", value: tonWallet },
+        { label: "Network", value: "The Open Network (TON)" },
+      ],
+    },
+    USDT: {
+      ...DEPOSIT_INSTRUCTIONS.USDT,
+      details: [
+        { label: "Deposit Address (TRC-20)", value: tronWallet },
+        { label: "Network", value: "TRON (TRC-20)" },
+        { label: "Minimum Deposit", value: "10 USDT" },
+      ],
+    },
+    EUR: {
+      ...DEPOSIT_INSTRUCTIONS.EUR,
+      details: [
+        { label: "Beneficiary", value: bank },
+        { label: "IBAN", value: eurIban },
+        { label: "BIC / SWIFT", value: eurBic },
+        { label: "Currency", value: "EUR" },
+      ],
+    },
+    NOK: {
+      ...DEPOSIT_INSTRUCTIONS.NOK,
+      details: [
+        { label: "Account Holder", value: bank },
+        { label: "Account Number", value: nokAccount },
+        { label: "Currency", value: "NOK" },
+      ],
+    },
+    TRY: {
+      ...DEPOSIT_INSTRUCTIONS.TRY,
+      details: [
+        { label: "Beneficiary", value: bank },
+        { label: "IBAN", value: tryIban },
+        { label: "Currency", value: "TRY" },
+      ],
+    },
+  };
+}

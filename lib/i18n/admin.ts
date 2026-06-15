@@ -17,6 +17,7 @@ export interface AdminDict {
     auditLog: string;
     tonDeposits: string;
     tonSettings: string;
+    settings: string;
   };
   user: {
     logout: string;
@@ -43,6 +44,7 @@ export const adminDicts: Record<Lang, AdminDict> = {
       auditLog: "Audit Log",
       tonDeposits: "TON Deposits",
       tonSettings: "TON Settings",
+      settings: "Settings",
     },
     user: {
       logout: "Log out",
@@ -69,6 +71,7 @@ export const adminDicts: Record<Lang, AdminDict> = {
       auditLog: "گزارش فعالیت",
       tonDeposits: "واریزهای TON",
       tonSettings: "تنظیمات TON",
+      settings: "تنظیمات پلتفرم",
     },
     user: {
       logout: "خروج",

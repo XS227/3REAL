@@ -4,6 +4,8 @@ import { getDepositHistory } from "@/lib/deposits/queries";
 import { getRealDepositHistory } from "@/lib/ton/deposits";
 import { getTonSettings } from "@/lib/ton/settings";
 import { getTonWallets } from "@/lib/ton/queries";
+import { getPlatformSettings } from "@/lib/settings/platform";
+import { buildDepositInstructions } from "@/lib/deposits/instructions";
 import { DepositForm } from "@/components/deposits/DepositForm";
 import { DepositHistory } from "@/components/deposits/DepositHistory";
 import { RealDepositSection } from "@/components/ton/RealDepositSection";
@@ -35,7 +37,7 @@ export default async function DepositPage({
   const isRealBlockchain = assetCode === "REAL";
 
   // Parallel data fetch — only load blockchain data when REAL is selected
-  const [user, deposits, tonWallets, tonSettings, realDeposits] = await Promise.all([
+  const [user, deposits, tonWallets, tonSettings, realDeposits, platformSettings] = await Promise.all([
     prisma.user.findUniqueOrThrow({
       where: { id: session.userId },
       select: { emailVerified: true, kycTier: true, referralCode: true },
@@ -44,7 +46,10 @@ export default async function DepositPage({
     isRealBlockchain ? getTonWallets(session.userId) : Promise.resolve([]),
     isRealBlockchain ? getTonSettings() : Promise.resolve(null),
     isRealBlockchain ? getRealDepositHistory(session.userId, 20) : Promise.resolve([]),
+    getPlatformSettings(),
   ]);
+
+  const depositInstructions = buildDepositInstructions(platformSettings);
 
   const depositAddress = tonSettings?.depositAddress ?? "";
 
@@ -88,6 +93,7 @@ export default async function DepositPage({
           kycTier={session.kycTier}
           emailVerified={user.emailVerified}
           referralCode={user.referralCode}
+          instructions={depositInstructions}
         />
       )}
 
