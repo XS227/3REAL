@@ -1,3 +1,9 @@
+// PM2's daemon doesn't inherit the shell env, and Next's automatic .env
+// loading isn't reliable under pm2 fork mode — without this, the app starts
+// with DATABASE_URL undefined and pg silently falls back to peer-auth
+// defaults (OS user, db named after it), failing every DB call.
+require("dotenv").config({ path: require("path").join(__dirname, ".env") });
+
 /** @type {import('@types/pm2').StartOptions} */
 module.exports = {
   apps: [
@@ -30,6 +36,7 @@ module.exports = {
       log_date_format: "YYYY-MM-DD HH:mm:ss Z",
 
       env_production: {
+        ...process.env,
         NODE_ENV: "production",
         PORT: "3020",
       },
