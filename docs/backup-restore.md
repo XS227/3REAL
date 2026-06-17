@@ -185,6 +185,6 @@ In the event of complete VPS loss:
 5. Restore `.env` from secure storage
 6. Restore DB from latest backup (§3)
 7. Restore uploads from latest backup (§4)
-8. Run `bash deploy/deploy.sh` (skips build if `.next` exists)
+8. Run `bash deploy/deploy.sh` (always rebuilds and verifies the deploy — there is no skip-build path)
 9. Restore nginx config + SSL certs from backup or re-issue cert
 10. Verify `https://3real.setaei.com/api/health` returns 200
