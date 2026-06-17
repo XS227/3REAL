@@ -8,7 +8,6 @@ export type DashboardUser = {
   kycTier: number;
   emailVerified: boolean;
   referralCode: string;
-  twoFaEnabled: boolean;
   createdAt: Date;
   lastLoginAt: Date | null;
 };
@@ -92,7 +91,6 @@ export async function getDashboardData(userId: string): Promise<DashboardData> {
           kycTier: true,
           emailVerified: true,
           referralCode: true,
-          twoFaEnabled: true,
           createdAt: true,
           lastLoginAt: true,
         },

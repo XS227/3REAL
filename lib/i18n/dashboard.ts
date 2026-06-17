@@ -54,7 +54,6 @@ export interface DashboardDict {
       completion: string;
       emailVerified: string;
       kycApproved: string;
-      twoFa: string;
       completeKyc: string;
       kycStatus: Record<string, string>;
       kycTier: Record<number, string>;
@@ -262,7 +261,6 @@ export const dashboardDicts: Record<Lang, DashboardDict> = {
         completion: "completion",
         emailVerified: "Email verified",
         kycApproved: "KYC approved",
-        twoFa: "2FA enabled",
         completeKyc: "Complete KYC",
         kycStatus: {
           not_started: "Not submitted",
@@ -512,7 +510,6 @@ export const dashboardDicts: Record<Lang, DashboardDict> = {
         completion: "تکمیل شده",
         emailVerified: "ایمیل تأیید شده",
         kycApproved: "احراز هویت تأیید شده",
-        twoFa: "احراز دو مرحله‌ای فعال",
         completeKyc: "تکمیل احراز هویت",
         kycStatus: {
           not_started: "ارسال نشده",

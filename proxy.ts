@@ -11,6 +11,8 @@ const PUBLIC_PATHS = [
   "/auth/verify-email",
   "/status",
   "/r",
+  "/terms",
+  "/privacy",
   "/api/auth/login",
   "/api/auth/register",
   "/api/auth/logout",

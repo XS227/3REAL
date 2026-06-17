@@ -67,7 +67,6 @@ export default async function DashboardPage() {
           <ProfileCard
             emailVerified={user.emailVerified}
             kycTier={user.kycTier}
-            twoFaEnabled={user.twoFaEnabled}
             kycProfile={kycProfile}
             t={t.dashboard.profileCard}
           />

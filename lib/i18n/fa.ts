@@ -307,8 +307,8 @@ export const fa: LandingDict = {
       legal: {
         title: "حقوقی",
         items: [
-          { label: "سیاست حفظ حریم خصوصی", href: "#" },
-          { label: "شرایط استفاده از خدمات", href: "#" },
+          { label: "سیاست حفظ حریم خصوصی", href: "/privacy" },
+          { label: "شرایط استفاده از خدمات", href: "/terms" },
         ],
       },
       ecosystem: {

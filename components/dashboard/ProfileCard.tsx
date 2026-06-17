@@ -5,14 +5,13 @@ import type { DashboardDict } from "@/lib/i18n/dashboard";
 type Props = {
   emailVerified: boolean;
   kycTier: number;
-  twoFaEnabled: boolean;
   kycProfile: KycSummary;
   t: DashboardDict["dashboard"]["profileCard"];
 };
 
 type CheckItem = { label: string; done: boolean; sublabel?: string };
 
-export function ProfileCard({ emailVerified, kycTier, twoFaEnabled, kycProfile, t }: Props) {
+export function ProfileCard({ emailVerified, kycTier, kycProfile, t }: Props) {
   const kycDone = kycTier >= 2;
   const kycSub = kycProfile
     ? t.kycStatus[kycProfile.status] ?? kycProfile.status
@@ -21,7 +20,6 @@ export function ProfileCard({ emailVerified, kycTier, twoFaEnabled, kycProfile, 
   const items: CheckItem[] = [
     { label: t.emailVerified, done: emailVerified },
     { label: t.kycApproved, done: kycDone, sublabel: kycSub },
-    { label: t.twoFa, done: twoFaEnabled },
   ];
 
   const doneCount = items.filter((i) => i.done).length;
