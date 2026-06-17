@@ -35,9 +35,13 @@ git pull origin main
 AFTER_COMMIT=$(git rev-parse HEAD)
 log "Commit: $BEFORE_COMMIT -> $AFTER_COMMIT"
 
-# ── 2. Install production dependencies ───────────────────────────────────────
+# ── 2. Install dependencies ───────────────────────────────────────────────────
+# Full install, including devDependencies: `next build` itself needs
+# tailwindcss/@tailwindcss/postcss/typescript, and `prisma generate`/`migrate`
+# need the prisma CLI. `--omit=dev` here silently pruned those right before
+# the steps that needed them, breaking the build.
 log "Installing dependencies..."
-npm install --omit=dev
+npm install
 
 # ── 3. Run database migrations ───────────────────────────────────────────────
 log "Running Prisma migrations..."

@@ -59,23 +59,7 @@ export async function getAdminUserLedger(
   ]);
 
   return {
-    entries: rows.map((r: {
-      id: string;
-      amount: { valueOf(): number };
-      assetCode: string;
-      createdAt: Date;
-      account: { label: string | null };
-      ledgerTransaction: {
-        id: string;
-        type: string;
-        status: string;
-        note: string | null;
-        chainTxHash: string | null;
-        referenceType: string | null;
-        referenceId: string | null;
-        createdAt: Date;
-      };
-    }) => ({
+    entries: rows.map((r) => ({
       id: r.id,
       amount: Number(r.amount),
       assetCode: r.assetCode as string,

@@ -82,12 +82,7 @@ export async function getTransactionDetail(
           chainTxHash: tx.ledgerTx.chainTxHash ?? null,
           chainNetwork: tx.ledgerTx.chainNetwork ?? null,
           approvedById: tx.ledgerTx.approvedById ?? null,
-          entries: tx.ledgerTx.entries.map((e: {
-            id: string;
-            amount: { valueOf(): number };
-            assetCode: string;
-            account: { label: string | null; ownerType: string; ownerId: string };
-          }) => ({
+          entries: tx.ledgerTx.entries.map((e) => ({
             id: e.id,
             amount: Number(e.amount),
             assetCode: e.assetCode as string,
