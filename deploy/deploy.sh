@@ -55,7 +55,11 @@ npx prisma generate
 log "Removing any existing build output..."
 rm -rf .next
 log "Building Next.js application..."
-npm run build
+# This box has 957M RAM; the TS-check phase of `next build` has hit V8's
+# default old-space ceiling and aborted (SIGABRT, OOM) even though swap had
+# room. Raise the heap limit so V8 uses the swap that's actually available
+# instead of giving up early.
+NODE_OPTIONS="--max-old-space-size=1536" npm run build
 BUILD_TIME=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
 log "Build complete at $BUILD_TIME"
 
