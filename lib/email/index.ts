@@ -34,6 +34,25 @@ export async function sendEmail(opts: EmailOptions): Promise<void> {
   if (error) throw new Error(`Resend error: ${error.message}`);
 }
 
+// Never throws — callers that must not hard-fail a request just because email
+// delivery is down (e.g. registration, resend-verification) use this instead.
+export async function sendEmailSafe(opts: EmailOptions): Promise<boolean> {
+  try {
+    await sendEmail(opts);
+    return true;
+  } catch (err) {
+    console.error(
+      "[email] Send failed:",
+      opts.subject,
+      "->",
+      opts.to,
+      "-",
+      err instanceof Error ? err.message : err
+    );
+    return false;
+  }
+}
+
 export function verificationEmail(to: string, verifyUrl: string): EmailOptions {
   return {
     to,

@@ -1,6 +1,7 @@
 import { CheckCircle, XCircle, Circle, User } from "lucide-react";
 import type { KycSummary } from "@/lib/dashboard/queries";
 import type { DashboardDict } from "@/lib/i18n/dashboard";
+import { ResendVerificationButton } from "./ResendVerificationButton";
 
 type Props = {
   emailVerified: boolean;
@@ -60,6 +61,16 @@ export function ProfileCard({ emailVerified, kycTier, kycProfile, t }: Props) {
                 <p className={`text-xs ${done ? "text-zinc-500" : "text-zinc-600"}`}>
                   {sublabel}
                 </p>
+              )}
+              {label === t.emailVerified && !done && (
+                <div className="mt-1">
+                  <ResendVerificationButton
+                    label={t.resendVerification}
+                    sendingLabel={t.resendVerificationSending}
+                    sentMessage={t.resendVerificationSent}
+                    failedMessage={t.resendVerificationFailed}
+                  />
+                </div>
               )}
             </div>
           </li>

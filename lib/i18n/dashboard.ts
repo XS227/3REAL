@@ -57,6 +57,10 @@ export interface DashboardDict {
       completeKyc: string;
       kycStatus: Record<string, string>;
       kycTier: Record<number, string>;
+      resendVerification: string;
+      resendVerificationSending: string;
+      resendVerificationSent: string;
+      resendVerificationFailed: string;
     };
     recentActivity: {
       title: string;
@@ -271,6 +275,10 @@ export const dashboardDicts: Record<Lang, DashboardDict> = {
           update_requested: "Update requested",
         },
         kycTier: { 0: "Not verified", 1: "Email tier", 2: "ID verified", 3: "Full KYC" },
+        resendVerification: "Resend verification email",
+        resendVerificationSending: "Sending…",
+        resendVerificationSent: "Verification email sent. Check your inbox.",
+        resendVerificationFailed: "Couldn't send the email right now. Please try again later.",
       },
       recentActivity: {
         title: "Recent Activity",
@@ -520,6 +528,10 @@ export const dashboardDicts: Record<Lang, DashboardDict> = {
           update_requested: "نیاز به بروزرسانی",
         },
         kycTier: { 0: "تأیید نشده", 1: "سطح ایمیل", 2: "هویت تأیید شده", 3: "KYC کامل" },
+        resendVerification: "ارسال دوباره ایمیل تأیید",
+        resendVerificationSending: "در حال ارسال…",
+        resendVerificationSent: "ایمیل تأیید ارسال شد. صندوق ورودی خود را بررسی کنید.",
+        resendVerificationFailed: "در حال حاضر امکان ارسال ایمیل نیست. لطفاً بعداً دوباره تلاش کنید.",
       },
       recentActivity: {
         title: "فعالیت‌های اخیر",

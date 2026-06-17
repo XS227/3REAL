@@ -3,7 +3,7 @@ import { prisma } from "@/lib/prisma";
 import { hashPassword } from "@/lib/auth/password";
 import { createAuthToken, generateReferralCode } from "@/lib/auth/tokens";
 import { registerSchema } from "@/lib/validators/auth";
-import { sendEmail, verificationEmail } from "@/lib/email";
+import { sendEmailSafe, verificationEmail } from "@/lib/email";
 import { audit, ipFromRequest } from "@/lib/audit";
 import { checkRateLimit } from "@/lib/rate-limit";
 
@@ -128,14 +128,14 @@ export async function POST(req: NextRequest) {
       : (process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000");
   const verifyUrl = `${appUrl}/auth/verify-email?token=${rawToken}`;
 
-  await sendEmail(verificationEmail(normalizedEmail, verifyUrl));
+  const emailSent = await sendEmailSafe(verificationEmail(normalizedEmail, verifyUrl));
 
   await audit({
     actorId: user.id,
     targetId: user.id,
     targetType: "user",
     action: "auth.register",
-    meta: { email: normalizedEmail, hasReferral: !!referrer },
+    meta: { email: normalizedEmail, hasReferral: !!referrer, emailSent },
     ipAddress: ip,
     userAgent: req.headers.get("user-agent") ?? undefined,
   });
@@ -143,7 +143,10 @@ export async function POST(req: NextRequest) {
   return NextResponse.json(
     {
       success: true,
-      message: "Account created. Check your email to verify your address.",
+      emailSent,
+      message: emailSent
+        ? "Account created. Check your email to verify your address."
+        : "Account created, but verification email could not be sent. Please contact support or try resend verification later.",
       // Dev helper — the email is logged to console; also surface URL here
       ...(process.env.NODE_ENV !== "production" && { devVerifyUrl: verifyUrl }),
     },
