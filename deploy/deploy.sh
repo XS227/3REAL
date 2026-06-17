@@ -89,6 +89,14 @@ PM2_UPTIME=$(pm2 jlist | node -e "
 ")
 log "  PM2 process since:  $PM2_UPTIME"
 
+log "  Waiting for server to accept connections..."
+for i in $(seq 1 15); do
+    if curl -s -o /dev/null --max-time 2 "http://127.0.0.1:$PORT/api/health"; then
+        break
+    fi
+    sleep 1
+done
+
 check_route() {
     local path="$1"
     local expect_pattern="$2"
