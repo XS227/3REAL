@@ -10,7 +10,7 @@ APP_DIR="/var/www/3real"
 APP_NAME="3real"
 LOG_PREFIX="[deploy]"
 
-log() { echo "$LOG_PREFIX $(date '+%H:%M:%S') $*"; }
+log() { echo "$LOG_PREFIX $(date '+%H:%M:%S') $*" >&2; }
 fail() { echo "$LOG_PREFIX ERROR: $*" >&2; exit 1; }
 
 PORT="3020"
@@ -51,33 +51,84 @@ npx prisma migrate deploy
 log "Generating Prisma client..."
 npx prisma generate
 
-# ── 5. Build Next.js (always — never conditional on .next existing) ──────────
-log "Removing any existing build output..."
-rm -rf .next
-log "Building Next.js application..."
-# This box has 957M RAM; the TS-check phase of `next build` has hit V8's
-# default old-space ceiling and aborted (SIGABRT, OOM) even though swap had
-# room. Raise the heap limit so V8 uses the swap that's actually available
-# instead of giving up early.
-NODE_OPTIONS="--max-old-space-size=1536" npm run build
+# ── 5. Stop the app before building ───────────────────────────────────────────
+# This box has 957M RAM. Building while the live PM2 process is also running
+# caused memory contention severe enough to OOM-kill / SIGABRT the build
+# (V8 heap abort during the TS-check phase) and to trigger involuntary PM2
+# restarts of the live app mid-build. Stopping it first frees that memory and
+# removes the race entirely — a short, controlled downtime instead of random
+# crashes on both sides.
+WAS_RUNNING=0
+if pm2 describe "$APP_NAME" > /dev/null 2>&1; then
+    WAS_RUNNING=1
+    log "Stopping $APP_NAME (PM2) before build to free memory..."
+    pm2 stop "$APP_NAME" > /dev/null
+    log "App stopped."
+else
+    log "No existing PM2 process named $APP_NAME — nothing to stop."
+fi
+
+# Back up the current build output instead of just deleting it, so a failed
+# build can be rolled back to a known-good previous build rather than leaving
+# the app with no .next directory to start from at all.
+if [ -d .next ]; then
+    log "Backing up current build output to .next.bak..."
+    rm -rf .next.bak
+    mv .next .next.bak
+fi
+
+# ── 6. Build Next.js (always — never conditional on .next existing) ─────────
+log "Build started (NODE_OPTIONS=--max-old-space-size=1536)..."
+BUILD_OK=1
+NODE_OPTIONS="--max-old-space-size=1536" npm run build || BUILD_OK=0
+
+if [ "$BUILD_OK" -ne 1 ]; then
+    log "Build FAILED."
+
+    if [ -d .next.bak ]; then
+        log "Restoring previous build output from .next.bak..."
+        rm -rf .next
+        mv .next.bak .next
+    else
+        log "WARNING: no previous build backup available — app may fail to start."
+    fi
+
+    if [ "$WAS_RUNNING" -eq 1 ]; then
+        log "Restarting previous PM2 process so the app is not left down..."
+        if pm2 restart "$APP_NAME" --update-env > /dev/null 2>&1; then
+            log "App restarted on the previous build."
+        else
+            log "WARNING: failed to restart $APP_NAME after build failure — app may be down."
+        fi
+    else
+        log "App was not previously running — nothing to restart."
+    fi
+    pm2 save > /dev/null 2>&1 || true
+
+    fail "Build failed — deployed code NOT updated. Previous version restored where possible."
+fi
+
+log "Build succeeded."
+rm -rf .next.bak
 BUILD_TIME=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
 log "Build complete at $BUILD_TIME"
 
-# ── 6. Ensure PM2 log directory exists ───────────────────────────────────────
+# ── 7. Ensure PM2 log directory exists ───────────────────────────────────────
 mkdir -p /var/log/pm2
 
-# ── 7. Restart via PM2 (always a real restart, not just reload) ──────────────
-log "Restarting PM2 process..."
-if pm2 describe "$APP_NAME" > /dev/null 2>&1; then
+# ── 8. Start/restart via PM2 (always a real restart, not just reload) ────────
+log "Restarting PM2 process with new build..."
+if [ "$WAS_RUNNING" -eq 1 ]; then
     pm2 restart "$APP_NAME" --update-env
 else
     pm2 start ecosystem.config.js --env production
 fi
+log "App restarted."
 
-# ── 8. Persist PM2 process list across reboots ───────────────────────────────
+# ── 9. Persist PM2 process list across reboots ───────────────────────────────
 pm2 save
 
-# ── 9. Post-deploy verification ───────────────────────────────────────────────
+# ── 10. Post-deploy verification ──────────────────────────────────────────────
 log "Running post-deploy verification..."
 
 DEPLOYED_COMMIT=$(git rev-parse --short HEAD)
@@ -103,28 +154,31 @@ done
 
 check_route() {
     local path="$1"
-    local expect_pattern="$2"
     local code
     code=$(curl -s -o /dev/null -w "%{http_code}" --max-time 8 "http://127.0.0.1:$PORT$path" || echo "000")
     log "  $path -> HTTP $code"
     echo "$code"
 }
 
-STATUS_CODE=$(check_route "/status" "")
-TERMS_CODE=$(check_route "/terms" "")
-PRIVACY_CODE=$(check_route "/privacy" "")
+HOME_CODE=$(check_route "/")
+STATUS_CODE=$(check_route "/status")
+TERMS_CODE=$(check_route "/terms")
+PRIVACY_CODE=$(check_route "/privacy")
+HEALTH_CODE=$(check_route "/api/health")
 
 FAILED=0
-if [ "$STATUS_CODE" = "307" ] || [ "$STATUS_CODE" = "302" ]; then
-    log "  WARNING: /status returned a redirect ($STATUS_CODE) — check it's not redirecting to login."
-fi
-[ "$TERMS_CODE" = "200" ] || { log "  FAIL: /terms did not return 200 (got $TERMS_CODE)"; FAILED=1; }
+[ "$HOME_CODE" = "200" ]    || { log "  FAIL: / did not return 200 (got $HOME_CODE)"; FAILED=1; }
+[ "$STATUS_CODE" = "200" ]  || { log "  FAIL: /status did not return 200 (got $STATUS_CODE) — check it's not redirecting to login"; FAILED=1; }
+[ "$TERMS_CODE" = "200" ]   || { log "  FAIL: /terms did not return 200 (got $TERMS_CODE)"; FAILED=1; }
 [ "$PRIVACY_CODE" = "200" ] || { log "  FAIL: /privacy did not return 200 (got $PRIVACY_CODE)"; FAILED=1; }
+[ "$HEALTH_CODE" = "200" ]  || { log "  FAIL: /api/health did not return 200 (got $HEALTH_CODE)"; FAILED=1; }
 
 if [ "$FAILED" -ne 0 ]; then
-    fail "Post-deploy verification failed — see warnings/failures above. Do not consider this deploy successful."
+    log "Verification FAILED."
+    fail "Post-deploy verification failed — see failures above. Do not consider this deploy successful."
 fi
 
+log "Verification passed."
 log "Done. App is running on port $PORT ($DOMAIN)."
 log "Check status: pm2 status"
 log "Tail logs:    pm2 logs $APP_NAME"
