@@ -248,6 +248,7 @@ model User {
   twoFaSecret    String?   @db.VarChar(128)
   sessionVersion Int       @default(1)
   lastLoginAt    DateTime?
+  onboardedAt    DateTime?
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
 

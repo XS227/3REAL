@@ -215,7 +215,9 @@ export async function GET(req: NextRequest) {
     userAgent,
   });
 
-  const response = NextResponse.redirect(new URL(from, origin));
+  // New users get a first-login orientation instead of landing cold on /dashboard.
+  const destination = isNewUser ? "/dashboard/onboarding" : from;
+  const response = NextResponse.redirect(new URL(destination, origin));
   response.cookies.set(SESSION_COOKIE, token, cookieOptions());
   response.cookies.delete(OAUTH_STATE_COOKIE);
   return response;

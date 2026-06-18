@@ -8,8 +8,10 @@ export type DashboardUser = {
   kycTier: number;
   emailVerified: boolean;
   referralCode: string;
+  referredById: string | null;
   createdAt: Date;
   lastLoginAt: Date | null;
+  onboardedAt: Date | null;
 };
 
 export type ReferralStats = {
@@ -91,8 +93,10 @@ export async function getDashboardData(userId: string): Promise<DashboardData> {
           kycTier: true,
           emailVerified: true,
           referralCode: true,
+          referredById: true,
           createdAt: true,
           lastLoginAt: true,
+          onboardedAt: true,
         },
       }),
       getUserBalances(userId),
