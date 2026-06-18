@@ -2,10 +2,11 @@
 
 import { useState, useRef } from "react";
 import { useRouter } from "next/navigation";
-import { ASSETS, ASSET_ORDER, fmtAsset } from "@/lib/wallet/assets";
+import { ASSETS, ASSET_ORDER } from "@/lib/wallet/assets";
 import { DEPOSIT_INSTRUCTIONS, DEPOSIT_KYC_TIER, DEPOSIT_MINIMUMS, type DepositInstruction } from "@/lib/deposits/instructions";
 import { DepositInstructions } from "./DepositInstructions";
 import type { AssetCode } from "@/lib/generated/prisma/enums";
+import type { DashboardDict } from "@/lib/i18n/dashboard";
 import { CheckCircle, Upload, X, FileText, AlertCircle, Info } from "lucide-react";
 
 type Props = {
@@ -14,25 +15,28 @@ type Props = {
   emailVerified: boolean;
   referralCode: string;
   instructions?: Record<AssetCode, DepositInstruction>;
+  t: DashboardDict["deposit"];
 };
 
 function PermissionBanner({
   assetCode,
   kycTier,
   emailVerified,
+  t,
 }: {
   assetCode: AssetCode;
   kycTier: number;
   emailVerified: boolean;
+  t: DashboardDict["deposit"];
 }) {
   if (!emailVerified) {
     return (
       <div className="flex items-start gap-2 rounded-lg border border-red-500/20 bg-red-500/5 px-4 py-3">
         <AlertCircle className="mt-0.5 h-4 w-4 shrink-0 text-red-400" />
         <div>
-          <p className="text-sm font-medium text-red-300">Email not verified</p>
+          <p className="text-sm font-medium text-red-300">{t.emailNotVerifiedTitle}</p>
           <p className="text-xs text-zinc-500 mt-0.5">
-            Verify your email address before making deposits.
+            {t.emailNotVerifiedDesc}
           </p>
         </div>
       </div>
@@ -46,10 +50,10 @@ function PermissionBanner({
         <AlertCircle className="mt-0.5 h-4 w-4 shrink-0 text-amber-400" />
         <div>
           <p className="text-sm font-medium text-amber-300">
-            KYC Tier {required} required for {assetCode} deposits
+            {t.kycRequiredTitle.replace("{tier}", String(required)).replace("{asset}", assetCode)}
           </p>
           <p className="text-xs text-zinc-500 mt-0.5">
-            Complete identity verification to unlock deposits for this asset.
+            {t.kycRequiredDesc}
           </p>
         </div>
       </div>
@@ -59,7 +63,7 @@ function PermissionBanner({
   return null;
 }
 
-export function DepositForm({ initialAsset, kycTier, emailVerified, referralCode, instructions }: Props) {
+export function DepositForm({ initialAsset, kycTier, emailVerified, referralCode, instructions, t }: Props) {
   const router = useRouter();
   const [selectedAsset, setSelectedAsset] = useState<AssetCode>(initialAsset);
   const [amount, setAmount] = useState("");
@@ -71,7 +75,7 @@ export function DepositForm({ initialAsset, kycTier, emailVerified, referralCode
   const [success, setSuccess] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const instruction = (instructions ?? DEPOSIT_INSTRUCTIONS)[selectedAsset];
+  const instruction = (instructions ?? DEPOSIT_INSTRUCTIONS.en)[selectedAsset];
   const requiredTier = DEPOSIT_KYC_TIER[selectedAsset];
   const minimum = DEPOSIT_MINIMUMS[selectedAsset];
   const meta = ASSETS[selectedAsset];
@@ -101,14 +105,14 @@ export function DepositForm({ initialAsset, kycTier, emailVerified, referralCode
       const res = await fetch("/api/deposits", { method: "POST", body: fd });
       const data = await res.json();
       if (!res.ok) {
-        setError(data.error ?? "Submission failed. Please try again.");
+        setError(data.error ?? t.submissionFailed);
         setLoading(false);
         return;
       }
       setSuccess(true);
       router.refresh();
     } catch {
-      setError("Network error. Please check your connection and try again.");
+      setError(t.networkError);
       setLoading(false);
     }
   }
@@ -117,9 +121,9 @@ export function DepositForm({ initialAsset, kycTier, emailVerified, referralCode
     return (
       <div className="rounded-xl border border-emerald-500/20 bg-emerald-500/5 p-8 text-center">
         <CheckCircle className="mx-auto mb-3 h-10 w-10 text-emerald-400" />
-        <h3 className="text-lg font-semibold text-emerald-300">Deposit Request Submitted</h3>
+        <h3 className="text-lg font-semibold text-emerald-300">{t.requestSubmittedTitle}</h3>
         <p className="mt-1 text-sm text-zinc-400">
-          Your request is pending review. You will be notified once it is processed.
+          {t.requestSubmittedDesc}
         </p>
         <button
           onClick={() => {
@@ -131,7 +135,7 @@ export function DepositForm({ initialAsset, kycTier, emailVerified, referralCode
           }}
           className="mt-4 text-sm text-amber-400 hover:text-amber-300 underline"
         >
-          Submit another deposit
+          {t.submitAnother}
         </button>
       </div>
     );
@@ -141,7 +145,7 @@ export function DepositForm({ initialAsset, kycTier, emailVerified, referralCode
     <form onSubmit={handleSubmit} className="space-y-6">
       {/* Asset selector */}
       <div>
-        <p className="mb-3 text-sm font-medium text-zinc-300">Select Asset</p>
+        <p className="mb-3 text-sm font-medium text-zinc-300">{t.selectAsset}</p>
         <div className="grid grid-cols-3 gap-2 sm:grid-cols-6">
           {ASSET_ORDER.map((code) => {
             const m = ASSETS[code];
@@ -177,17 +181,18 @@ export function DepositForm({ initialAsset, kycTier, emailVerified, referralCode
         assetCode={selectedAsset}
         kycTier={kycTier}
         emailVerified={emailVerified}
+        t={t}
       />
 
       {/* Instructions — always show so user knows what to do */}
-      <DepositInstructions assetCode={selectedAsset} referenceCode={referralCode} details={instruction.details} />
+      <DepositInstructions assetCode={selectedAsset} referenceCode={referralCode} instruction={instruction} t={t} />
 
       {/* Amount input */}
       <div>
         <label className="mb-1.5 block text-sm font-medium text-zinc-300">
-          Amount{" "}
+          {t.form.amount}{" "}
           <span className="text-zinc-600 font-normal">
-            (minimum {minimum.toLocaleString()} {selectedAsset})
+            ({t.minimumPrefix} {minimum.toLocaleString()} {selectedAsset})
           </span>
         </label>
         <div className="relative">
@@ -214,7 +219,7 @@ export function DepositForm({ initialAsset, kycTier, emailVerified, referralCode
         <label className="mb-1.5 block text-sm font-medium text-zinc-300">
           {instruction.refLabel}{" "}
           {!instruction.refRequired && (
-            <span className="text-zinc-600 font-normal">(optional)</span>
+            <span className="text-zinc-600 font-normal">({t.optional})</span>
           )}
         </label>
         <input
@@ -222,9 +227,9 @@ export function DepositForm({ initialAsset, kycTier, emailVerified, referralCode
           value={paymentRef}
           onChange={(e) => setPaymentRef(e.target.value)}
           placeholder={
-            instruction.refLabel.toLowerCase().includes("hash")
-              ? "0x… or TxHash…"
-              : "Your payment reference"
+            instruction.refLabel.toLowerCase().includes("hash") || instruction.refLabel.includes("هش")
+              ? t.hashPlaceholder
+              : t.refPlaceholder
           }
           disabled={!isEligible}
           required={instruction.refRequired}
@@ -237,8 +242,7 @@ export function DepositForm({ initialAsset, kycTier, emailVerified, referralCode
       {/* Proof upload */}
       <div>
         <label className="mb-1.5 block text-sm font-medium text-zinc-300">
-          {instruction.proofLabel}{" "}
-          <span className="text-zinc-600 font-normal">(optional)</span>
+          {instruction.proofLabel}
         </label>
 
         {proofFile ? (
@@ -270,7 +274,7 @@ export function DepositForm({ initialAsset, kycTier, emailVerified, referralCode
               disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
           >
             <Upload className="h-4 w-4" />
-            Click to upload proof
+            {t.uploadCta}
           </button>
         )}
 
@@ -295,12 +299,12 @@ export function DepositForm({ initialAsset, kycTier, emailVerified, referralCode
         className="w-full rounded-lg bg-amber-500 py-3 text-sm font-semibold text-zinc-950
           hover:bg-amber-400 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
       >
-        {loading ? "Submitting…" : "Submit Deposit Request"}
+        {loading ? t.form.submitting : t.form.submit}
       </button>
 
       <div className="flex items-start gap-2 text-xs text-zinc-600">
         <Info className="mt-0.5 h-3 w-3 shrink-0" />
-        Deposits are processed manually. Ledger credit is applied only after admin approval.
+        {t.manualNote}
       </div>
     </form>
   );

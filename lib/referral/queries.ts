@@ -111,9 +111,9 @@ export async function getReferralPageData(
       registeredAt: r.registeredAt,
       status: r.referred?.emailVerified
         ? r.referred.kycTier >= 2
-          ? "KYC Verified"
-          : "Email Verified"
-        : "Pending Email",
+          ? "kyc_verified"
+          : "email_verified"
+        : "pending_email",
       rewardStatus: r.status,
       rewardAmount: Number(r.rewardAmount),
       referralLevel: r.referralLevel,
@@ -125,7 +125,7 @@ export async function getReferralPageData(
     .map((r) => ({
       id: r.id,
       createdAt: r.ledgerTx!.createdAt,
-      trigger: "Email Verified",
+      trigger: "email_verified",
       amount: Number(r.rewardAmount),
       status: "completed",
       referredEmail: maskEmail(r.referred?.email ?? ""),

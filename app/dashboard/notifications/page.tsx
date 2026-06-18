@@ -13,5 +13,5 @@ export default async function NotificationsPage() {
   const t = dashboardDicts[lang].notifications;
   const data = await getNotifications(session.userId, 0);
 
-  return <NotificationsPageClient initialData={data} t={t} />;
+  return <NotificationsPageClient initialData={data} t={t} lang={lang} />;
 }

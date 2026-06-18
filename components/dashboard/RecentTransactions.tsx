@@ -1,10 +1,11 @@
 import { ArrowDownLeft, ArrowUpRight, Clock } from "lucide-react";
 import type { TransactionEntry } from "@/lib/dashboard/queries";
-import type { DashboardDict } from "@/lib/i18n/dashboard";
+import { dateLocale, type DashboardDict, type Lang } from "@/lib/i18n/dashboard";
 
 type Props = {
   transactions: TransactionEntry[];
   t: DashboardDict["dashboard"]["recentTransactions"];
+  lang: Lang;
 };
 
 const STATUS_STYLE: Record<string, string> = {
@@ -18,11 +19,11 @@ const STATUS_STYLE: Record<string, string> = {
   failed: "bg-red-500/10 text-red-500",
 };
 
-function fmtDate(date: Date): string {
-  return date.toLocaleDateString("en-US", { month: "short", day: "numeric" });
+function fmtDate(date: Date, lang: Lang): string {
+  return date.toLocaleDateString(dateLocale(lang), { month: "short", day: "numeric" });
 }
 
-export function RecentTransactions({ transactions, t }: Props) {
+export function RecentTransactions({ transactions, t, lang }: Props) {
   return (
     <div className="rounded-xl border border-zinc-800 bg-zinc-900 p-6">
       <div className="mb-4 flex items-center gap-2">
@@ -66,7 +67,7 @@ export function RecentTransactions({ transactions, t }: Props) {
                     <span className={`rounded-full px-1.5 py-0.5 text-[10px] font-medium ${STATUS_STYLE[tx.status] ?? "bg-zinc-800 text-zinc-500"}`}>
                       {t.statusLabels[tx.status] ?? tx.status}
                     </span>
-                    <span className="text-[10px] text-zinc-600">{fmtDate(tx.createdAt)}</span>
+                    <span className="text-[10px] text-zinc-600">{fmtDate(tx.createdAt, lang)}</span>
                   </div>
                 </div>
               </li>

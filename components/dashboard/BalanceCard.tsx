@@ -21,7 +21,7 @@ export function BalanceCard({ real, t }: Props) {
         <p className="text-4xl font-bold tabular-nums text-amber-400 sm:text-5xl">
           {fmtAmount(total, 2)}
         </p>
-        <p className="mt-1 text-sm text-zinc-500">REAL tokens</p>
+        <p className="mt-1 text-sm text-zinc-500">{t.tokensLabel}</p>
       </div>
 
       {/* Available / Pending split */}

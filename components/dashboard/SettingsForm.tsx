@@ -2,11 +2,13 @@
 
 import { useState } from "react";
 import { CheckCircle2, AlertCircle, Eye, EyeOff } from "lucide-react";
+import type { DashboardDict } from "@/lib/i18n/dashboard";
 
 interface Props {
   displayName: string | null;
   email: string;
   isGoogleAccount: boolean;
+  t: DashboardDict["settings"];
 }
 
 function Alert({
@@ -31,7 +33,7 @@ function Alert({
   );
 }
 
-export function DisplayNameForm({ displayName }: { displayName: string | null }) {
+export function DisplayNameForm({ displayName, t }: { displayName: string | null; t: DashboardDict["settings"] }) {
   const [name, setName] = useState(displayName ?? "");
   const [status, setStatus] = useState<{ type: "success" | "error"; msg: string } | null>(null);
   const [saving, setSaving] = useState(false);
@@ -48,12 +50,12 @@ export function DisplayNameForm({ displayName }: { displayName: string | null })
       });
       const data = await res.json();
       if (!res.ok) {
-        setStatus({ type: "error", msg: data.error ?? "Failed to update" });
+        setStatus({ type: "error", msg: data.error ?? t.displayNameFailed });
       } else {
-        setStatus({ type: "success", msg: "Display name updated." });
+        setStatus({ type: "success", msg: t.displayNameUpdated });
       }
     } catch {
-      setStatus({ type: "error", msg: "Network error. Try again." });
+      setStatus({ type: "error", msg: t.networkError });
     } finally {
       setSaving(false);
     }
@@ -62,16 +64,16 @@ export function DisplayNameForm({ displayName }: { displayName: string | null })
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
       <div>
-        <label className="block text-xs font-medium text-zinc-400 mb-1.5">Display Name</label>
+        <label className="block text-xs font-medium text-zinc-400 mb-1.5">{t.displayNameLabel}</label>
         <input
           type="text"
           value={name}
           onChange={(e) => setName(e.target.value)}
-          placeholder="Your name (optional)"
+          placeholder={t.displayNamePlaceholder}
           maxLength={128}
           className="w-full rounded-lg border border-zinc-700 bg-zinc-800 px-3 py-2 text-sm text-zinc-100 placeholder:text-zinc-600 focus:border-amber-500/60 focus:outline-none"
         />
-        <p className="mt-1 text-xs text-zinc-600">Shown in your profile. Leave blank to use your email address.</p>
+        <p className="mt-1 text-xs text-zinc-600">{t.displayNameHint}</p>
       </div>
       {status && <Alert type={status.type} message={status.msg} />}
       <button
@@ -79,13 +81,13 @@ export function DisplayNameForm({ displayName }: { displayName: string | null })
         disabled={saving}
         className="rounded-lg bg-amber-500 px-4 py-2 text-sm font-semibold text-black hover:bg-amber-400 disabled:opacity-50 transition-colors"
       >
-        {saving ? "Saving…" : "Save Name"}
+        {saving ? t.saving : t.saveName}
       </button>
     </form>
   );
 }
 
-export function ChangePasswordForm({ isGoogleAccount }: { isGoogleAccount: boolean }) {
+export function ChangePasswordForm({ isGoogleAccount, t }: { isGoogleAccount: boolean; t: DashboardDict["settings"] }) {
   const [current, setCurrent] = useState("");
   const [newPw, setNewPw] = useState("");
   const [confirm, setConfirm] = useState("");
@@ -97,11 +99,10 @@ export function ChangePasswordForm({ isGoogleAccount }: { isGoogleAccount: boole
   if (isGoogleAccount) {
     return (
       <p className="text-sm text-zinc-500">
-        Your account uses Google sign-in. To set a password, use the{" "}
+        {t.googleAccountNote}{" "}
         <a href="/auth/forgot-password" className="text-amber-400 hover:underline">
-          forgot password
-        </a>{" "}
-        flow.
+          {t.forgotPasswordLink}
+        </a>
       </p>
     );
   }
@@ -110,7 +111,7 @@ export function ChangePasswordForm({ isGoogleAccount }: { isGoogleAccount: boole
     e.preventDefault();
     setStatus(null);
     if (newPw !== confirm) {
-      setStatus({ type: "error", msg: "New passwords do not match." });
+      setStatus({ type: "error", msg: t.passwordsDontMatch });
       return;
     }
     setSaving(true);
@@ -122,15 +123,15 @@ export function ChangePasswordForm({ isGoogleAccount }: { isGoogleAccount: boole
       });
       const data = await res.json();
       if (!res.ok) {
-        setStatus({ type: "error", msg: data.error ?? "Failed to change password." });
+        setStatus({ type: "error", msg: data.error ?? t.passwordChangeFailed });
       } else {
-        setStatus({ type: "success", msg: "Password changed. You will be signed out of other sessions." });
+        setStatus({ type: "success", msg: t.passwordChanged });
         setCurrent("");
         setNewPw("");
         setConfirm("");
       }
     } catch {
-      setStatus({ type: "error", msg: "Network error. Try again." });
+      setStatus({ type: "error", msg: t.networkError });
     } finally {
       setSaving(false);
     }
@@ -139,7 +140,7 @@ export function ChangePasswordForm({ isGoogleAccount }: { isGoogleAccount: boole
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
       <div>
-        <label className="block text-xs font-medium text-zinc-400 mb-1.5">Current Password</label>
+        <label className="block text-xs font-medium text-zinc-400 mb-1.5">{t.currentPasswordLabel}</label>
         <div className="relative">
           <input
             type={showCurrent ? "text" : "password"}
@@ -158,7 +159,7 @@ export function ChangePasswordForm({ isGoogleAccount }: { isGoogleAccount: boole
         </div>
       </div>
       <div>
-        <label className="block text-xs font-medium text-zinc-400 mb-1.5">New Password</label>
+        <label className="block text-xs font-medium text-zinc-400 mb-1.5">{t.newPasswordLabel}</label>
         <div className="relative">
           <input
             type={showNew ? "text" : "password"}
@@ -176,10 +177,10 @@ export function ChangePasswordForm({ isGoogleAccount }: { isGoogleAccount: boole
             {showNew ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
           </button>
         </div>
-        <p className="mt-1 text-xs text-zinc-600">Min 8 characters, at least one letter and one number.</p>
+        <p className="mt-1 text-xs text-zinc-600">{t.newPasswordHint}</p>
       </div>
       <div>
-        <label className="block text-xs font-medium text-zinc-400 mb-1.5">Confirm New Password</label>
+        <label className="block text-xs font-medium text-zinc-400 mb-1.5">{t.confirmPasswordLabel}</label>
         <input
           type="password"
           value={confirm}
@@ -194,30 +195,30 @@ export function ChangePasswordForm({ isGoogleAccount }: { isGoogleAccount: boole
         disabled={saving}
         className="rounded-lg bg-amber-500 px-4 py-2 text-sm font-semibold text-black hover:bg-amber-400 disabled:opacity-50 transition-colors"
       >
-        {saving ? "Saving…" : "Change Password"}
+        {saving ? t.saving : t.changePassword}
       </button>
     </form>
   );
 }
 
-export function SettingsPage({ displayName, email, isGoogleAccount }: Props) {
+export function SettingsPage({ displayName, email, isGoogleAccount, t }: Props) {
   return (
     <div className="space-y-8 max-w-xl">
       {/* Profile section */}
       <div className="rounded-xl border border-zinc-800 bg-zinc-900 p-6 space-y-2">
-        <h2 className="text-sm font-semibold text-zinc-200 mb-4">Profile</h2>
+        <h2 className="text-sm font-semibold text-zinc-200 mb-4">{t.profileSection}</h2>
         <div className="mb-4">
-          <p className="text-xs font-medium text-zinc-400 mb-1">Email</p>
+          <p className="text-xs font-medium text-zinc-400 mb-1">{t.emailLabel}</p>
           <p className="text-sm text-zinc-300 font-mono">{email}</p>
-          <p className="text-xs text-zinc-600 mt-0.5">Email address cannot be changed.</p>
+          <p className="text-xs text-zinc-600 mt-0.5">{t.emailImmutableNote}</p>
         </div>
-        <DisplayNameForm displayName={displayName} />
+        <DisplayNameForm displayName={displayName} t={t} />
       </div>
 
       {/* Security section */}
       <div className="rounded-xl border border-zinc-800 bg-zinc-900 p-6">
-        <h2 className="text-sm font-semibold text-zinc-200 mb-4">Security</h2>
-        <ChangePasswordForm isGoogleAccount={isGoogleAccount} />
+        <h2 className="text-sm font-semibold text-zinc-200 mb-4">{t.securitySection}</h2>
+        <ChangePasswordForm isGoogleAccount={isGoogleAccount} t={t} />
       </div>
     </div>
   );

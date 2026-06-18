@@ -1,25 +1,26 @@
 import { Activity } from "lucide-react";
 import type { ActivityEntry } from "@/lib/dashboard/queries";
-import type { DashboardDict } from "@/lib/i18n/dashboard";
+import { dateLocale, type DashboardDict, type Lang } from "@/lib/i18n/dashboard";
 
 type Props = {
   entries: ActivityEntry[];
   t: DashboardDict["dashboard"]["recentActivity"];
+  lang: Lang;
 };
 
-function timeAgo(date: Date): string {
+function timeAgo(date: Date, t: DashboardDict["dashboard"]["recentActivity"], lang: Lang): string {
   const seconds = Math.floor((Date.now() - date.getTime()) / 1000);
-  if (seconds < 60) return "just now";
+  if (seconds < 60) return t.justNow;
   const minutes = Math.floor(seconds / 60);
-  if (minutes < 60) return `${minutes}m ago`;
+  if (minutes < 60) return `${minutes} ${t.minutesAgo}`;
   const hours = Math.floor(minutes / 60);
-  if (hours < 24) return `${hours}h ago`;
+  if (hours < 24) return `${hours} ${t.hoursAgo}`;
   const days = Math.floor(hours / 24);
-  if (days < 30) return `${days}d ago`;
-  return date.toLocaleDateString("en-US", { month: "short", day: "numeric" });
+  if (days < 30) return `${days} ${t.daysAgo}`;
+  return date.toLocaleDateString(dateLocale(lang), { month: "short", day: "numeric" });
 }
 
-export function RecentActivity({ entries, t }: Props) {
+export function RecentActivity({ entries, t, lang }: Props) {
   return (
     <div className="rounded-xl border border-zinc-800 bg-zinc-900 p-6">
       <div className="mb-4 flex items-center gap-2">
@@ -42,7 +43,7 @@ export function RecentActivity({ entries, t }: Props) {
                 )}
               </div>
               <span className="shrink-0 text-xs text-zinc-600">
-                {timeAgo(entry.createdAt)}
+                {timeAgo(entry.createdAt, t, lang)}
               </span>
             </li>
           ))}

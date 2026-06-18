@@ -23,6 +23,7 @@ import {
   SlidersHorizontal,
 } from "lucide-react";
 import { LogoutButton } from "@/components/auth/LogoutButton";
+import { Logo } from "@/components/icons/Logo";
 import type { Lang, AdminDict } from "@/lib/i18n/admin";
 
 function LangToggle({ lang, label }: { lang: Lang; label: string }) {
@@ -72,8 +73,8 @@ export function AdminShell({ email, role, lang, t, children }: Props) {
       {/* Logo */}
       <div className="flex items-center justify-between border-b border-zinc-800 px-5 py-4">
         <div className="flex items-center gap-2">
-          <Link href="/admin" className="text-xl font-bold tracking-tight text-amber-400">
-            3REAL
+          <Link href="/admin">
+            <Logo markClassName="h-7 w-7" textClassName="text-lg" />
           </Link>
           <span className="rounded border border-red-500/30 bg-red-500/10 px-1.5 py-0.5 text-[10px] font-bold uppercase tracking-wider text-red-400">
             {t.badge}
@@ -134,7 +135,7 @@ export function AdminShell({ email, role, lang, t, children }: Props) {
       {/* Mobile header */}
       <div className="fixed inset-x-0 top-0 z-40 flex items-center justify-between border-b border-zinc-800 bg-zinc-950/95 px-4 py-3 backdrop-blur md:hidden">
         <div className="flex items-center gap-2">
-          <span className="font-bold text-amber-400">3REAL</span>
+          <Logo markClassName="h-6 w-6" textClassName="text-base" />
           <span className="rounded border border-red-500/30 bg-red-500/10 px-1 py-0.5 text-[9px] font-bold uppercase text-red-400">
             {t.badge}
           </span>

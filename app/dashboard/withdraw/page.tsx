@@ -55,12 +55,14 @@ export default async function WithdrawPage({
         kycTier={session.kycTier}
         emailVerified={user.emailVerified}
         balances={balances}
+        t={t}
+        lang={lang}
       />
 
       {/* Withdrawal history */}
       <div>
         <h2 className="mb-3 text-sm font-medium text-zinc-400">{t.yourWithdrawals}</h2>
-        <WithdrawalHistory rows={withdrawals} />
+        <WithdrawalHistory rows={withdrawals} t={t} lang={lang} />
       </div>
     </div>
   );

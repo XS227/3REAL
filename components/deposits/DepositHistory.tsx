@@ -2,8 +2,9 @@ import { ArrowDownLeft, Clock } from "lucide-react";
 import type { DepositRow } from "@/lib/deposits/queries";
 import { ASSETS } from "@/lib/wallet/assets";
 import type { AssetCode } from "@/lib/generated/prisma/enums";
+import { dateLocale, type DashboardDict, type Lang } from "@/lib/i18n/dashboard";
 
-type Props = { deposits: DepositRow[] };
+type Props = { deposits: DepositRow[]; t: DashboardDict["deposit"]; lang: Lang };
 
 const STATUS_STYLE: Record<string, string> = {
   pending: "bg-zinc-800 text-zinc-400",
@@ -15,38 +16,20 @@ const STATUS_STYLE: Record<string, string> = {
   cancelled: "bg-zinc-800 text-zinc-500",
 };
 
-const STATUS_LABEL: Record<string, string> = {
-  under_review: "Under Review",
-  processing: "Processing",
-  completed: "Completed",
-  pending: "Pending",
-  approved: "Approved",
-  rejected: "Rejected",
-  cancelled: "Cancelled",
-};
-
-const PAYMENT_LABEL: Record<string, string> = {
-  bank_transfer: "Bank Transfer",
-  usdt_trc20: "USDT TRC-20",
-  ton: "TON",
-  sepa: "SEPA",
-  manual: "Manual",
-};
-
-function fmtDate(d: Date) {
-  return new Date(d).toLocaleDateString("en-US", {
+function fmtDate(d: Date, lang: Lang) {
+  return new Date(d).toLocaleDateString(dateLocale(lang), {
     year: "numeric",
     month: "short",
     day: "numeric",
   });
 }
 
-export function DepositHistory({ deposits }: Props) {
+export function DepositHistory({ deposits, t, lang }: Props) {
   if (deposits.length === 0) {
     return (
       <div className="rounded-xl border border-zinc-800 bg-zinc-900 p-6 text-center">
         <Clock className="mx-auto mb-2 h-8 w-8 text-zinc-700" />
-        <p className="text-sm text-zinc-500">No deposit requests yet</p>
+        <p className="text-sm text-zinc-500">{t.noDepositsYet}</p>
       </div>
     );
   }
@@ -55,8 +38,10 @@ export function DepositHistory({ deposits }: Props) {
     <div className="rounded-xl border border-zinc-800 bg-zinc-900 overflow-hidden">
       <div className="flex items-center gap-2 border-b border-zinc-800 px-5 py-4">
         <Clock className="h-4 w-4 text-zinc-400" />
-        <h3 className="text-sm font-medium text-zinc-300">Deposit History</h3>
-        <span className="ml-auto text-xs text-zinc-600">{deposits.length} request{deposits.length !== 1 ? "s" : ""}</span>
+        <h3 className="text-sm font-medium text-zinc-300">{t.historyTitle}</h3>
+        <span className="ml-auto text-xs text-zinc-600">
+          {deposits.length} {deposits.length !== 1 ? t.requestsSuffix : t.requestSuffix}
+        </span>
       </div>
 
       <ul className="divide-y divide-zinc-800/60">
@@ -72,10 +57,10 @@ export function DepositHistory({ deposits }: Props) {
 
               <div className="flex-1 min-w-0">
                 <p className="text-sm font-medium text-zinc-200">
-                  Deposit · {dep.assetCode}
+                  {t.depositLabel} · {dep.assetCode}
                 </p>
                 <p className="text-xs text-zinc-600">
-                  {dep.paymentMethod ? PAYMENT_LABEL[dep.paymentMethod] ?? dep.paymentMethod : "—"}
+                  {dep.paymentMethod ? t.paymentMethods[dep.paymentMethod] ?? dep.paymentMethod : "—"}
                   {dep.paymentRef ? ` · ${dep.paymentRef.slice(0, 16)}…` : ""}
                 </p>
               </div>
@@ -94,9 +79,9 @@ export function DepositHistory({ deposits }: Props) {
                       STATUS_STYLE[dep.status] ?? "bg-zinc-800 text-zinc-500"
                     }`}
                   >
-                    {STATUS_LABEL[dep.status] ?? dep.status}
+                    {t.status[dep.status] ?? dep.status}
                   </span>
-                  <span className="text-[10px] text-zinc-600">{fmtDate(dep.createdAt)}</span>
+                  <span className="text-[10px] text-zinc-600">{fmtDate(dep.createdAt, lang)}</span>
                 </div>
               </div>
             </li>

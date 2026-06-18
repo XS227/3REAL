@@ -28,7 +28,7 @@ export function ReferralCard({ referralCode, baseUrl, stats, t }: Props) {
           <span className="rounded-md bg-zinc-800 px-3 py-2 font-mono text-base font-bold tracking-wider text-amber-400">
             {referralCode}
           </span>
-          <CopyButton text={referralCode} />
+          <CopyButton text={referralCode} copyLabel={t.copyLink} copiedLabel={t.copied} />
         </div>
       </div>
 
@@ -39,7 +39,7 @@ export function ReferralCard({ referralCode, baseUrl, stats, t }: Props) {
           <span className="flex-1 truncate rounded-md bg-zinc-800 px-3 py-2 text-xs text-zinc-400">
             {referralLink}
           </span>
-          <CopyButton text={referralLink} />
+          <CopyButton text={referralLink} copyLabel={t.copyLink} copiedLabel={t.copied} />
         </div>
       </div>
 

@@ -6,7 +6,7 @@ import { AccountExplorer } from "@/components/wallet/AccountExplorer";
 import { getTonWallets } from "@/lib/ton/queries";
 import { TonWalletBalances } from "@/components/ton/TonWalletBalances";
 import { cookies } from "next/headers";
-import { resolveDashboardLang, dashboardDicts } from "@/lib/i18n/dashboard";
+import { resolveDashboardLang, dashboardDicts, dateLocale } from "@/lib/i18n/dashboard";
 import Link from "next/link";
 import { Wallet, Plus, Star, ShieldCheck } from "lucide-react";
 
@@ -41,6 +41,7 @@ export default async function WalletPage() {
               key={code}
               meta={ASSETS[code]}
               balance={balances[code]}
+              t={t}
             />
           ))}
         </div>
@@ -95,10 +96,10 @@ export default async function WalletPage() {
                         </span>
                       )}
                     </div>
-                    <TonWalletBalances walletId={w.id} />
+                    <TonWalletBalances walletId={w.id} lang={lang} />
                     <p className="text-xs text-zinc-600 flex items-center gap-1 mt-1">
                       <ShieldCheck className="h-3 w-3 text-emerald-600" />
-                      {w.network} · verified {new Date(w.verifiedAt).toLocaleDateString()}
+                      {w.network} · {t.verifiedPrefix} {new Date(w.verifiedAt).toLocaleDateString(dateLocale(lang))}
                     </p>
                   </div>
                   <Link
@@ -119,7 +120,7 @@ export default async function WalletPage() {
         <h2 className="mb-4 text-xs font-medium uppercase tracking-widest text-zinc-600">
           {t.ledgerSection}
         </h2>
-        <AccountExplorer accounts={accounts} />
+        <AccountExplorer accounts={accounts} t={t} lang={lang} />
       </section>
     </div>
   );

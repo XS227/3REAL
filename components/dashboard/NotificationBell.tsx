@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState, useCallback, useTransition } from "react";
 import { Bell, X, Check, CheckCheck, Info, ShieldCheck, Coins, ArrowUpRight, Gift } from "lucide-react";
 import Link from "next/link";
+import type { DashboardDict } from "@/lib/i18n/dashboard";
 
 type NotificationItem = {
   id: string;
@@ -29,12 +30,12 @@ function typeIcon(type: string) {
   return <Info className="h-4 w-4 text-zinc-400" />;
 }
 
-function timeAgo(iso: string): string {
+function timeAgo(iso: string, t: DashboardDict["notifications"]): string {
   const diff = Math.floor((Date.now() - new Date(iso).getTime()) / 1000);
-  if (diff < 60) return "just now";
-  if (diff < 3600) return `${Math.floor(diff / 60)}m ago`;
-  if (diff < 86400) return `${Math.floor(diff / 3600)}h ago`;
-  return `${Math.floor(diff / 86400)}d ago`;
+  if (diff < 60) return t.justNow;
+  if (diff < 3600) return `${Math.floor(diff / 60)} ${t.minutesAgo}`;
+  if (diff < 86400) return `${Math.floor(diff / 3600)} ${t.hoursAgo}`;
+  return `${Math.floor(diff / 86400)} ${t.daysAgo}`;
 }
 
 function referenceHref(type: string, referenceType: string | null): string | null {
@@ -45,7 +46,9 @@ function referenceHref(type: string, referenceType: string | null): string | nul
   return null;
 }
 
-export function NotificationBell({ initialUnread = 0 }: { initialUnread?: number }) {
+type Props = { initialUnread?: number; t: DashboardDict["notifications"] };
+
+export function NotificationBell({ initialUnread = 0, t }: Props) {
   const [open, setOpen] = useState(false);
   const [data, setData] = useState<ApiResponse | null>(null);
   const [unread, setUnread] = useState(initialUnread);
@@ -123,7 +126,7 @@ export function NotificationBell({ initialUnread = 0 }: { initialUnread?: number
         ref={buttonRef}
         onClick={() => setOpen((o) => !o)}
         className="relative rounded-lg p-2 text-zinc-400 transition-colors hover:bg-zinc-800 hover:text-zinc-100"
-        aria-label="Notifications"
+        aria-label={t.bellAriaLabel}
       >
         <Bell className="h-5 w-5" />
         {unread > 0 && (
@@ -140,16 +143,16 @@ export function NotificationBell({ initialUnread = 0 }: { initialUnread?: number
         >
           {/* Header */}
           <div className="flex items-center justify-between border-b border-zinc-800 px-4 py-3">
-            <span className="text-sm font-semibold text-zinc-100">Notifications</span>
+            <span className="text-sm font-semibold text-zinc-100">{t.title}</span>
             <div className="flex items-center gap-1">
               {unread > 0 && (
                 <button
                   onClick={markAll}
                   className="flex items-center gap-1 rounded px-2 py-1 text-xs text-zinc-400 transition-colors hover:bg-zinc-800 hover:text-zinc-100"
-                  title="Mark all as read"
+                  title={t.markAllRead}
                 >
                   <CheckCheck className="h-3.5 w-3.5" />
-                  All read
+                  {t.markAllRead}
                 </button>
               )}
               <button
@@ -166,7 +169,7 @@ export function NotificationBell({ initialUnread = 0 }: { initialUnread?: number
             {notifications.length === 0 ? (
               <div className="flex flex-col items-center gap-2 px-4 py-10 text-center">
                 <Bell className="h-8 w-8 text-zinc-700" />
-                <p className="text-sm text-zinc-500">No notifications yet</p>
+                <p className="text-sm text-zinc-500">{t.empty}</p>
               </div>
             ) : (
               <ul>
@@ -215,7 +218,7 @@ export function NotificationBell({ initialUnread = 0 }: { initialUnread?: number
                             )}
                           </>
                         )}
-                        <p className="mt-1 text-[10px] text-zinc-600">{timeAgo(n.createdAt)}</p>
+                        <p className="mt-1 text-[10px] text-zinc-600">{timeAgo(n.createdAt, t)}</p>
                       </div>
 
                       {/* Mark read button */}
@@ -223,7 +226,7 @@ export function NotificationBell({ initialUnread = 0 }: { initialUnread?: number
                         <button
                           onClick={() => markOne(n.id)}
                           className="mt-0.5 shrink-0 rounded p-1 text-zinc-600 transition-colors hover:bg-zinc-800 hover:text-zinc-300"
-                          title="Mark as read"
+                          title={t.markAllRead}
                         >
                           <Check className="h-3.5 w-3.5" />
                         </button>
@@ -243,7 +246,7 @@ export function NotificationBell({ initialUnread = 0 }: { initialUnread?: number
                 onClick={() => setOpen(false)}
                 className="text-xs text-zinc-500 transition-colors hover:text-amber-400"
               >
-                View all notifications
+                {t.viewAll}
               </Link>
             </div>
           )}

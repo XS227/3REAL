@@ -1,5 +1,6 @@
 import { ArrowUpRight } from "lucide-react";
 import type { WithdrawalRow } from "@/lib/withdrawals/queries";
+import { dateLocale, type DashboardDict, type Lang } from "@/lib/i18n/dashboard";
 
 const STATUS_STYLES: Record<string, string> = {
   pending: "bg-amber-500/10 text-amber-400",
@@ -11,8 +12,8 @@ const STATUS_STYLES: Record<string, string> = {
   cancelled: "bg-zinc-700/50 text-zinc-500",
 };
 
-function fmtDate(d: Date) {
-  return new Date(d).toLocaleDateString("en-US", {
+function fmtDate(d: Date, lang: Lang) {
+  return new Date(d).toLocaleDateString(dateLocale(lang), {
     month: "short",
     day: "numeric",
     hour: "2-digit",
@@ -20,15 +21,19 @@ function fmtDate(d: Date) {
   });
 }
 
-export function WithdrawalHistory({ rows }: { rows: WithdrawalRow[] }) {
+type Props = { rows: WithdrawalRow[]; t: DashboardDict["withdraw"]; lang: Lang };
+
+export function WithdrawalHistory({ rows, t, lang }: Props) {
   if (rows.length === 0) {
     return (
       <div className="rounded-xl border border-zinc-800 bg-zinc-900/50 py-10 text-center">
         <ArrowUpRight className="mx-auto mb-2 h-8 w-8 text-zinc-700" />
-        <p className="text-sm text-zinc-600">No withdrawal requests yet</p>
+        <p className="text-sm text-zinc-600">{t.noWithdrawalsYet}</p>
       </div>
     );
   }
+
+  const headers = [t.columns.date, t.columns.asset, t.columns.amount, t.columns.destination, t.columns.status];
 
   return (
     <div className="overflow-hidden rounded-xl border border-zinc-800 bg-zinc-900">
@@ -36,7 +41,7 @@ export function WithdrawalHistory({ rows }: { rows: WithdrawalRow[] }) {
         <table className="min-w-full">
           <thead>
             <tr className="border-b border-zinc-800 text-left">
-              {["Date", "Asset", "Amount", "Destination", "Status"].map((h) => (
+              {headers.map((h) => (
                 <th
                   key={h}
                   className="px-5 py-3 text-xs font-medium uppercase tracking-wider text-zinc-500"
@@ -50,7 +55,7 @@ export function WithdrawalHistory({ rows }: { rows: WithdrawalRow[] }) {
             {rows.map((row) => (
               <tr key={row.id} className="hover:bg-zinc-800/20 transition-colors">
                 <td className="px-5 py-3 text-sm text-zinc-400 whitespace-nowrap">
-                  {fmtDate(row.createdAt)}
+                  {fmtDate(row.createdAt, lang)}
                 </td>
                 <td className="px-5 py-3 text-sm font-medium text-zinc-200">
                   {row.assetCode}
@@ -66,11 +71,11 @@ export function WithdrawalHistory({ rows }: { rows: WithdrawalRow[] }) {
                 </td>
                 <td className="px-5 py-3">
                   <span
-                    className={`inline-block rounded-full px-2.5 py-0.5 text-xs font-medium capitalize ${
+                    className={`inline-block rounded-full px-2.5 py-0.5 text-xs font-medium ${
                       STATUS_STYLES[row.status] ?? "bg-zinc-700/50 text-zinc-400"
                     }`}
                   >
-                    {row.status.replace("_", " ")}
+                    {t.status[row.status] ?? row.status.replace("_", " ")}
                   </span>
                   {row.adminNote && row.status === "rejected" && (
                     <p className="mt-0.5 text-[11px] text-red-400/80 truncate max-w-[160px]">

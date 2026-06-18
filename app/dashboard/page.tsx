@@ -1,4 +1,5 @@
 import { cookies } from "next/headers";
+import { redirect } from "next/navigation";
 import { requireAuth } from "@/lib/auth/guards";
 import { getDashboardData } from "@/lib/dashboard/queries";
 import { BalanceCard } from "@/components/dashboard/BalanceCard";
@@ -18,6 +19,10 @@ export default async function DashboardPage() {
 
   const data = await getDashboardData(session.userId);
   const { user, balances, referralStats, recentActivity, recentTransactions, kycProfile } = data;
+
+  if (!user.onboardedAt) {
+    redirect("/dashboard/onboarding");
+  }
 
   const baseUrl = process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000";
   const displayName = user.displayName ?? user.email.split("@")[0];
@@ -76,7 +81,7 @@ export default async function DashboardPage() {
       {/* Wallet + referral */}
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
         <div className="lg:col-span-2">
-          <WalletCard balances={balances} t={t.dashboard.walletCard} />
+          <WalletCard balances={balances} t={t.dashboard.walletCard} assetNames={t.wallet.assets} />
         </div>
         <div>
           <ReferralCard
@@ -93,8 +98,8 @@ export default async function DashboardPage() {
 
       {/* Activity + transactions */}
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
-        <RecentTransactions transactions={recentTransactions} t={t.dashboard.recentTransactions} />
-        <RecentActivity entries={recentActivity} t={t.dashboard.recentActivity} />
+        <RecentTransactions transactions={recentTransactions} t={t.dashboard.recentTransactions} lang={lang} />
+        <RecentActivity entries={recentActivity} t={t.dashboard.recentActivity} lang={lang} />
       </div>
     </div>
   );

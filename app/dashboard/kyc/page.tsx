@@ -35,6 +35,8 @@ export default async function KycPage() {
         status={status}
         rejectionReason={profile?.rejectionReason}
         reviewedAt={profile?.reviewedAt ?? undefined}
+        t={t}
+        lang={lang}
       />
 
       {/* Tier benefits info — show when not yet approved */}
@@ -66,7 +68,7 @@ export default async function KycPage() {
               <p className="text-sm text-zinc-500 mt-0.5">{t.underReviewNote}</p>
             )}
           </div>
-          <KycUploadForm profile={profile} documents={documents} />
+          <KycUploadForm profile={profile} documents={documents} t={t} />
         </div>
       )}
 

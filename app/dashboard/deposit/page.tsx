@@ -49,7 +49,7 @@ export default async function DepositPage({
     getPlatformSettings(),
   ]);
 
-  const depositInstructions = buildDepositInstructions(platformSettings);
+  const depositInstructions = buildDepositInstructions(platformSettings, lang);
 
   const depositAddress = tonSettings?.depositAddress ?? "";
 
@@ -62,12 +62,19 @@ export default async function DepositPage({
           <h1 className="text-2xl font-bold text-zinc-100">{t.title}</h1>
         </div>
         <p className="text-sm text-zinc-500">
-          {isRealBlockchain ? t.autoCredit : t.manualApproval}
+          {isRealBlockchain && depositAddress
+            ? t.autoCredit
+            : isRealBlockchain
+              ? t.realManualBeta
+              : t.manualApproval}
         </p>
       </div>
 
-      {/* REAL asset: blockchain deposit flow */}
-      {isRealBlockchain && depositAddress ? (
+      {/* REAL asset: blockchain deposit flow — only when the TON deposit
+          address is actually configured (it is not, by default; see
+          ton.deposit_address / ton.api_key in Settings). Otherwise REAL
+          falls through to the same manual form as every other asset. */}
+      {isRealBlockchain && depositAddress && (
         <RealDepositSection
           depositAddress={depositAddress}
           walletCount={tonWallets.length}
@@ -75,16 +82,10 @@ export default async function DepositPage({
             ...d,
             createdAt: d.createdAt.toISOString(),
           }))}
+          t={dashboardDicts[lang].realDepositSection}
+          lang={lang}
         />
-      ) : isRealBlockchain ? (
-        /* No deposit address configured yet — fall through to manual form */
-        <div className="rounded-xl border border-zinc-800 bg-zinc-900/40 p-5">
-          <p className="text-sm text-zinc-400">
-            Automated REAL deposits are not yet configured. Use the manual form below to
-            submit a deposit request.
-          </p>
-        </div>
-      ) : null}
+      )}
 
       {/* Non-REAL assets or fallback manual form */}
       {(!isRealBlockchain || !depositAddress) && (
@@ -94,6 +95,7 @@ export default async function DepositPage({
           emailVerified={user.emailVerified}
           referralCode={user.referralCode}
           instructions={depositInstructions}
+          t={t}
         />
       )}
 
@@ -101,7 +103,7 @@ export default async function DepositPage({
       {!isRealBlockchain && (
         <div>
           <h2 className="mb-3 text-sm font-medium text-zinc-400">{t.yourDeposits}</h2>
-          <DepositHistory deposits={deposits} />
+          <DepositHistory deposits={deposits} t={t} lang={lang} />
         </div>
       )}
 
@@ -109,7 +111,7 @@ export default async function DepositPage({
       {isRealBlockchain && deposits.length > 0 && (
         <div>
           <h2 className="mb-3 text-sm font-medium text-zinc-400">{t.allHistory}</h2>
-          <DepositHistory deposits={deposits} />
+          <DepositHistory deposits={deposits} t={t} lang={lang} />
         </div>
       )}
     </div>

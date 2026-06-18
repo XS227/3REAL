@@ -13,7 +13,7 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import type { NotificationItem } from "@/lib/notifications/queries";
-import type { DashboardDict } from "@/lib/i18n/dashboard";
+import { dateLocale, type DashboardDict, type Lang } from "@/lib/i18n/dashboard";
 
 type ApiResponse = {
   notifications: NotificationItem[];
@@ -37,21 +37,23 @@ function typeHref(type: string): string | null {
   return null;
 }
 
-function timeAgo(iso: string): string {
+function timeAgo(iso: string, t: DashboardDict["notifications"], lang: Lang): string {
   const diff = Math.floor((Date.now() - new Date(iso).getTime()) / 1000);
-  if (diff < 60) return "just now";
-  if (diff < 3600) return `${Math.floor(diff / 60)}m ago`;
-  if (diff < 86400) return `${Math.floor(diff / 3600)}h ago`;
-  if (diff < 86400 * 7) return `${Math.floor(diff / 86400)}d ago`;
-  return new Date(iso).toLocaleDateString("en-US", { month: "short", day: "numeric" });
+  if (diff < 60) return t.justNow;
+  if (diff < 3600) return `${Math.floor(diff / 60)} ${t.minutesAgo}`;
+  if (diff < 86400) return `${Math.floor(diff / 3600)} ${t.hoursAgo}`;
+  if (diff < 86400 * 7) return `${Math.floor(diff / 86400)} ${t.daysAgo}`;
+  return new Date(iso).toLocaleDateString(dateLocale(lang), { month: "short", day: "numeric" });
 }
 
 export function NotificationsPageClient({
   initialData,
   t,
+  lang,
 }: {
   initialData: ApiResponse;
   t: DashboardDict["notifications"];
+  lang: Lang;
 }) {
   const [data, setData] = useState(initialData);
   const [loading, setLoading] = useState(false);
@@ -160,7 +162,7 @@ export function NotificationsPageClient({
                       {n.body && (
                         <p className="mt-1 text-sm leading-relaxed text-zinc-400">{n.body}</p>
                       )}
-                      <p className="mt-2 text-xs text-zinc-600">{timeAgo(n.createdAt)}</p>
+                      <p className="mt-2 text-xs text-zinc-600">{timeAgo(n.createdAt, t, lang)}</p>
                     </div>
 
                     {/* Mark read */}
@@ -168,7 +170,7 @@ export function NotificationsPageClient({
                       <button
                         onClick={() => markOne(n.id)}
                         className="shrink-0 rounded p-1.5 text-zinc-600 transition-colors hover:bg-zinc-700 hover:text-zinc-300"
-                        title="Mark as read"
+                        title={t.markAllRead}
                       >
                         <Check className="h-4 w-4" />
                       </button>

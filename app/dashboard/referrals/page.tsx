@@ -100,7 +100,7 @@ export default async function ReferralsPage() {
               <span className="rounded-lg bg-zinc-800 px-4 py-2.5 font-mono text-lg font-bold tracking-widest text-amber-400">
                 {overview.code}
               </span>
-              <CopyButton text={overview.code} />
+              <CopyButton text={overview.code} copyLabel={t.copy} copiedLabel={t.copied} />
             </div>
           </div>
 
@@ -111,36 +111,34 @@ export default async function ReferralsPage() {
               <span className="flex-1 truncate rounded-lg bg-zinc-800 px-3 py-2.5 text-xs text-zinc-400">
                 {overview.link}
               </span>
-              <CopyButton text={overview.link} />
+              <CopyButton text={overview.link} copyLabel={t.copy} copiedLabel={t.copied} />
             </div>
           </div>
 
           {/* Share buttons */}
           <div className="flex flex-wrap gap-2">
-            <QRCodeDisplay value={overview.link} />
+            <QRCodeDisplay value={overview.link} t={t.qr} />
           </div>
 
           <div className="mt-4 rounded-lg bg-zinc-800/50 p-3 text-xs text-zinc-500">
             <p className="font-medium text-zinc-400 mb-1">{t.howItWorks}</p>
             <ul className="space-y-1 list-disc list-inside">
-              <li>Friend registers with your code → pending</li>
-              <li>Friend verifies email → <span className="text-amber-400">50 REAL</span> credited instantly</li>
-              <li>Friend completes KYC → <span className="text-amber-400">+25 REAL</span> bonus</li>
-              <li>Friend makes first deposit → <span className="text-amber-400">+10 REAL</span> bonus</li>
-              <li>Friend refers others → you earn <span className="text-zinc-300">15 REAL</span> per (L2)</li>
+              {t.howItWorksSteps.map((step) => (
+                <li key={step}>{step}</li>
+              ))}
             </ul>
           </div>
         </div>
 
         {/* Earnings calculator */}
-        <EarningsCalculator />
+        <EarningsCalculator t={t.calculatorConfig} />
       </div>
 
       {/* Invite tracking */}
-      <InviteTable invites={invites} />
+      <InviteTable invites={invites} t={t} lang={lang} />
 
       {/* Reward history */}
-      <RewardHistory rewards={rewardHistory} />
+      <RewardHistory rewards={rewardHistory} t={t} lang={lang} />
 
       {/* Pool info footer */}
       <div className="flex items-center justify-between rounded-xl border border-zinc-800 bg-zinc-900/50 px-5 py-3">

@@ -2,27 +2,13 @@ import { ScrollText, ArrowDownLeft, ArrowUpRight, RefreshCw, Gift, Minus } from 
 import type { AssetMeta } from "@/lib/wallet/assets";
 import { fmtAsset } from "@/lib/wallet/assets";
 import type { LedgerHistoryEntry } from "@/lib/wallet/queries";
+import { dateLocale, type DashboardDict, type Lang } from "@/lib/i18n/dashboard";
 
 type Props = {
   entries: LedgerHistoryEntry[];
   meta: AssetMeta;
-};
-
-const TX_TYPE_LABEL: Record<string, string> = {
-  deposit: "Deposit",
-  withdrawal: "Withdrawal",
-  fiat_deposit: "Fiat Deposit",
-  referral_reward: "Referral Reward",
-  fee: "Fee",
-  transfer: "Internal Transfer",
-  blockchain_deposit: "On-chain Deposit",
-  blockchain_withdrawal: "On-chain Withdrawal",
-  correction: "Manual Correction",
-  initial_credit: "Initial Credit",
-  conversion: "Conversion",
-  pool_topup: "Pool Top-up",
-  withdrawal_settlement: "Withdrawal Settlement",
-  withdrawal_reversal: "Withdrawal Reversal",
+  t: DashboardDict["wallet"];
+  lang: Lang;
 };
 
 const STATUS_STYLE: Record<string, string> = {
@@ -42,8 +28,8 @@ function TxIcon({ type, credit }: { type: string; credit: boolean }) {
   return <ArrowUpRight className={`${base} text-red-400`} />;
 }
 
-function fmtDate(date: Date): string {
-  return date.toLocaleDateString("en-US", {
+function fmtDate(date: Date, lang: Lang): string {
+  return date.toLocaleDateString(dateLocale(lang), {
     year: "numeric",
     month: "short",
     day: "numeric",
@@ -52,21 +38,21 @@ function fmtDate(date: Date): string {
   });
 }
 
-export function LedgerHistory({ entries, meta }: Props) {
+export function LedgerHistory({ entries, meta, t, lang }: Props) {
   return (
     <div className="rounded-xl border border-zinc-800 bg-zinc-900 p-6">
       <div className="mb-4 flex items-center gap-2">
         <ScrollText className="h-4 w-4 text-zinc-400" />
-        <h2 className="text-sm font-medium text-zinc-300">Ledger History</h2>
-        <span className="ml-auto text-xs text-zinc-600">{entries.length} entries</span>
+        <h2 className="text-sm font-medium text-zinc-300">{t.ledgerHistory}</h2>
+        <span className="ml-auto text-xs text-zinc-600">{entries.length} {t.entriesSuffix}</span>
       </div>
 
       {entries.length === 0 ? (
         <div className="py-10 text-center">
           <ScrollText className="mx-auto mb-3 h-8 w-8 text-zinc-800" />
-          <p className="text-sm text-zinc-600">No ledger entries yet</p>
+          <p className="text-sm text-zinc-600">{t.noHistory}</p>
           <p className="mt-1 text-xs text-zinc-700">
-            Entries appear here once transactions are settled
+            {t.noHistoryDesc}
           </p>
         </div>
       ) : (
@@ -89,7 +75,7 @@ export function LedgerHistory({ entries, meta }: Props) {
                 {/* Type + note */}
                 <div className="flex-1 min-w-0">
                   <p className="text-sm font-medium text-zinc-200">
-                    {TX_TYPE_LABEL[entry.tx.type] ?? entry.tx.type}
+                    {t.txTypes[entry.tx.type] ?? entry.tx.type}
                   </p>
                   {entry.tx.note ? (
                     <p className="text-xs text-zinc-600 truncate">{entry.tx.note}</p>
@@ -98,7 +84,7 @@ export function LedgerHistory({ entries, meta }: Props) {
                       {entry.tx.chainTxHash.slice(0, 20)}…
                     </p>
                   ) : null}
-                  <p className="text-[10px] text-zinc-700">{fmtDate(entry.createdAt)}</p>
+                  <p className="text-[10px] text-zinc-700">{fmtDate(entry.createdAt, lang)}</p>
                 </div>
 
                 {/* Amount + status */}
@@ -117,7 +103,7 @@ export function LedgerHistory({ entries, meta }: Props) {
                       STATUS_STYLE[entry.tx.status] ?? "bg-zinc-800 text-zinc-500"
                     }`}
                   >
-                    {entry.tx.status}
+                    {t.txStatus[entry.tx.status] ?? entry.tx.status}
                   </span>
                 </div>
               </li>

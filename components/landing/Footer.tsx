@@ -3,6 +3,7 @@ import { ArrowUpRight } from "lucide-react";
 import type { LandingDict } from "@/lib/i18n/en";
 import type { LandingLang } from "@/lib/i18n";
 import { LangSwitcher } from "@/components/landing/LangSwitcher";
+import { Logo } from "@/components/icons/Logo";
 
 export function Footer({
   t,
@@ -19,9 +20,8 @@ export function Footer({
         <div className="grid grid-cols-1 gap-10 sm:grid-cols-2 lg:grid-cols-4">
           {/* Brand column */}
           <div className="lg:col-span-1">
-            <Link href="/" className="inline-flex items-center font-black text-xl tracking-tight">
-              <span className="text-amber-400">3</span>
-              <span className="text-white">REAL</span>
+            <Link href="/" className="inline-flex items-center">
+              <Logo />
             </Link>
             <p className="mt-3 text-sm text-amber-400/80 font-medium">{t.tagline}</p>
             <p className="mt-1 text-sm text-zinc-500">{t.description}</p>
@@ -86,7 +86,7 @@ export function Footer({
         <div className="mt-12 pt-6 border-t border-zinc-800 flex flex-col sm:flex-row items-center justify-between gap-3">
           <p className="text-xs text-zinc-600">{t.copyright}</p>
           <p className="text-xs text-zinc-700">
-            Not a licensed financial institution. Not investment advice.
+            {t.disclaimer}
           </p>
         </div>
       </div>

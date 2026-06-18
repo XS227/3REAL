@@ -20,6 +20,7 @@ import {
 } from "lucide-react";
 import { LogoutButton } from "@/components/auth/LogoutButton";
 import { NotificationBell } from "@/components/dashboard/NotificationBell";
+import { Logo } from "@/components/icons/Logo";
 import type { DashboardDict, Lang } from "@/lib/i18n/dashboard";
 
 type Props = {
@@ -74,11 +75,11 @@ export function DashboardShell({ email, role, initialUnread = 0, lang, t, childr
     <aside className="flex h-full w-64 flex-col bg-zinc-950 border-r border-zinc-800">
       {/* Logo */}
       <div className="flex items-center justify-between border-b border-zinc-800 px-5 py-4">
-        <Link href="/dashboard" className="text-xl font-bold tracking-tight text-amber-400">
-          3REAL
+        <Link href="/dashboard">
+          <Logo markClassName="h-7 w-7" textClassName="text-lg" />
         </Link>
         <div className="flex items-center gap-1">
-          <NotificationBell initialUnread={initialUnread} />
+          <NotificationBell initialUnread={initialUnread} t={t.notifications} />
           <button
             className="rounded p-1 text-zinc-500 hover:text-zinc-300 md:hidden"
             onClick={() => setOpen(false)}
@@ -129,11 +130,11 @@ export function DashboardShell({ email, role, initialUnread = 0, lang, t, childr
     >
       {/* Mobile header */}
       <div className="fixed inset-x-0 top-0 z-40 flex items-center justify-between border-b border-zinc-800 bg-zinc-950/95 px-4 py-3 backdrop-blur md:hidden">
-        <Link href="/dashboard" className="font-bold text-amber-400">
-          3REAL
+        <Link href="/dashboard">
+          <Logo markClassName="h-6 w-6" textClassName="text-base" />
         </Link>
         <div className="flex items-center gap-1">
-          <NotificationBell initialUnread={initialUnread} />
+          <NotificationBell initialUnread={initialUnread} t={t.notifications} />
           <button
             onClick={() => setOpen(true)}
             className="rounded p-1.5 text-zinc-400 hover:bg-zinc-800"

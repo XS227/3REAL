@@ -3,6 +3,7 @@
 import { useRef, useState } from "react";
 import { Upload, CheckCircle, XCircle, Clock, FileText, X } from "lucide-react";
 import type { KycDocumentRow } from "@/lib/kyc/queries";
+import type { DashboardDict } from "@/lib/i18n/dashboard";
 
 export type DocConfig = {
   type: string;
@@ -16,29 +17,30 @@ type Props = {
   existing?: KycDocumentRow;
   editable: boolean;
   onChange: (file: File | null) => void;
+  t: DashboardDict["kyc"];
 };
 
-function DocStatusBadge({ status }: { status: string }) {
+function DocStatusBadge({ status, t }: { status: string; t: DashboardDict["kyc"] }) {
   if (status === "approved")
     return (
       <span className="flex items-center gap-1 text-xs text-emerald-400">
-        <CheckCircle className="h-3 w-3" /> Approved
+        <CheckCircle className="h-3 w-3" /> {t.status.approved}
       </span>
     );
   if (status === "rejected")
     return (
       <span className="flex items-center gap-1 text-xs text-red-400">
-        <XCircle className="h-3 w-3" /> Rejected
+        <XCircle className="h-3 w-3" /> {t.status.rejected}
       </span>
     );
   return (
     <span className="flex items-center gap-1 text-xs text-amber-400">
-      <Clock className="h-3 w-3" /> Pending
+      <Clock className="h-3 w-3" /> {t.status.pending}
     </span>
   );
 }
 
-export function DocumentSlot({ config, existing, editable, onChange }: Props) {
+export function DocumentSlot({ config, existing, editable, onChange, t }: Props) {
   const [selected, setSelected] = useState<File | null>(null);
   const [preview, setPreview] = useState<string | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
@@ -77,15 +79,15 @@ export function DocumentSlot({ config, existing, editable, onChange }: Props) {
           <div className="flex items-center gap-2">
             <p className="text-sm font-medium text-zinc-200">{config.label}</p>
             {config.required && (
-              <span className="text-[10px] text-red-400 font-medium">Required</span>
+              <span className="text-[10px] text-red-400 font-medium">{t.required}</span>
             )}
             {!config.required && (
-              <span className="text-[10px] text-zinc-600 font-medium">Optional</span>
+              <span className="text-[10px] text-zinc-600 font-medium">{t.optional}</span>
             )}
           </div>
           <p className="text-xs text-zinc-500 mt-0.5">{config.hint}</p>
         </div>
-        {existing && <DocStatusBadge status={existing.status} />}
+        {existing && <DocStatusBadge status={existing.status} t={t} />}
       </div>
 
       {/* Existing doc display */}
@@ -93,7 +95,7 @@ export function DocumentSlot({ config, existing, editable, onChange }: Props) {
         <div className="mb-3 flex items-center gap-2 rounded-lg border border-zinc-700 bg-zinc-800 px-3 py-2">
           <FileText className="h-4 w-4 shrink-0 text-zinc-400" />
           <span className="flex-1 truncate text-xs text-zinc-400">
-            {existing.fileName ?? "Document"}
+            {existing.fileName ?? t.documentFallback}
           </span>
           <span className="text-xs text-zinc-600">v{existing.version}</span>
         </div>
@@ -156,9 +158,9 @@ export function DocumentSlot({ config, existing, editable, onChange }: Props) {
             <div className="flex flex-col items-center gap-1.5 py-2">
               <Upload className="h-6 w-6 text-zinc-500" />
               <p className="text-xs text-zinc-400">
-                {existing ? "Upload replacement" : "Click or drag to upload"}
+                {existing ? t.uploadReplacement : t.clickOrDragUpload}
               </p>
-              <p className="text-[10px] text-zinc-600">JPG, PNG, WEBP, PDF · max 10 MB</p>
+              <p className="text-[10px] text-zinc-600">{t.fileTypesHint}</p>
             </div>
           )}
         </div>
@@ -166,7 +168,7 @@ export function DocumentSlot({ config, existing, editable, onChange }: Props) {
 
       {hasApprovedDoc && (
         <p className="text-xs text-emerald-500 mt-2">
-          This document has been approved and cannot be replaced.
+          {t.approvedCannotReplace}
         </p>
       )}
     </div>

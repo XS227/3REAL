@@ -103,7 +103,7 @@ export async function POST(req: NextRequest) {
     proofFilePath = relativePath;
   }
 
-  const instruction = DEPOSIT_INSTRUCTIONS[assetCode];
+  const instruction = DEPOSIT_INSTRUCTIONS.en[assetCode];
 
   // Create the Transaction record
   await prisma.transaction.create({

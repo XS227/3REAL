@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { dateLocale, type Lang } from "@/lib/i18n/dashboard";
 
 type Balances = {
   ton: number;
@@ -8,7 +9,7 @@ type Balances = {
   fetchedAt: string;
 };
 
-export function TonWalletBalances({ walletId }: { walletId: string }) {
+export function TonWalletBalances({ walletId, lang }: { walletId: string; lang: Lang }) {
   const [data, setData] = useState<Balances | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -58,7 +59,7 @@ export function TonWalletBalances({ walletId }: { walletId: string }) {
         </span>
       </div>
       <p className="text-xs text-gray-600">
-        Updated {new Date(data.fetchedAt).toLocaleTimeString()}
+        Updated {new Date(data.fetchedAt).toLocaleTimeString(dateLocale(lang))}
       </p>
     </div>
   );

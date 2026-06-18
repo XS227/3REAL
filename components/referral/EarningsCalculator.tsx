@@ -2,17 +2,20 @@
 
 import { useState } from "react";
 import { Calculator } from "lucide-react";
+import type { DashboardDict } from "@/lib/i18n/dashboard";
 
 const L1_REWARD = 50;
 const L2_REWARD = 15;
 
 const ACTIVITY_MULTIPLIERS = [
-  { label: "Email only", l1: 1, l2: 0 },
-  { label: "Email + KYC", l1: 1, l2: 0.7 },
-  { label: "Email + KYC + Deposit", l1: 1, l2: 1 },
+  { l1: 1, l2: 0 },
+  { l1: 1, l2: 0.7 },
+  { l1: 1, l2: 1 },
 ];
 
-export function EarningsCalculator() {
+type Props = { t: DashboardDict["referrals"]["calculatorConfig"] };
+
+export function EarningsCalculator({ t }: Props) {
   const [directReferrals, setDirectReferrals] = useState(5);
   const [activityIndex, setActivityIndex] = useState(1);
 
@@ -25,13 +28,13 @@ export function EarningsCalculator() {
     <div className="rounded-xl border border-zinc-800 bg-zinc-900 p-6">
       <div className="mb-5 flex items-center gap-2">
         <Calculator className="h-4 w-4 text-amber-400" />
-        <h2 className="text-sm font-medium text-zinc-300">Earnings Calculator</h2>
+        <h2 className="text-sm font-medium text-zinc-300">{t.title}</h2>
       </div>
 
       <div className="space-y-4 mb-6">
         <div>
           <label className="mb-2 block text-xs text-zinc-500">
-            Number of direct referrals
+            {t.directReferralsLabel}
           </label>
           <div className="flex items-center gap-3">
             <input
@@ -50,12 +53,12 @@ export function EarningsCalculator() {
 
         <div>
           <label className="mb-2 block text-xs text-zinc-500">
-            Expected referral activity
+            {t.activityLabel}
           </label>
           <div className="grid grid-cols-3 gap-1.5">
-            {ACTIVITY_MULTIPLIERS.map((opt, i) => (
+            {t.activityOptions.map((label, i) => (
               <button
-                key={opt.label}
+                key={label}
                 onClick={() => setActivityIndex(i)}
                 className={`rounded-lg border px-2 py-2 text-xs font-medium transition-colors ${
                   activityIndex === i
@@ -63,7 +66,7 @@ export function EarningsCalculator() {
                     : "border-zinc-700 bg-zinc-800 text-zinc-400 hover:border-zinc-600"
                 }`}
               >
-                {opt.label}
+                {label}
               </button>
             ))}
           </div>
@@ -74,7 +77,7 @@ export function EarningsCalculator() {
       <div className="rounded-lg bg-zinc-950/60 p-4 space-y-3">
         <div className="flex justify-between text-sm">
           <span className="text-zinc-500">
-            Direct rewards ({directReferrals} × {L1_REWARD} REAL)
+            {t.directRewardsLabel} ({directReferrals} × {L1_REWARD} REAL)
           </span>
           <span className="font-semibold tabular-nums text-zinc-300">
             {directEarnings.toLocaleString()} REAL
@@ -82,14 +85,14 @@ export function EarningsCalculator() {
         </div>
         <div className="flex justify-between text-sm">
           <span className="text-zinc-500">
-            Indirect rewards (est. {L2_REWARD} REAL × avg 1.5)
+            {t.indirectRewardsLabel} (est. {L2_REWARD} REAL × avg 1.5)
           </span>
           <span className="font-semibold tabular-nums text-zinc-400">
             {Math.round(indirectEarnings).toLocaleString()} REAL
           </span>
         </div>
         <div className="border-t border-zinc-800 pt-3 flex justify-between">
-          <span className="text-sm font-medium text-zinc-300">Estimated total</span>
+          <span className="text-sm font-medium text-zinc-300">{t.estimatedTotal}</span>
           <span className="text-xl font-bold tabular-nums text-amber-400">
             {Math.round(total).toLocaleString()} REAL
           </span>
@@ -97,7 +100,7 @@ export function EarningsCalculator() {
       </div>
 
       <p className="mt-3 text-center text-xs text-zinc-600">
-        Direct: 50 REAL · Indirect: 15 REAL · Plus KYC and deposit bonuses
+        {t.footerNote}
       </p>
     </div>
   );

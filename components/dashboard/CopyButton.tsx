@@ -7,10 +7,14 @@ export function CopyButton({
   text,
   className,
   size = "sm",
+  copyLabel = "Copy",
+  copiedLabel = "Copied",
 }: {
   text: string;
   className?: string;
   size?: "xs" | "sm";
+  copyLabel?: string;
+  copiedLabel?: string;
 }) {
   const [copied, setCopied] = useState(false);
 
@@ -35,14 +39,14 @@ export function CopyButton({
           ? "bg-emerald-500/20 text-emerald-400"
           : "bg-zinc-800 text-zinc-400 hover:bg-zinc-700 hover:text-zinc-200"
         } ${className ?? ""}`}
-      title="Copy to clipboard"
+      title={copyLabel}
     >
       {copied ? (
         <Check className={isXs ? "h-2.5 w-2.5" : "h-3 w-3"} />
       ) : (
         <Copy className={isXs ? "h-2.5 w-2.5" : "h-3 w-3"} />
       )}
-      {copied ? "Copied" : "Copy"}
+      {copied ? copiedLabel : copyLabel}
     </button>
   );
 }

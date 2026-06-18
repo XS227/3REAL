@@ -2,20 +2,14 @@
 
 import { useRouter, useSearchParams } from "next/navigation";
 import { useCallback } from "react";
+import type { DashboardDict } from "@/lib/i18n/dashboard";
 
 const ASSETS = ["REAL", "TON", "USDT", "EUR", "NOK", "TRY"];
 const STATUSES = ["pending", "under_review", "approved", "processing", "completed", "rejected", "cancelled"];
-const STATUS_LABELS: Record<string, string> = {
-  pending: "Pending",
-  under_review: "Under Review",
-  approved: "Approved",
-  processing: "Processing",
-  completed: "Completed",
-  rejected: "Rejected",
-  cancelled: "Cancelled",
-};
 
-export function TransactionFilters() {
+type Props = { t: DashboardDict["transactions"] };
+
+export function TransactionFilters({ t }: Props) {
   const router = useRouter();
   const sp = useSearchParams();
 
@@ -42,20 +36,20 @@ export function TransactionFilters() {
         value={sp.get("type") ?? ""}
         onChange={(e) => update("type", e.target.value)}
         className={selectCls}
-        aria-label="Filter by type"
+        aria-label={t.filters.allTypes}
       >
-        <option value="">All types</option>
-        <option value="deposit">Deposit</option>
-        <option value="withdrawal">Withdrawal</option>
+        <option value="">{t.filters.allTypes}</option>
+        <option value="deposit">{t.typeLabels.deposit}</option>
+        <option value="withdrawal">{t.typeLabels.withdrawal}</option>
       </select>
 
       <select
         value={sp.get("asset") ?? ""}
         onChange={(e) => update("asset", e.target.value)}
         className={selectCls}
-        aria-label="Filter by asset"
+        aria-label={t.filters.allAssets}
       >
-        <option value="">All assets</option>
+        <option value="">{t.filters.allAssets}</option>
         {ASSETS.map((a) => (
           <option key={a} value={a}>
             {a}
@@ -67,12 +61,12 @@ export function TransactionFilters() {
         value={sp.get("status") ?? ""}
         onChange={(e) => update("status", e.target.value)}
         className={selectCls}
-        aria-label="Filter by status"
+        aria-label={t.filters.allStatuses}
       >
-        <option value="">All statuses</option>
+        <option value="">{t.filters.allStatuses}</option>
         {STATUSES.map((s) => (
           <option key={s} value={s}>
-            {STATUS_LABELS[s] ?? s}
+            {t.status[s] ?? s.replace("_", " ")}
           </option>
         ))}
       </select>
@@ -82,16 +76,16 @@ export function TransactionFilters() {
         value={sp.get("from") ?? ""}
         onChange={(e) => update("from", e.target.value)}
         className={selectCls + " text-zinc-400"}
-        title="From date"
-        aria-label="From date"
+        title={t.filters.fromDate}
+        aria-label={t.filters.fromDate}
       />
       <input
         type="date"
         value={sp.get("to") ?? ""}
         onChange={(e) => update("to", e.target.value)}
         className={selectCls + " text-zinc-400"}
-        title="To date"
-        aria-label="To date"
+        title={t.filters.toDate}
+        aria-label={t.filters.toDate}
       />
 
       {(sp.get("type") || sp.get("asset") || sp.get("status") || sp.get("from") || sp.get("to")) && (
@@ -99,7 +93,7 @@ export function TransactionFilters() {
           onClick={() => router.push("?")}
           className="rounded-lg border border-zinc-700 px-3 py-2 text-sm text-zinc-400 hover:text-zinc-200 hover:border-zinc-500 transition-colors"
         >
-          Clear filters
+          {t.clearFilters}
         </button>
       )}
     </div>

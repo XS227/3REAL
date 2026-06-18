@@ -4,10 +4,11 @@ import { useEffect, useRef, useState } from "react";
 import { useTonConnectUI, useTonWallet } from "@tonconnect/ui-react";
 import { useRouter } from "next/navigation";
 import { Wallet, CheckCircle, XCircle, Loader2 } from "lucide-react";
+import type { DashboardDict } from "@/lib/i18n/dashboard";
 
 type Status = "idle" | "connecting" | "verifying" | "success" | "error";
 
-export function ConnectWalletSection() {
+export function ConnectWalletSection({ t }: { t: DashboardDict["walletConnect"] }) {
   const [tonConnectUI] = useTonConnectUI();
   const wallet = useTonWallet();
   const router = useRouter();
@@ -31,7 +32,7 @@ export function ConnectWalletSection() {
         });
       })
       .catch(() => {
-        if (!cancelled) setErrorMsg("Failed to initialise connection. Refresh and try again.");
+        if (!cancelled) setErrorMsg(t.initFailed);
       });
     return () => {
       cancelled = true;
@@ -91,8 +92,8 @@ export function ConnectWalletSection() {
       <div className="flex items-center gap-3 rounded-xl border border-emerald-500/30 bg-emerald-500/5 px-4 py-3">
         <CheckCircle className="h-5 w-5 shrink-0 text-emerald-400" />
         <div>
-          <p className="text-sm font-medium text-emerald-300">Wallet linked successfully</p>
-          <p className="text-xs text-zinc-500">Your TON wallet has been verified and saved.</p>
+          <p className="text-sm font-medium text-emerald-300">{t.linkedSuccessTitle}</p>
+          <p className="text-xs text-zinc-500">{t.linkedSuccessDesc}</p>
         </div>
       </div>
     );
@@ -104,7 +105,7 @@ export function ConnectWalletSection() {
         <div className="flex items-start gap-3 rounded-xl border border-red-500/30 bg-red-500/5 px-4 py-3">
           <XCircle className="mt-0.5 h-4 w-4 shrink-0 text-red-400" />
           <div>
-            <p className="text-sm font-medium text-red-300">Verification failed</p>
+            <p className="text-sm font-medium text-red-300">{t.verificationFailed}</p>
             <p className="text-xs text-zinc-500">{errorMsg}</p>
           </div>
         </div>
@@ -113,7 +114,7 @@ export function ConnectWalletSection() {
       {status === "verifying" ? (
         <div className="flex items-center gap-3 rounded-xl border border-zinc-800 bg-zinc-900 px-4 py-3">
           <Loader2 className="h-4 w-4 shrink-0 animate-spin text-amber-400" />
-          <p className="text-sm text-zinc-400">Verifying cryptographic proof…</p>
+          <p className="text-sm text-zinc-400">{t.verifyingProof}</p>
         </div>
       ) : (
         <button
@@ -126,13 +127,12 @@ export function ConnectWalletSection() {
           ) : (
             <Wallet className="h-4 w-4" />
           )}
-          Connect TON Wallet
+          {t.connectButton}
         </button>
       )}
 
       <p className="text-xs text-zinc-600">
-        Your wallet&apos;s private key never leaves your device. 3REAL only records your address
-        after verifying a cryptographic proof of ownership.
+        {t.privacyNote}
       </p>
     </div>
   );

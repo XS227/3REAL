@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import type { LandingDict } from "@/lib/i18n/en";
 import type { LandingLang } from "@/lib/i18n";
 import { LangSwitcher } from "@/components/landing/LangSwitcher";
+import { Logo } from "@/components/icons/Logo";
 
 export function Navbar({ t, lang }: { t: LandingDict["nav"]; lang: LandingLang }) {
   const [open, setOpen] = useState(false);
@@ -16,9 +17,8 @@ export function Navbar({ t, lang }: { t: LandingDict["nav"]; lang: LandingLang }
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex h-16 items-center justify-between">
           {/* Logo */}
-          <Link href="/" className="flex items-center font-black text-xl tracking-tight select-none">
-            <span className="text-amber-400">3</span>
-            <span className="text-white">REAL</span>
+          <Link href="/" className="select-none">
+            <Logo />
           </Link>
 
           {/* Desktop nav links */}

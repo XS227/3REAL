@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Star, Trash2, ShieldCheck, Network } from "lucide-react";
+import { dateLocale, type DashboardDict, type Lang } from "@/lib/i18n/dashboard";
 
 type Wallet = {
   id: string;
@@ -17,12 +18,14 @@ function fmtAddr(addr: string) {
   return hash.slice(0, 6) + "…" + hash.slice(-6);
 }
 
-export function ConnectedWallets({ wallets }: { wallets: Wallet[] }) {
+type Props = { wallets: Wallet[]; t: DashboardDict["walletConnect"]; lang: Lang };
+
+export function ConnectedWallets({ wallets, t, lang }: Props) {
   const router = useRouter();
   const [busy, setBusy] = useState<string | null>(null);
 
   async function disconnect(id: string) {
-    if (!confirm("Remove this TON wallet from your account?")) return;
+    if (!confirm(t.removeConfirm)) return;
     setBusy(id);
     await fetch(`/api/ton/disconnect/${id}`, { method: "DELETE" });
     router.refresh();
@@ -38,7 +41,7 @@ export function ConnectedWallets({ wallets }: { wallets: Wallet[] }) {
 
   if (wallets.length === 0) {
     return (
-      <p className="text-sm text-zinc-600">No TON wallets linked yet.</p>
+      <p className="text-sm text-zinc-600">{t.noWalletsLinked}</p>
     );
   }
 
@@ -59,7 +62,7 @@ export function ConnectedWallets({ wallets }: { wallets: Wallet[] }) {
               {w.isPrimary && (
                 <span className="flex items-center gap-1 rounded border border-amber-500/30 bg-amber-500/10 px-1.5 py-0.5 text-[10px] font-semibold text-amber-400">
                   <Star className="h-2.5 w-2.5" />
-                  Primary
+                  {t.primary}
                 </span>
               )}
             </div>
@@ -70,7 +73,7 @@ export function ConnectedWallets({ wallets }: { wallets: Wallet[] }) {
               </span>
               <span className="flex items-center gap-1">
                 <ShieldCheck className="h-3 w-3 text-emerald-600" />
-                Verified {new Date(w.verifiedAt).toLocaleDateString()}
+                {t.verifiedPrefix} {new Date(w.verifiedAt).toLocaleDateString(dateLocale(lang))}
               </span>
             </div>
           </div>
@@ -79,7 +82,7 @@ export function ConnectedWallets({ wallets }: { wallets: Wallet[] }) {
               <button
                 onClick={() => setPrimary(w.id)}
                 disabled={busy === w.id}
-                title="Set as primary"
+                title={t.setPrimaryTitle}
                 className="rounded-lg border border-zinc-700 p-1.5 text-zinc-500 hover:border-amber-500/40 hover:text-amber-400 disabled:opacity-50 transition-colors"
               >
                 <Star className="h-3.5 w-3.5" />
@@ -88,7 +91,7 @@ export function ConnectedWallets({ wallets }: { wallets: Wallet[] }) {
             <button
               onClick={() => disconnect(w.id)}
               disabled={busy === w.id}
-              title="Remove wallet"
+              title={t.removeTitle}
               className="rounded-lg border border-zinc-700 p-1.5 text-zinc-500 hover:border-red-500/40 hover:text-red-400 disabled:opacity-50 transition-colors"
             >
               <Trash2 className="h-3.5 w-3.5" />

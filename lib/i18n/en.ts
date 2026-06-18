@@ -320,6 +320,7 @@ export const en = {
       },
     },
     copyright: "© 2026 SETAEI. All rights reserved.",
+    disclaimer: "Secure digital asset portal with verified accounts, manual review, and transparent ledger tracking during beta.",
   },
 };
 

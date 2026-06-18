@@ -1,8 +1,9 @@
 import { Database } from "lucide-react";
 import type { UserAccountSummary } from "@/lib/ledger/accounts";
 import { ASSETS } from "@/lib/wallet/assets";
+import { dateLocale, type DashboardDict, type Lang } from "@/lib/i18n/dashboard";
 
-type Props = { accounts: UserAccountSummary[] };
+type Props = { accounts: UserAccountSummary[]; t: DashboardDict["wallet"]; lang: Lang };
 
 function shortId(id: string): string {
   return `${id.slice(0, 8)}…${id.slice(-4)}`;
@@ -16,21 +17,23 @@ const ACCOUNT_TYPE_STYLE: Record<string, string> = {
   expense: "bg-red-500/10 text-red-400",
 };
 
-export function AccountExplorer({ accounts }: Props) {
+export function AccountExplorer({ accounts, t, lang }: Props) {
   return (
     <div className="rounded-xl border border-zinc-800 bg-zinc-900 p-6">
       <div className="mb-4 flex items-center gap-2">
         <Database className="h-4 w-4 text-zinc-400" />
-        <h2 className="text-sm font-medium text-zinc-300">Account Explorer</h2>
-        <span className="ml-auto text-xs text-zinc-600">{accounts.length} account{accounts.length !== 1 ? "s" : ""}</span>
+        <h2 className="text-sm font-medium text-zinc-300">{t.accountExplorer}</h2>
+        <span className="ml-auto text-xs text-zinc-600">
+          {accounts.length} {accounts.length !== 1 ? t.accountsSuffix : t.accountSuffix}
+        </span>
       </div>
 
       {accounts.length === 0 ? (
         <div className="py-8 text-center">
           <Database className="mx-auto mb-3 h-8 w-8 text-zinc-800" />
-          <p className="text-sm text-zinc-600">No ledger accounts yet</p>
+          <p className="text-sm text-zinc-600">{t.noAccounts}</p>
           <p className="mt-1 text-xs text-zinc-700">
-            Accounts are created automatically when your first transaction is settled
+            {t.noAccountsDesc}
           </p>
         </div>
       ) : (
@@ -38,11 +41,11 @@ export function AccountExplorer({ accounts }: Props) {
           <table className="w-full text-sm">
             <thead>
               <tr className="border-b border-zinc-800">
-                <th className="pb-2 text-left text-xs font-medium text-zinc-600">Account ID</th>
-                <th className="pb-2 text-left text-xs font-medium text-zinc-600">Asset</th>
-                <th className="pb-2 text-left text-xs font-medium text-zinc-600">Type</th>
-                <th className="pb-2 text-right text-xs font-medium text-zinc-600">Entries</th>
-                <th className="pb-2 text-right text-xs font-medium text-zinc-600">Created</th>
+                <th className="pb-2 text-left text-xs font-medium text-zinc-600">{t.columns.accountId}</th>
+                <th className="pb-2 text-left text-xs font-medium text-zinc-600">{t.columns.asset}</th>
+                <th className="pb-2 text-left text-xs font-medium text-zinc-600">{t.columns.type}</th>
+                <th className="pb-2 text-right text-xs font-medium text-zinc-600">{t.columns.entries}</th>
+                <th className="pb-2 text-right text-xs font-medium text-zinc-600">{t.columns.created}</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-zinc-800">
@@ -60,16 +63,16 @@ export function AccountExplorer({ accounts }: Props) {
                         <span className={`text-xs font-semibold ${meta?.accentClass ?? "text-zinc-400"}`}>
                           {account.assetCode}
                         </span>
-                        <span className="text-xs text-zinc-600">{meta?.name}</span>
+                        <span className="text-xs text-zinc-600">{t.assets[account.assetCode] ?? meta?.name}</span>
                       </div>
                     </td>
                     <td className="py-3 pr-4">
                       <span
-                        className={`rounded-full px-2 py-0.5 text-[10px] font-medium capitalize ${
+                        className={`rounded-full px-2 py-0.5 text-[10px] font-medium ${
                           ACCOUNT_TYPE_STYLE[account.accountType] ?? "bg-zinc-800 text-zinc-500"
                         }`}
                       >
-                        {account.accountType}
+                        {t.accountTypes[account.accountType] ?? account.accountType}
                       </span>
                     </td>
                     <td className="py-3 pr-4 text-right">
@@ -79,7 +82,7 @@ export function AccountExplorer({ accounts }: Props) {
                     </td>
                     <td className="py-3 text-right">
                       <span className="text-xs text-zinc-600">
-                        {account.createdAt.toLocaleDateString("en-US", {
+                        {account.createdAt.toLocaleDateString(dateLocale(lang), {
                           month: "short",
                           day: "numeric",
                           year: "numeric",

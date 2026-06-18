@@ -1,8 +1,10 @@
 import { Suspense } from "react";
 import Link from "next/link";
+import { cookies } from "next/headers";
 import { requireAuth } from "@/lib/auth/guards";
 import { getTransactionHistory } from "@/lib/transactions/history";
 import { TransactionFilters } from "@/components/dashboard/TransactionFilters";
+import { resolveDashboardLang, dashboardDicts, dateLocale, type Lang } from "@/lib/i18n/dashboard";
 import { ArrowDownLeft, ArrowUpRight, ClipboardList } from "lucide-react";
 
 export const dynamic = "force-dynamic";
@@ -18,19 +20,8 @@ const STATUS_COLOR: Record<string, string> = {
   failed: "text-red-400 bg-red-500/10 border-red-500/20",
 };
 
-const STATUS_LABEL: Record<string, string> = {
-  pending: "Pending",
-  under_review: "Under Review",
-  approved: "Approved",
-  processing: "Processing",
-  completed: "Completed",
-  rejected: "Rejected",
-  cancelled: "Cancelled",
-  failed: "Failed",
-};
-
-function fmtDate(d: Date) {
-  return new Date(d).toLocaleString("en-US", {
+function fmtDate(d: Date, lang: Lang) {
+  return new Date(d).toLocaleString(dateLocale(lang), {
     month: "short",
     day: "numeric",
     year: "numeric",
@@ -60,8 +51,9 @@ export default async function TransactionsPage({
 }: {
   searchParams: Promise<SearchParams>;
 }) {
-  const session = await requireAuth();
-  const sp = await searchParams;
+  const [session, sp, cookieStore] = await Promise.all([requireAuth(), searchParams, cookies()]);
+  const lang = resolveDashboardLang(cookieStore.get("lang")?.value);
+  const t = dashboardDicts[lang].transactions;
 
   const page = Math.max(1, parseInt(sp.page ?? "1", 10) || 1);
   const filters: import("@/lib/transactions/history").TxHistoryFilters = {};
@@ -79,15 +71,15 @@ export default async function TransactionsPage({
       <div className="flex items-center gap-3">
         <ClipboardList className="h-5 w-5 text-amber-400" />
         <div>
-          <h1 className="text-2xl font-bold text-zinc-100">Transaction History</h1>
-          <p className="text-sm text-zinc-500 mt-0.5">{total} total transactions</p>
+          <h1 className="text-2xl font-bold text-zinc-100">{t.title}</h1>
+          <p className="text-sm text-zinc-500 mt-0.5">{total} {t.totalSuffix}</p>
         </div>
       </div>
 
       {/* Filters */}
       <div className="rounded-xl border border-zinc-800 bg-zinc-900 p-4">
         <Suspense>
-          <TransactionFilters />
+          <TransactionFilters t={t} />
         </Suspense>
       </div>
 
@@ -95,9 +87,9 @@ export default async function TransactionsPage({
       <div className="rounded-xl border border-zinc-800 bg-zinc-900 overflow-hidden">
         {rows.length === 0 ? (
           <div className="py-16 text-center">
-            <p className="text-zinc-600 text-sm">No transactions match your filters.</p>
+            <p className="text-zinc-600 text-sm">{t.noMatch}</p>
             <Link href="/dashboard/transactions" className="mt-2 block text-xs text-amber-400 hover:underline">
-              Clear filters
+              {t.clearFilters}
             </Link>
           </div>
         ) : (
@@ -105,7 +97,7 @@ export default async function TransactionsPage({
             <table className="w-full text-sm">
               <thead>
                 <tr className="border-b border-zinc-800">
-                  {["Date", "Type", "Asset", "Amount", "Status", "Reference", ""].map((h) => (
+                  {[t.columns.date, t.columns.type, t.columns.asset, t.columns.amount, t.columns.status, t.columns.reference, ""].map((h) => (
                     <th key={h} className="px-4 py-3 text-left text-xs font-medium text-zinc-500">
                       {h}
                     </th>
@@ -119,7 +111,7 @@ export default async function TransactionsPage({
                   return (
                     <tr key={tx.id} className="hover:bg-zinc-800/30 transition-colors">
                       <td className="px-4 py-3 text-xs text-zinc-500 whitespace-nowrap font-mono">
-                        {fmtDate(tx.createdAt)}
+                        {fmtDate(tx.createdAt, lang)}
                       </td>
                       <td className="px-4 py-3">
                         <span
@@ -132,7 +124,7 @@ export default async function TransactionsPage({
                           ) : (
                             <ArrowUpRight className="h-3 w-3" />
                           )}
-                          {isDeposit ? "Deposit" : "Withdrawal"}
+                          {isDeposit ? t.typeLabels.deposit : t.typeLabels.withdrawal}
                         </span>
                       </td>
                       <td className="px-4 py-3 text-xs font-bold text-zinc-300">
@@ -142,7 +134,7 @@ export default async function TransactionsPage({
                         {isDeposit ? "+" : "−"}{fmtAmount(tx.amount, decimals)}
                         {parseFloat(tx.feeAmount) > 0 && (
                           <span className="ml-1 text-zinc-600">
-                            (fee: {fmtAmount(tx.feeAmount, 2)})
+                            ({t.feePrefix} {fmtAmount(tx.feeAmount, 2)})
                           </span>
                         )}
                       </td>
@@ -152,7 +144,7 @@ export default async function TransactionsPage({
                             STATUS_COLOR[tx.status] ?? "text-zinc-400 bg-zinc-800 border-zinc-700"
                           }`}
                         >
-                          {STATUS_LABEL[tx.status] ?? tx.status}
+                          {t.status[tx.status] ?? tx.status}
                         </span>
                       </td>
                       <td className="px-4 py-3 max-w-[180px]">
@@ -170,7 +162,7 @@ export default async function TransactionsPage({
                           href={`/dashboard/transactions/${tx.id}`}
                           className="text-xs text-zinc-600 hover:text-amber-400 transition-colors"
                         >
-                          View →
+                          {t.viewLink}
                         </Link>
                       </td>
                     </tr>
@@ -186,7 +178,7 @@ export default async function TransactionsPage({
       {pages > 1 && (
         <div className="flex items-center justify-between text-sm">
           <p className="text-zinc-600">
-            Page {page} of {pages} · {total} transactions
+            {t.pagePrefix} {page} {t.ofPage} {pages} · {total} {t.totalSuffix}
           </p>
           <div className="flex gap-2">
             {page > 1 && (
@@ -194,7 +186,7 @@ export default async function TransactionsPage({
                 href={`?${new URLSearchParams({ ...sp, page: String(page - 1) }).toString()}`}
                 className="rounded-lg border border-zinc-700 px-3 py-1.5 text-zinc-300 hover:bg-zinc-800 transition-colors"
               >
-                ← Previous
+                {t.previous}
               </Link>
             )}
             {page < pages && (
@@ -202,7 +194,7 @@ export default async function TransactionsPage({
                 href={`?${new URLSearchParams({ ...sp, page: String(page + 1) }).toString()}`}
                 className="rounded-lg border border-zinc-700 px-3 py-1.5 text-zinc-300 hover:bg-zinc-800 transition-colors"
               >
-                Next →
+                {t.next}
               </Link>
             )}
           </div>
