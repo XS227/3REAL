@@ -37,8 +37,7 @@ export function Navbar({ t, lang }: { t: LandingDict["nav"]; lang: LandingLang }
           {/* Desktop CTAs */}
           <div className="hidden md:flex items-center gap-3">
             <LangSwitcher current={lang} />
-            {/* Auth is Google-only: CTAs go straight to the OAuth flow */}
-            <a href="/api/auth/google">
+            <Link href="/auth/login">
               <Button
                 variant="ghost"
                 size="sm"
@@ -46,15 +45,15 @@ export function Navbar({ t, lang }: { t: LandingDict["nav"]; lang: LandingLang }
               >
                 {t.cta.signIn}
               </Button>
-            </a>
-            <a href="/api/auth/google">
+            </Link>
+            <Link href="/auth/register">
               <Button
                 size="sm"
                 className="bg-amber-500 hover:bg-amber-400 text-zinc-950 font-semibold"
               >
                 {t.cta.register}
               </Button>
-            </a>
+            </Link>
           </div>
 
           {/* Mobile: language switcher + hamburger */}
@@ -87,7 +86,7 @@ export function Navbar({ t, lang }: { t: LandingDict["nav"]; lang: LandingLang }
               ))}
             </nav>
             <div className="flex flex-col gap-2 pt-3 border-t border-zinc-800">
-              <a href="/api/auth/google" onClick={() => setOpen(false)}>
+              <Link href="/auth/login" onClick={() => setOpen(false)}>
                 <Button
                   variant="outline"
                   size="sm"
@@ -95,15 +94,15 @@ export function Navbar({ t, lang }: { t: LandingDict["nav"]; lang: LandingLang }
                 >
                   {t.cta.signIn}
                 </Button>
-              </a>
-              <a href="/api/auth/google" onClick={() => setOpen(false)}>
+              </Link>
+              <Link href="/auth/register" onClick={() => setOpen(false)}>
                 <Button
                   size="sm"
                   className="w-full bg-amber-500 hover:bg-amber-400 text-zinc-950 font-semibold"
                 >
                   {t.cta.register}
                 </Button>
-              </a>
+              </Link>
             </div>
           </div>
         )}

@@ -9,6 +9,7 @@ export const fa: LandingDict = {
       { label: "امکانات", href: "#features" },
       { label: "نحوه کار", href: "#how-it-works" },
       { label: "سؤالات متداول", href: "#faq" },
+      { label: "درباره ما", href: "/about" },
     ],
     cta: { signIn: "ورود", register: "شروع کنید" },
   },
@@ -19,7 +20,7 @@ export const fa: LandingDict = {
     tagline: "امن. سودآور. متصل.",
     description:
       "درگاه دارایی دیجیتال اکوسیستم SETAEI. توکن‌های REAL خود را مدیریت کنید، شبکه خود را گسترش دهید و از همین امروز به زیرساخت مالی فردا دسترسی داشته باشید.",
-    cta: { primary: "ادامه با گوگل", secondary: "مشاهده بازار" },
+    cta: { primary: "شروع کنید", secondary: "مشاهده بازار" },
     stats: {
       price: "قیمت REAL",
       change30d: "تغییر ۳۰ روزه",
@@ -180,15 +181,15 @@ export const fa: LandingDict = {
     steps: [
       {
         number: "01",
-        title: "ورود با گوگل",
+        title: "ساخت حساب کاربری",
         description:
-          "یک کلیک با حساب گوگل — بدون گذرواژه، بدون فرم. حساب شما در چند ثانیه آماده است.",
+          "با یک کلیک با گوگل ثبت‌نام کنید، یا با ایمیل و گذرواژه حساب بسازید. حساب شما در چند ثانیه آماده است.",
       },
       {
         number: "02",
         title: "احراز هویت",
         description:
-          "ورود با گوگل بلافاصله سطح ۱ را باز می‌کند. با ارائه مدرک شناسایی رسمی، سقف تراکنش بالاتری باز کنید.",
+          "تأیید ایمیل (یا ورود با گوگل) بلافاصله سطح ۱ را باز می‌کند. با ارائه مدرک شناسایی رسمی، سقف تراکنش بالاتری باز کنید.",
       },
       {
         number: "03",
@@ -254,7 +255,7 @@ export const fa: LandingDict = {
       {
         question: "چگونه وارد شوم؟",
         answer:
-          "3REAL فقط از ورود با گوگل استفاده می‌کند. روی هر دکمه ورود کلیک کنید تا مستقیم به گوگل منتقل شوید — با یک کلیک حساب شما آماده است. بدون گذرواژه، بدون فرم.",
+          "می‌توانید با یک کلیک با گوگل وارد شوید، یا با ایمیل و گذرواژه ثبت‌نام کنید. گوگل فقط یک گزینه راحت است — هرگز اجباری نیست و حساب شما در هر دو حالت یکسان کار می‌کند.",
       },
       {
         question: "برنامه معرفی چگونه کار می‌کند؟",
@@ -296,8 +297,8 @@ export const fa: LandingDict = {
       platform: {
         title: "پلتفرم",
         items: [
-          { label: "شروع کنید", href: "/api/auth/google" },
-          { label: "ورود", href: "/api/auth/google" },
+          { label: "شروع کنید", href: "/auth/register" },
+          { label: "ورود", href: "/auth/login" },
           {
             label: "REAL در DYOR",
             href: "https://dyor.io/token/EQDhq_DjQUMJqfXLP8K8J6SlOvon08XQQK0T49xon2e0xU8p",
@@ -305,10 +306,14 @@ export const fa: LandingDict = {
         ],
       },
       legal: {
-        title: "حقوقی",
+        title: "اعتماد و حقوقی",
         items: [
-          { label: "سیاست حفظ حریم خصوصی", href: "/privacy" },
+          { label: "درباره ما", href: "/about" },
+          { label: "وایت‌پیپر", href: "/whitepaper" },
+          { label: "امنیت", href: "/security" },
           { label: "شرایط استفاده از خدمات", href: "/terms" },
+          { label: "سیاست حفظ حریم خصوصی", href: "/privacy" },
+          { label: "وضعیت سیستم", href: "/status" },
         ],
       },
       ecosystem: {

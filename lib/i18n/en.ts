@@ -7,6 +7,7 @@ export const en = {
       { label: "Features", href: "#features" },
       { label: "How It Works", href: "#how-it-works" },
       { label: "FAQ", href: "#faq" },
+      { label: "About", href: "/about" },
     ],
     cta: { signIn: "Sign In", register: "Get Started" },
   },
@@ -17,7 +18,7 @@ export const en = {
     tagline: "Secure. Rewarding. Connected.",
     description:
       "The digital asset portal of the SETAEI ecosystem. Manage your REAL tokens, grow your network, and access tomorrow's financial infrastructure — today.",
-    cta: { primary: "Continue with Google", secondary: "Explore the Market" },
+    cta: { primary: "Get Started", secondary: "Explore the Market" },
     stats: {
       price: "REAL Price",
       change30d: "30d Change",
@@ -178,15 +179,15 @@ export const en = {
     steps: [
       {
         number: "01",
-        title: "Sign in with Google",
+        title: "Create Your Account",
         description:
-          "One click with your Google account — no passwords, no forms. Your account is ready in seconds.",
+          "Sign up with Google in one click, or register with your email and password. Your account is ready in seconds.",
       },
       {
         number: "02",
         title: "Verify Identity",
         description:
-          "Google sign-in unlocks Tier 1 instantly. Submit a government ID to unlock higher transaction limits.",
+          "Verifying your email (or signing in with Google) unlocks Tier 1 instantly. Submit a government ID to unlock higher transaction limits.",
       },
       {
         number: "03",
@@ -252,7 +253,7 @@ export const en = {
       {
         question: "How do I sign in?",
         answer:
-          "3REAL uses Google sign-in only. Click any sign-in button and you'll be taken straight to Google — one click and your account is ready. No passwords to remember, no forms to fill in.",
+          "You can sign in with Google in one click, or register with your email and password. Google is offered as a convenience — it is never required, and your account works the same either way.",
       },
       {
         question: "How does the referral program work?",
@@ -294,8 +295,8 @@ export const en = {
       platform: {
         title: "Platform",
         items: [
-          { label: "Get Started", href: "/api/auth/google" },
-          { label: "Sign In", href: "/api/auth/google" },
+          { label: "Get Started", href: "/auth/register" },
+          { label: "Sign In", href: "/auth/login" },
           {
             label: "REAL on DYOR",
             href: "https://dyor.io/token/EQDhq_DjQUMJqfXLP8K8J6SlOvon08XQQK0T49xon2e0xU8p",
@@ -303,10 +304,14 @@ export const en = {
         ],
       },
       legal: {
-        title: "Legal",
+        title: "Trust & Legal",
         items: [
-          { label: "Privacy Policy", href: "/privacy" },
+          { label: "About", href: "/about" },
+          { label: "Whitepaper", href: "/whitepaper" },
+          { label: "Security", href: "/security" },
           { label: "Terms of Service", href: "/terms" },
+          { label: "Privacy Policy", href: "/privacy" },
+          { label: "System Status", href: "/status" },
         ],
       },
       ecosystem: {

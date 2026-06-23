@@ -119,9 +119,9 @@ export function HeroSection({ t }: { t: LandingDict["hero"] }) {
           {t.description}
         </p>
 
-        {/* CTA row — sign-in goes straight to Google OAuth */}
+        {/* CTA row — register supports Google or email/password */}
         <div className="mb-12 flex flex-col items-center justify-center gap-4 sm:flex-row">
-          <a href="/api/auth/google">
+          <a href="/auth/register">
             <Button
               size="lg"
               className="h-12 bg-amber-500 px-8 text-base font-bold text-zinc-950 shadow-[0_0_30px_-8px_rgba(245,158,11,0.7)] hover:bg-amber-400"
