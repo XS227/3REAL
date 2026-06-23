@@ -78,9 +78,13 @@ if [ -d .next ]; then
 fi
 
 # ── 6. Build Next.js (always — never conditional on .next existing) ─────────
-log "Build started (NODE_OPTIONS=--max-old-space-size=1536)..."
+# Forced to webpack, not Turbopack: Turbopack build reliably fails on this box
+# with ENOENT on a _buildManifest.js.tmp write (reproduced twice, same step),
+# correlated with an NFT-trace warning from app/api/kyc/files/[...path]/route.ts.
+# `next build --webpack` builds the same app cleanly with no such failure.
+log "Build started (NODE_OPTIONS=--max-old-space-size=1536, webpack)..."
 BUILD_OK=1
-NODE_OPTIONS="--max-old-space-size=1536" npm run build || BUILD_OK=0
+NODE_OPTIONS="--max-old-space-size=1536" npx next build --webpack || BUILD_OK=0
 
 if [ "$BUILD_OK" -ne 1 ]; then
     log "Build FAILED."
